@@ -1,4 +1,4 @@
-# SOMEIP-anad-SOMEIP-SD
+# SOMEIP-and-SOMEIP-SD
 
 # build instructions
 ```cmake
