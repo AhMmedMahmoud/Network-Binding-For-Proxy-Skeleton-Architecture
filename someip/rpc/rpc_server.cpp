@@ -168,9 +168,9 @@ namespace ara
 
                     std::cout << "handler for method whose id is " 
                               << methodId 
-                              << "and belong to service whose id is " 
+                              << " and belong to service whose id is " 
                               << serviceId 
-                              << "is registed into hash table" << "\n";
+                              << " is registed into hash table" << "\n";
                 }
             }
         }
