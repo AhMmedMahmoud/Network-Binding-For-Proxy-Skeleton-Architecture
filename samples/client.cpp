@@ -27,7 +27,7 @@ void myHandle(const SomeIpRpcMessage &message)
     std::cout << "return code: " << static_cast<int>(message.ReturnCode()) << std::endl;
 
 
-    if(   message.MessageId() == ( ((uint32_t)4369) <<16 ) | 4369 )   
+    if(  message.MessageId() == ((((uint32_t)4660) <<16) | ((uint32_t)4369))  )   
     {
         std::vector<uint8_t> payload = message.RpcPayload();
         // Print each element in the payload of response message
@@ -37,7 +37,7 @@ void myHandle(const SomeIpRpcMessage &message)
         }
         std::cout << std::endl;
     }
-    else if(   message.MessageId() == ( ((uint32_t)1000) <<16 ) | 2000 )   
+    else if(  message.MessageId() == ((((uint32_t)1000) <<16) | ((uint32_t)2000))  )   
     {
          std::vector<uint8_t> payload = message.RpcPayload();
         // Print each element in the payload of response message
