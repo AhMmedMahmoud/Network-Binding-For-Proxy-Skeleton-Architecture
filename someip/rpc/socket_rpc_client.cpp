@@ -11,6 +11,8 @@ namespace ara
             namespace rpc
             {
                 const size_t SocketRpcClient::cBufferSize;
+                
+                /**************************** constructor  ****************************************/
 
                 SocketRpcClient::SocketRpcClient(
                     AsyncBsdSocketLib::Poller *poller,

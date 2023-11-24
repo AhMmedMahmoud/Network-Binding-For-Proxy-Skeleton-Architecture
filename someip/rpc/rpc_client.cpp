@@ -9,13 +9,23 @@ namespace ara
         {
             namespace rpc
             {
+                /*********************** useful for constructor of my child *****************/
+
                 RpcClient::RpcClient(
                     uint8_t protocolVersion,
                     uint8_t interfaceVersion) noexcept : mProtocolVersion{protocolVersion},
                                                          mInterfaceVersion{interfaceVersion}
-                {
-                }
+                {}
 
+
+
+                /**************************** useful for my child *************************/
+
+                /*
+                - take serialized SOMEIP received that represents response message
+                - check if messageID for this message is one of my messages ids
+                    - invoke registed handler that takes this message and processes it
+                */
                 void RpcClient::InvokeHandler(const std::vector<uint8_t> &payload) const
                 {
                     try
@@ -33,6 +43,10 @@ namespace ara
                         // Ignore the corrupted RPC server response
                     }
                 }
+
+
+
+                /**************************** fundemental functions *************************/
 
                 void RpcClient::SetHandler(
                     uint16_t serviceId, uint16_t methodId, HandlerType handler)

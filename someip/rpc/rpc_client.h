@@ -31,7 +31,7 @@ namespace ara
                     std::map<uint32_t, HandlerType> mHandlers;
 
                 protected:
-                    /*********************** for my child ******************************/
+                    /*********************** useful for constructor of my child *****************/
 
                     /// @brief Constructor
                     /// @param protocolVersion SOME/IP protocol header version
@@ -39,6 +39,9 @@ namespace ara
                     RpcClient(
                         uint8_t protocolVersion,
                         uint8_t interfaceVersion) noexcept;
+
+
+                    /**************************** useful for my child *************************/
 
                     /// @brief Invoke corresponding response handler at a message reception
                     /// @param payload Serialized SOME/IP response payload byte vector

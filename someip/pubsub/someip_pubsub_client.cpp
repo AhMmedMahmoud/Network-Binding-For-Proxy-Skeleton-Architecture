@@ -8,6 +8,8 @@ namespace ara
         {
             namespace pubsub
             {
+                /******************************* constructor ******************************/
+
                 SomeIpPubSubClient::SomeIpPubSubClient(
                     helper::NetworkLayer<sd::SomeIpSdMessage> *networkLayer,
                     uint8_t counter) : mSubscriptionLock(mSubscriptionMutex, std::defer_lock),
@@ -15,14 +17,13 @@ namespace ara
                                        mCounter{counter},
                                        mValidNotify{true}
                 {
-                    auto _receiver =
-                        std::bind(
-                            &SomeIpPubSubClient::onMessageReceived,
-                            this,
-                            std::placeholders::_1);
-
+                    auto _receiver = std::bind(&SomeIpPubSubClient::onMessageReceived, this, std::placeholders::_1);
                     mCommunicationLayer->SetReceiver(this, _receiver);
                 }
+
+
+
+                /************************ helps in fundemental functions *****************/
 
                 void SomeIpPubSubClient::onMessageReceived(sd::SomeIpSdMessage &&message)
                 {
@@ -39,6 +40,10 @@ namespace ara
                         }
                     }
                 }
+                
+                
+                
+                /******************************* fundemental functions *********************/
 
                 void SomeIpPubSubClient::Subscribe(
                     uint16_t serviceId,
@@ -51,6 +56,7 @@ namespace ara
                     auto _entry{
                         entry::EventgroupEntry::CreateSubscribeEventEntry(
                             serviceId, instanceId, majorVersion, mCounter, eventgroupId)};
+                            
                     _message.AddEntry(std::move(_entry));
 
                     mCommunicationLayer->Send(_message);
@@ -101,6 +107,10 @@ namespace ara
 
                     return _result;
                 }
+
+
+
+                /******************************* destructor ******************************/
 
                 SomeIpPubSubClient::~SomeIpPubSubClient()
                 {

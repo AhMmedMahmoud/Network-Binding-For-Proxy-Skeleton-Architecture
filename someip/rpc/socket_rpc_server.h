@@ -17,17 +17,25 @@ namespace ara
                 class SocketRpcServer : public RpcServer
                 {
                 private:
+                    /******************************* attributes  *************************************/
+
                     static const size_t cBufferSize{256};
 
                     helper::ConcurrentQueue<std::vector<uint8_t>> mSendingQueue;
                     AsyncBsdSocketLib::Poller *const mPoller;
                     AsyncBsdSocketLib::TcpListener mServer;
 
+
+
+                    /**************************** backend functions  **********************************/
+
                     void onAccept();
                     void onReceive();
                     void onSend();
 
                 public:
+                    /**************************** constructor  ****************************************/
+
                     /// @brief Constructor
                     /// @param poller BSD sockets poller
                     /// @param ipAddress RPC server IP address
@@ -41,6 +49,10 @@ namespace ara
                         uint16_t port,
                         uint8_t protocolVersion,
                         uint8_t interfaceVersion = 1);
+
+
+
+                    /**************************** override deconstructor inherited from parent *********/
 
                     virtual ~SocketRpcServer() override;
                 };

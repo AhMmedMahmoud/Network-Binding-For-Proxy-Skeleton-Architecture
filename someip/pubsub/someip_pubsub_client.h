@@ -19,6 +19,8 @@ namespace ara
                 class SomeIpPubSubClient
                 {
                 private:
+                    /******************************* attributes ******************************/
+
                     helper::ConcurrentQueue<sd::SomeIpSdMessage> mMessageBuffer;
                     std::mutex mSubscriptionMutex;
                     std::unique_lock<std::mutex> mSubscriptionLock;
@@ -27,11 +29,20 @@ namespace ara
                     uint8_t mCounter;
                     bool mValidNotify;
 
+
+
+                    /************************ helps in fundemental functions *****************/
+
                     void onMessageReceived(sd::SomeIpSdMessage &&message);
 
                 public:
+                    /************************ disable empty constructor **********************/
+
                     SomeIpPubSubClient() = delete;
-                    ~SomeIpPubSubClient();
+                    
+                    
+
+                    /******************************* constructor ******************************/
 
                     /// @brief Constructor
                     /// @param networkLayer Network communication abstraction layer
@@ -39,6 +50,11 @@ namespace ara
                     SomeIpPubSubClient(
                         helper::NetworkLayer<sd::SomeIpSdMessage> *networkLayer,
                         uint8_t counter);
+
+
+
+
+                    /******************************* fundemental functions *********************/
 
                     /// @brief Subscribe to an event-group
                     /// @param serviceId Service in interest ID
@@ -69,6 +85,12 @@ namespace ara
                     bool TryGetProcessedSubscription(
                         int duration,
                         sd::SomeIpSdMessage &message);
+
+
+
+                    /******************************* destructor ******************************/
+
+                    ~SomeIpPubSubClient();
                 };
             }
         }

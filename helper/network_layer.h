@@ -22,6 +22,8 @@ namespace ara
                 std::map<void *, std::function<void(T)>> mReceiverCallbacks;
 
             protected:
+                /******************************* for my child ****************************/
+
                 /// @brief Fire all the set receiver callaback
                 /// @param payload Received payload
                 void FireReceiverCallbacks(const std::vector<uint8_t> &payload)

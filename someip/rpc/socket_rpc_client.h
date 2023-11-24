@@ -18,16 +18,23 @@ namespace ara
                 class SocketRpcClient : public RpcClient
                 {
                 private:
-                    static const size_t cBufferSize{256};
+                    /******************************* attributes  *************************************/
 
+                    static const size_t cBufferSize{256};
                     helper::ConcurrentQueue<std::vector<uint8_t>> mSendingQueue;
                     AsyncBsdSocketLib::Poller *const mPoller;
                     AsyncBsdSocketLib::TcpClient mClient;
+
+
+
+                    /**************************** backend functions  **********************************/
 
                     void onSend();
                     void onReceive();
 
                 protected:
+                    /**************************** useful in Send  *************************************/
+
                     void Send(const std::vector<uint8_t> &payload) override;
 
                 public:

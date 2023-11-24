@@ -46,6 +46,10 @@ namespace ara
                     return SomeIpReturnCode::eOK;
                 }
 
+
+                /*
+                    make from passed message a vector fills with response SOMEIP message
+                */
                 void RpcServer::getResponsePayload(
                     const SomeIpRpcMessage &request,
                     SomeIpReturnCode returnCode,
@@ -81,6 +85,21 @@ namespace ara
                     const std::vector<uint8_t> &requestPayload,
                     std::vector<uint8_t> &responsePayload) const
                 {
+                    /*
+                    take
+                    - serialized SOMEIP message that represents request to executing a method
+                    - vector to be filled with SOMEIP message that represents response to the request
+
+                    success senario
+                      - valiadate serialized SOMEIP message
+                      - check for message id
+                        - call the registed handler for this message id
+                            - call the method
+                            - fill the result into passed vector
+                        - make SOMEIP message 
+                        - serialize it
+                        - store it in passed vector 
+                    */
                     try
                     {
                         const SomeIpRpcMessage _request{SomeIpRpcMessage::Deserialize(requestPayload)};
@@ -89,7 +108,8 @@ namespace ara
                         if (_returnCode != SomeIpReturnCode::eOK)
                         {
                             getResponsePayload(
-                                _request, _returnCode,
+                                _request,
+                                _returnCode,
                                 responsePayload);
 
                             return true;
@@ -145,7 +165,12 @@ namespace ara
                     mHandlers[_messageId] = handler;
 
                     mServices.insert(serviceId);
-                    std::cout << "inserted\n";
+
+                    std::cout << "handler for method whose id is " 
+                              << methodId 
+                              << "and belong to service whose id is " 
+                              << serviceId 
+                              << "is registed into hash table" << "\n";
                 }
             }
         }
