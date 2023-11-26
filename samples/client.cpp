@@ -12,6 +12,7 @@ using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
 /// @param message response message
 void myHandle(const SomeIpRpcMessage &message) 
 {
+    /*
     std::cout << "\n------------------------------------------------\n";
     std::cout << "myHandle is executed\n";
 
@@ -25,7 +26,7 @@ void myHandle(const SomeIpRpcMessage &message)
     std::cout << "interface version: " << 1 << std::endl;
     std::cout << "message type: " << static_cast<int>(message.MessageType()) << std::endl;
     std::cout << "return code: " << static_cast<int>(message.ReturnCode()) << std::endl;
-
+    */
 
     if(  message.MessageId() == ((((uint32_t)4660) <<16) | ((uint32_t)4369))  )   
     {

@@ -19,10 +19,11 @@ namespace ara
 
                     std::vector<uint8_t> mRpcPayload;
 
+
                     SomeIpRpcMessage();
 
                 public:
-                    /******************************* constructor  ******************************/
+                    /******************************* constructors  ******************************/
 
                     /// @brief Constructor for RPC request message by copying the RPC payload
                     /// @param messageId Message ID consisting service and method/event ID
@@ -79,12 +80,15 @@ namespace ara
 
 
 
-
-                    /**************************** fundemental functions *************************/
+                    /********************************* getters  *********************************/
 
                     /// @brief Get the serialized RPC object
                     /// @returns Byte vector constant reference
                     const std::vector<uint8_t> &RpcPayload() const;
+
+
+
+                    /**************************** fundemental functions *************************/
 
                     /// @brief Deserialize a SOME/IP RPC message payload
                     /// @param payload Serialized SOME/IP message payload byte array

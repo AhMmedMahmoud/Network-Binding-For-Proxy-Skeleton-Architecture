@@ -9,6 +9,8 @@ namespace ara
         {
             namespace rpc
             {
+                /******************************* constructors  ******************************/
+
                 SomeIpRpcMessage::SomeIpRpcMessage() : SomeIpMessage(0,
                                                                      0,
                                                                      1,
@@ -60,6 +62,10 @@ namespace ara
                                                                                              mRpcPayload{rpcPayload}
                 {}
 
+
+
+                /*************** override virtual functions inherited from parent*************/
+
                 uint32_t SomeIpRpcMessage::Length() const noexcept
                 {
                     auto _result{static_cast<uint32_t>(8 + mRpcPayload.size())};
@@ -75,10 +81,18 @@ namespace ara
                     return _result;
                 }
 
+
+
+                /********************************* getters  *********************************/
+
                 const std::vector<uint8_t> &SomeIpRpcMessage::RpcPayload() const
                 {
                     return mRpcPayload;
                 }
+
+
+
+                /**************************** fundemental functions *************************/
 
                 SomeIpRpcMessage SomeIpRpcMessage::Deserialize(
                     const std::vector<uint8_t> &payload)

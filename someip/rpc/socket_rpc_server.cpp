@@ -84,6 +84,22 @@ namespace ara
                         // convert serialized SOMEIP message from array into vector
                         const std::vector<uint8_t> cRequestPayload(std::make_move_iterator(_buffer.begin()), std::make_move_iterator(_buffer.begin() + _receivedSize));
                         
+                        /*
+                        SomeIpRpcMessage received  = SomeIpRpcMessage::Deserialize(cRequestPayload);
+                        std::cout << "\n------------------------------------------------\n";
+                        std::cout << ".....received message..... \n";
+                        std::cout << "sevice id: " << (received.MessageId() >> 16) << std::endl;
+                        std::cout << "method id: "<< ((received.MessageId() << 16) >> 16) << std::endl;
+                        std::cout << "lenght: " << received.Length() << std::endl;
+                        std::cout << "client id: " << received.ClientId() << std::endl;
+                        std::cout << "session id: " << received.SessionId() << std::endl;
+                        std::cout << "protocol version: " << 12 << std::endl;
+                        std::cout << "interface version: " << 1 << std::endl;
+                        std::cout << "message type: " << static_cast<int>(received.MessageType()) << std::endl;
+                        std::cout << "return code: " << static_cast<int>(received.ReturnCode()) << std::endl;
+                        std::cout << "--------------------------------------------------\n";
+                        */
+
                         // define vector that will be filled with result of method that i provide
                         std::vector<uint8_t> _responsePayload;
                         
@@ -92,6 +108,22 @@ namespace ara
                         bool _handled{TryInvokeHandler(cRequestPayload, _responsePayload)};
                         if (_handled)
                         {
+                            /*
+                            SomeIpRpcMessage toSend  = SomeIpRpcMessage::Deserialize(_responsePayload);
+                            std::cout << "\n------------------------------------------------\n";
+                            std::cout << ".....sending message..... \n";
+                            std::cout << "sevice id: " << (toSend.MessageId() >> 16) << std::endl;
+                            std::cout << "method id: "<< ((toSend.MessageId() << 16) >> 16) << std::endl;
+                            std::cout << "lenght: " << toSend.Length() << std::endl;
+                            std::cout << "client id: " << toSend.ClientId() << std::endl;
+                            std::cout << "session id: " << toSend.SessionId() << std::endl;
+                            std::cout << "protocol version: " << 12 << std::endl;
+                            std::cout << "interface version: " << 1 << std::endl;
+                            std::cout << "message type: " << static_cast<int>(toSend.MessageType()) << std::endl;
+                            std::cout << "return code: " << static_cast<int>(toSend.ReturnCode()) << std::endl;
+                            std::cout << "--------------------------------------------------\n";
+                            */
+
                             // put vector that holds the result of method that i provide
                             mSendingQueue.TryEnqueue(std::move(_responsePayload));
                         }

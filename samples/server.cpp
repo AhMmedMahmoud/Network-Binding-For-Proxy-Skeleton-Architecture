@@ -33,7 +33,7 @@ uint8_t multiplicationOverVectorImp(const std::vector<uint8_t> &list)
 
 bool summationOverVector(const std::vector<uint8_t> &input, std::vector<uint8_t> &output) 
 {
-    std::cout << "summationOverVector is called\n";
+    std::cout << "\nsummationOverVector is called\n";
 
     uint8_t funcResult = summationOverVectorImp(input);
 
@@ -45,7 +45,7 @@ bool summationOverVector(const std::vector<uint8_t> &input, std::vector<uint8_t>
 
 bool multiplicationOverVector(const std::vector<uint8_t> &input, std::vector<uint8_t> &output) 
 {
-    std::cout << "multiplicationOverVector is called\n";
+    std::cout << "\nmultiplicationOverVector is called\n";
 
     uint8_t funcResult = multiplicationOverVectorImp(input);
 

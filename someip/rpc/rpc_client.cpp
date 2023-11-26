@@ -78,6 +78,23 @@ namespace ara
                         mInterfaceVersion,
                         rpcPayload);
 
+
+                    /*
+                    std::cout << "\n------------------------------------------------\n";
+                    std::cout << ".....requesting message..... \n";
+                    std::cout << "sevice id: " << (_request.MessageId() >> 16) << std::endl;
+                    std::cout << "method id: "<< ((_request.MessageId() << 16) >> 16) << std::endl;
+                    std::cout << "lenght: " << _request.Length() << std::endl;
+                    std::cout << "client id: " << _request.ClientId() << std::endl;
+                    std::cout << "session id: " << _request.SessionId() << std::endl;
+                    std::cout << "protocol version: " << 12 << std::endl;
+                    std::cout << "interface version: " << 1 << std::endl;
+                    std::cout << "message type: " << static_cast<int>(_request.MessageType()) << std::endl;
+                    std::cout << "return code: " << static_cast<int>(_request.ReturnCode()) << std::endl;
+                    std::cout << "------------------------------------------------\n\n";
+                    */
+
+
                     Send(_request.Payload());
 
                     // Increment the session ID for that specific message ID for the next send
