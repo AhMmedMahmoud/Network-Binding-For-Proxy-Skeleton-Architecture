@@ -17,18 +17,32 @@ namespace ara
                     class ServiceDownState : public helper::MachineState<helper::PubSubState>
                     {
                     protected:
+                        /*************** override virtual functions inherited from parent*************/
+
                         void Deactivate(helper::PubSubState nextState) override;
-
                     public:
-                        ServiceDownState() noexcept;
-
-                        ServiceDownState(const ServiceDownState &) = delete;
-                        ServiceDownState &operator=(const ServiceDownState &) = delete;
-
                         void Activate(helper::PubSubState previousState) override;
+
+                        // void Transit(T nextState)
+
+
+                        /**************************** fundemental functions *************************/
 
                         /// @brief Notify that the server has been started
                         void Started();
+
+
+
+                        /*********************** constructor **************************************/
+
+                        ServiceDownState() noexcept;
+
+                        
+                        
+                        /***************** disable copy constructor and assigment operator *********/
+
+                        ServiceDownState(const ServiceDownState &) = delete;
+                        ServiceDownState &operator=(const ServiceDownState &) = delete;
                     };
                 }
             }

@@ -10,18 +10,27 @@ namespace ara
             {
                 namespace fsm
                 {
-                    ServiceDownState::ServiceDownState() noexcept : helper::MachineState<helper::PubSubState>(helper::PubSubState::ServiceDown)
-                    {
-                    }
+                    /*********************** constructor **************************************/
 
-                    void ServiceDownState::Activate(helper::PubSubState previousState)
-                    {
-                        // Nothing to do on activation
-                    }
+                    ServiceDownState::ServiceDownState() noexcept : helper::MachineState<helper::PubSubState>(helper::PubSubState::ServiceDown)
+                    {}
+
+
+
+                    /**************************** fundemental functions *************************/
 
                     void ServiceDownState::Started()
                     {
                         Transit(helper::PubSubState::NotSubscribed);
+                    }
+
+
+
+                    /*************** override virtual functions inherited from parent*************/
+                    
+                    void ServiceDownState::Activate(helper::PubSubState previousState)
+                    {
+                        // Nothing to do on activation
                     }
 
                     void ServiceDownState::Deactivate(helper::PubSubState nextState)

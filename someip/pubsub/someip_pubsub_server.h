@@ -22,7 +22,8 @@ namespace ara
                 class SomeIpPubSubServer
                 {
                 private:
-                    helper::FiniteStateMachine<helper::PubSubState> mStateMachine;
+                    /******************************* attributes ******************************/
+
                     helper::NetworkLayer<sd::SomeIpSdMessage> *mCommunicationLayer;
                     const uint16_t mServiceId;
                     const uint16_t mInstanceId;
@@ -30,6 +31,9 @@ namespace ara
                     const uint16_t mEventgroupId;
                     const helper::Ipv4Address mEndpointIp;
                     const uint16_t mEndpointPort;
+
+
+                    helper::FiniteStateMachine<helper::PubSubState> mStateMachine;
                     fsm::ServiceDownState mServiceDownState;
                     fsm::NotSubscribedState mNotSubscribedState;
                     fsm::SubscribedState mSubscribedState;
@@ -38,10 +42,8 @@ namespace ara
                     void processEntry(const entry::EventgroupEntry *entry);
 
                 public:
-                    SomeIpPubSubServer() = delete;
-                    ~SomeIpPubSubServer();
+                    /******************************* constructor ******************************/
 
-                    /// @brief Constructor
                     /// @param networkLayer Network communication abstraction layer
                     /// @param serviceId Service ID
                     /// @param instanceId Service instance ID
@@ -58,6 +60,10 @@ namespace ara
                         helper::Ipv4Address ipAddress,
                         uint16_t port);
 
+
+
+                    /******************************* fundemental functions *********************/
+
                     /// @brief Start the server
                     void Start();
 
@@ -67,6 +73,18 @@ namespace ara
 
                     /// @brief Stop the server
                     void Stop();
+
+
+
+                    /************************ disable empty constructor **********************/
+
+                    SomeIpPubSubServer() = delete;
+                    
+                    
+                    
+                    /******************************* destructor ******************************/
+
+                    ~SomeIpPubSubServer();
                 };
             }
         }

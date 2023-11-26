@@ -21,16 +21,15 @@ namespace ara
                         int32_t mSubscriptionCounter;
 
                     protected:
+                        /*************** override virtual functions inherited from parent*************/
+
                         void Deactivate(helper::PubSubState nextState) override;
-
                     public:
-                        /// @brief Default constructor
-                        SubscribedState() noexcept;
+                       void Activate(helper::PubSubState previousState) override;
 
-                        SubscribedState(const SubscribedState &) = delete;
-                        SubscribedState &operator=(const SubscribedState &) = delete;
 
-                        void Activate(helper::PubSubState previousState) override;
+
+                        /**************************** fundemental functions *************************/
 
                         /// @brief Notify that a new client has subscribed to the server
                         void Subscribed() noexcept;
@@ -40,6 +39,20 @@ namespace ara
 
                         /// @brief Notify that the server has been stopped
                         void Stopped();
+
+
+
+                        /*********************** constructor **************************************/
+
+                        /// @brief Default constructor
+                        SubscribedState() noexcept;
+
+
+
+                        /***************** disable copy constructor and assigment operator *********/
+
+                        SubscribedState(const SubscribedState &) = delete;
+                        SubscribedState &operator=(const SubscribedState &) = delete;
                     };
                 }
             }

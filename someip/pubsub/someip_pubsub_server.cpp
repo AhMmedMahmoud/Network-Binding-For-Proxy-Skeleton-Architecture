@@ -9,6 +9,8 @@ namespace ara
         {
             namespace pubsub
             {
+                /******************************* constructor ******************************/
+
                 SomeIpPubSubServer::SomeIpPubSubServer(
                     helper::NetworkLayer<sd::SomeIpSdMessage> *networkLayer,
                     uint16_t serviceId,
@@ -112,6 +114,10 @@ namespace ara
                     mCommunicationLayer->Send(_acknowledgeMessage);
                 }
 
+
+
+                /******************************* fundemental functions *********************/
+
                 void SomeIpPubSubServer::Start()
                 {
                     helper::PubSubState _state = GetState();
@@ -138,6 +144,10 @@ namespace ara
                         mSubscribedState.Stopped();
                     }
                 }
+
+
+
+                /******************************* destructor ******************************/
 
                 SomeIpPubSubServer::~SomeIpPubSubServer()
                 {

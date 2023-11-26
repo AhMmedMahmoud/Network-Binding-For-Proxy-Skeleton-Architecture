@@ -12,6 +12,10 @@ namespace ara
                 const size_t SdNetworkLayer::cBufferSize{256};
                 const std::string SdNetworkLayer::cAnyIpAddress("0.0.0.0");
 
+
+
+                /******************************* constructors  ******************************/
+
                 SdNetworkLayer::SdNetworkLayer(
                     AsyncBsdSocketLib::Poller *poller,
                     std::string nicIpAddress,
@@ -43,16 +47,18 @@ namespace ara
                     }
                 }
 
+
+
+                /**************************** backend functions  **********************************/
+
                 void SdNetworkLayer::onReceive()
                 {
                     std::array<uint8_t, cBufferSize> _buffer;
                     std::string _ipAddress;
                     uint16_t _port;
-                    ssize_t _receivedSize{
-                        mUdpSocket.Receive(_buffer, _ipAddress, _port)};
+                    ssize_t _receivedSize{mUdpSocket.Receive(_buffer, _ipAddress, _port)};
 
-                    if (_receivedSize > 0 &&
-                        _port == cPort && _ipAddress == cNicIpAddress)
+                    if (_receivedSize > 0 && _port == cPort && _ipAddress == cNicIpAddress)
                     {
                         const std::vector<uint8_t> cRequestPayload(
                             std::make_move_iterator(_buffer.begin()),
@@ -81,11 +87,19 @@ namespace ara
                     }
                 }
 
+
+
+                /*************** override virtual functions inherited from parent*************/
+
                 void SdNetworkLayer::Send(const SomeIpSdMessage &message)
                 {
                     std::vector<uint8_t> _payload{message.Payload()};
                     mSendingQueue.TryEnqueue(std::move(_payload));
                 }
+
+
+
+                /**************************** override deconstructor  ************************/
 
                 SdNetworkLayer::~SdNetworkLayer()
                 {

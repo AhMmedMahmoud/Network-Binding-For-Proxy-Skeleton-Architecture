@@ -21,21 +21,55 @@ namespace ara
                 class SdNetworkLayer : public helper::NetworkLayer<SomeIpSdMessage>
                 {
                 private:
-                    static const size_t cBufferSize;
-                    static const std::string cAnyIpAddress;
+                    /******************************* inherited ******************************/
+                    /*
+                        ////// attribures //////
+                        std::map<void *, std::function<void(T)>> mReceiverCallbacks;
+                        
+                        ////// metohds //////
+                        void SetReceiver(void *object, std::function<void(T)> receiver)
+                        {
+                            mReceiverCallbacks[object] = receiver;
+                        }
 
+                        void FireReceiverCallbacks(const std::vector<uint8_t> &payload)
+                        {
+                            for (auto objectCallbackPair : mReceiverCallbacks)
+                            {
+                                // Create the received message from the received payload
+                                T _receivedMessage{T::Deserialize(payload)};
+
+                                std::function<void(T)> _callback = objectCallbackPair.second;
+                                _callback(std::move(_receivedMessage));
+                            }
+                        }
+                    */
+                    
+
+
+                    /*********************** extra attributes ******************************/
+
+                    AsyncBsdSocketLib::Poller *const mPoller;
                     const std::string cNicIpAddress;
                     const std::string cMulticastGroup;
                     const uint16_t cPort;
-                    
+
+
+                    static const size_t cBufferSize;
                     helper::ConcurrentQueue<std::vector<uint8_t>> mSendingQueue;
-                    AsyncBsdSocketLib::Poller *const mPoller;
                     AsyncBsdSocketLib::UdpClient mUdpSocket;
+                    static const std::string cAnyIpAddress;
+                    
+
+
+                    /**************************** backend functions  **********************************/
 
                     void onReceive();
                     void onSend();
 
                 public:
+                    /******************************* constructors  ******************************/
+
                     /// @brief Constructor
                     /// @param poller BSD sockets poller
                     /// @param nicIpAddress Network interface controller IPv4 address
@@ -48,9 +82,17 @@ namespace ara
                         std::string multicastGroup,
                         uint16_t port);
 
-                    ~SdNetworkLayer() override;
+
+
+                    /*************** override virtual functions inherited from parent*************/
 
                     void Send(const SomeIpSdMessage &message) override;
+
+
+
+                    /**************************** override deconstructor  ************************/
+
+                    ~SdNetworkLayer() override;
                 };
             }
         }

@@ -10,14 +10,28 @@ namespace ara
             {
                 namespace fsm
                 {
+                    /*********************** constructor **************************************/
+
                     SubscribedState::SubscribedState() noexcept : helper::MachineState<helper::PubSubState>(helper::PubSubState::Subscribed)
-                    {
-                    }
+                    {}
+
+
+
+                    /*************** override virtual functions inherited from parent*************/
 
                     void SubscribedState::Activate(helper::PubSubState previousState)
                     {
                         mSubscriptionCounter = 1;
                     }
+
+                    void SubscribedState::Deactivate(helper::PubSubState nextState)
+                    {
+                        // Nothing to do on deactivation
+                    }
+
+
+
+                    /**************************** fundemental functions *************************/
 
                     void SubscribedState::Subscribed() noexcept
                     {
@@ -37,12 +51,7 @@ namespace ara
                     void SubscribedState::Stopped()
                     {
                         Transit(helper::PubSubState::ServiceDown);
-                    }
-
-                    void SubscribedState::Deactivate(helper::PubSubState nextState)
-                    {
-                        // Nothing to do on deactivation
-                    }
+                    }  
                 }
             }
         }

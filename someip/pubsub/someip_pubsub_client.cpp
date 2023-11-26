@@ -8,6 +8,31 @@ namespace ara
         {
             namespace pubsub
             {
+                /************************ helps in fundemental functions *****************/
+
+                /*
+                    this function 
+                    - takes someip/sd message
+                    - for all entries that represent response to subscrition
+                        - add message in queue
+                */
+                void SomeIpPubSubClient::onMessageReceived(sd::SomeIpSdMessage &&message)
+                {
+                    for (auto &entry : message.Entries())
+                    {
+                        if (entry->Type() == entry::EntryType::Acknowledging)
+                        {
+                            bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
+                            if (_enqueued)
+                            {
+                                mSubscriptionConditionVariable.notify_one();
+                            }
+                        }
+                    }
+                }
+
+
+
                 /******************************* constructor ******************************/
 
                 SomeIpPubSubClient::SomeIpPubSubClient(
@@ -23,23 +48,7 @@ namespace ara
 
 
 
-                /************************ helps in fundemental functions *****************/
 
-                void SomeIpPubSubClient::onMessageReceived(sd::SomeIpSdMessage &&message)
-                {
-                    for (auto &entry : message.Entries())
-                    {
-                        if (entry->Type() == entry::EntryType::Acknowledging)
-                        {
-                            bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
-
-                            if (_enqueued)
-                            {
-                                mSubscriptionConditionVariable.notify_one();
-                            }
-                        }
-                    }
-                }
                 
                 
                 
@@ -51,12 +60,15 @@ namespace ara
                     uint8_t majorVersion,
                     uint16_t eventgroupId)
                 {
+                    // create someip/sd message with no entries and options
                     sd::SomeIpSdMessage _message;
 
+                    // make entry to request subsription
                     auto _entry{
                         entry::EventgroupEntry::CreateSubscribeEventEntry(
                             serviceId, instanceId, majorVersion, mCounter, eventgroupId)};
                             
+                    // add this entry to someip/sd message
                     _message.AddEntry(std::move(_entry));
 
                     mCommunicationLayer->Send(_message);
@@ -68,11 +80,15 @@ namespace ara
                     uint8_t majorVersion,
                     uint16_t eventgroupId)
                 {
+                    // create someip/sd message with no entries and options
                     sd::SomeIpSdMessage _message;
 
+                    // make entry to request subsription
                     auto _entry{
                         entry::EventgroupEntry::CreateUnsubscribeEventEntry(
                             serviceId, instanceId, majorVersion, mCounter, eventgroupId)};
+
+                    // add this entry to someip/sd message
                     _message.AddEntry(std::move(_entry));
 
                     mCommunicationLayer->Send(_message);

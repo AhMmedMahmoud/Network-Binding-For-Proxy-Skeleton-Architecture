@@ -52,11 +52,15 @@ namespace ara
                 std::function<void(T, T)> mTransitionCallback;
 
             protected:
-                /***************************** for my child ******************************/
+                /************************ for my child but virtual *************************/
 
                 /// @brief Deactivating the current state before transiting to the next state
                 /// @param nextState Next state coming after deactivation
                 virtual void Deactivate(T nextState) = 0;
+
+
+
+                /***************************** for my child ******************************/
 
                 /// @brief Transit to the next state
                 /// @param nextState Next state coming after the current state
@@ -114,6 +118,7 @@ namespace ara
                 /// @brief Activate the state
                 /// @param previousState Previous state before transiting to this state
                 virtual void Activate(T previousState) = 0;
+
 
 
                 /****************** tell compiler to generate default desctructor  ********************/

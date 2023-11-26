@@ -15,13 +15,13 @@ add_library(
    someip/rpc/someip_rpc_message.cpp
    someip/rpc/someip_rpc_message.h
 
-   #### sender and receiver for someip_rpc_message ####
+   #### receiver for someip_rpc_message ####
    someip/rpc/rpc_server.h
    someip/rpc/rpc_server.cpp
    someip/rpc/socket_rpc_server.h
    someip/rpc//socket_rpc_server.cpp
 
-
+   #### sender for someip_rpc_message ####
    someip/rpc/rpc_client.h
    someip/rpc/rpc_client.cpp
    someip/rpc/socket_rpc_client.h
@@ -42,17 +42,12 @@ add_library(
 
    ##### sockets #####
    asyncbsdsocket/include/communicator.h
-   asyncbsdsocket/include/fifo_receiver.h
-   asyncbsdsocket/include/fifo_sender.h
    asyncbsdsocket/include/network_socket.h
    asyncbsdsocket/include/poller.h
    asyncbsdsocket/include/tcp_client.h
    asyncbsdsocket/include/tcp_listener.h
    asyncbsdsocket/include/udp_client.h
-
    asyncbsdsocket/src/communicator.cpp
-   asyncbsdsocket/src/fifo_receiver.cpp
-   asyncbsdsocket/src/fifo_sender.cpp
    asyncbsdsocket/src/network_socket.cpp
    asyncbsdsocket/src/poller.cpp
    asyncbsdsocket/src/tcp_client.cpp

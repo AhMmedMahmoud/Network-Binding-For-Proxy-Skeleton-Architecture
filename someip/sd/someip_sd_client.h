@@ -33,12 +33,14 @@ namespace ara
                     std::mutex mStopOfferingMutex;
                     std::unique_lock<std::mutex> mStopOfferingLock;
                     std::condition_variable mStopOfferingConditionVariable;
+
                     fsm::ServiceNotseenState mServiceNotseenState;
                     fsm::ServiceSeenState mServiceSeenState;
                     fsm::ClientInitialWaitState mInitialWaitState;
                     fsm::ClientRepetitionState mRepetitionState;
                     fsm::StoppedState mStoppedState;
                     fsm::ServiceReadyState mServiceReadyState;
+
                     SomeIpSdMessage mFindServieMessage;
                     const uint16_t mServiceId;
                     std::mutex mEndpointMutex;
@@ -47,11 +49,9 @@ namespace ara
                     core::Optional<uint16_t> mOfferedPort;
 
                     void sendFind();
-                    bool matchRequestedService(
-                        const SomeIpSdMessage &message, uint32_t &ttl) const;
+                    bool matchRequestedService(const SomeIpSdMessage &message, uint32_t &ttl) const;
                     bool tryExtractOfferedEndpoint(
-                        const SomeIpSdMessage &message,
-                        std::string &ipAddress, uint16_t &port) const;
+                        const SomeIpSdMessage &message, std::string &ipAddress, uint16_t &port) const;
                     void onOfferChanged(uint32_t ttl);
                     void receiveSdMessage(SomeIpSdMessage &&message);
 
