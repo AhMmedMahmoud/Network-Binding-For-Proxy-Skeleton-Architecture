@@ -80,6 +80,8 @@ namespace ara
 
                     virtual void print() const noexcept override;
 
+
+
                     /********************************* getters  *********************************/
 
                     /// @brief Get the serialized RPC object
