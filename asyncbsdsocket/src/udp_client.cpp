@@ -31,7 +31,6 @@ namespace AsyncBsdSocketLib
     bool UdpClient::TrySetup() noexcept
     {
         FileDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
-
         bool _result = (FileDescriptor >= 0);
 
         if (_result && mIsMulticast && mShareAddress)
@@ -80,10 +79,8 @@ namespace AsyncBsdSocketLib
             if (_result)
             {
                 struct ip_mreq _multicastGroup;
-                _multicastGroup.imr_interface.s_addr =
-                    inet_addr(mNicIpAddress.c_str());
-                _multicastGroup.imr_multiaddr.s_addr =
-                    inet_addr(mMulticastIpAddress.c_str());
+                _multicastGroup.imr_interface.s_addr = inet_addr(mNicIpAddress.c_str());
+                _multicastGroup.imr_multiaddr.s_addr = inet_addr(mMulticastIpAddress.c_str());
 
                 // Subscribe to the multicast group for receiving the multicast traffic
                 _result =
@@ -93,7 +90,6 @@ namespace AsyncBsdSocketLib
                                 sizeof(_multicastGroup)) > -1);
             }
         }
-
         return _result;
     }
 }
