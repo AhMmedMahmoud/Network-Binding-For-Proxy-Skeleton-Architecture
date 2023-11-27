@@ -180,6 +180,9 @@ namespace ara
 
                 /// @brief print message
                 virtual void print() const noexcept;
+
+
+
                 /****************** tell compiler to generate default desctructor  ********************/
 
                 virtual ~SomeIpMessage() noexcept = default;
