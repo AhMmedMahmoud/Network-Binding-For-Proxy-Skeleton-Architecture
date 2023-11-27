@@ -87,6 +87,8 @@ namespace ara
      
                     virtual void print() const noexcept override;
 
+
+
                     /********************************** static functions **************************/
 
                     /// @brief Deserialize a SOME/IP SD message payload
