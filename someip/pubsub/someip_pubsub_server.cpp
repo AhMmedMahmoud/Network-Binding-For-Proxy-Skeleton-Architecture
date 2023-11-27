@@ -1,5 +1,6 @@
 #include "../../entry/eventgroup_entry.h"
 #include "./someip_pubsub_server.h"
+#include <iostream>
 
 namespace ara
 {
@@ -39,8 +40,18 @@ namespace ara
                     mCommunicationLayer->SetReceiver(this, _receiver);
                 }
 
+
+
+                /******************** function take any someip/sd message *****************/
+
                 void SomeIpPubSubServer::onMessageReceived(sd::SomeIpSdMessage &&message)
-                {
+                {     
+                    // for printing
+                    std::cout << "\n------------------------------------------------\n";
+                    std::cout << ".....received message..... \n";
+                    message.print();
+                    std::cout << "-------------------------------------------------\n\n";
+
                     // Iterate over all the message entry to search for the first Event-group Subscribing entry
                     for (auto &_entry : message.Entries())
                     {
@@ -70,7 +81,6 @@ namespace ara
                                             mSubscribedState.Unsubscribed();
                                         }
                                     }
-
                                     return;
                                 }
                             }
@@ -96,17 +106,15 @@ namespace ara
 
                     // Acknowledge the subscription if the service is up
                     auto _acknowledgeEntry =
-                        _state == helper::PubSubState::ServiceDown ? entry::EventgroupEntry::CreateNegativeAcknowledgeEntry(
-                                                                         entry)
-                                                                   : entry::EventgroupEntry::CreateAcknowledgeEntry(
-                                                                         entry);
+                        _state == helper::PubSubState::ServiceDown ? entry::EventgroupEntry::CreateNegativeAcknowledgeEntry(entry)
+                                                                   : entry::EventgroupEntry::CreateAcknowledgeEntry(entry);
 
                     // If the service is not down, add a multicast endpoint option to the acknowledgement entry
                     if (_state != helper::PubSubState::ServiceDown)
                     {
-                        auto _multicastEndpoint =
-                            option::Ipv4EndpointOption::CreateMulticastEndpoint(
+                        auto _multicastEndpoint = option::Ipv4EndpointOption::CreateMulticastEndpoint(
                                 cDiscardableEndpoint, mEndpointIp, mEndpointPort);
+
                         _acknowledgeEntry->AddFirstOption(std::move(_multicastEndpoint));
                     }
 

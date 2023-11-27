@@ -1,4 +1,5 @@
 #include "./someip_message.h"
+#include <iostream>
 
 namespace ara
 {
@@ -165,6 +166,7 @@ namespace ara
                     return false;
                 }
             }
+
             std::vector<uint8_t> SomeIpMessage::Payload() const
             {
                 std::vector<uint8_t> _result;
@@ -194,6 +196,18 @@ namespace ara
                 return _result;
             }
 
+            void SomeIpMessage::print() const noexcept
+            {
+                std::cout << "sevice id: " << (MessageId() >> 16) << std::endl;
+                std::cout << "method id: "<< ((MessageId() << 16) >> 16) << std::endl;
+                std::cout << "lenght: " << Length() << std::endl;
+                std::cout << "client id: " << ClientId() << std::endl;
+                std::cout << "session id: " << SessionId() << std::endl;
+                std::cout << "protocol version: " << ProtocolVersion() << std::endl;
+                std::cout << "interface version: " << InterfaceVersion() << std::endl;
+                std::cout << "message type: " << static_cast<int>(MessageType()) << std::endl;
+                std::cout << "return code: " << static_cast<int>(ReturnCode()) << std::endl;
+            }
 
 
             /********************************** static functions ***********************/

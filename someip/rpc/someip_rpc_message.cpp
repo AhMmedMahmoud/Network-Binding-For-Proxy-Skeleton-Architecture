@@ -1,5 +1,6 @@
 #include <utility>
 #include "./someip_rpc_message.h"
+#include <iostream>
 
 namespace ara
 {
@@ -81,6 +82,17 @@ namespace ara
                     return _result;
                 }
 
+                void SomeIpRpcMessage::print() const noexcept
+                {
+                    std::cout << "------------SOMEIP_RPC message------------\n";
+                    SomeIpMessage::print();
+                    std::cout << "payload: ";
+                    for (uint8_t byte : mRpcPayload) 
+                    {
+                        std::cout << static_cast<int>(byte) << "\t";
+                    }
+                    std::cout << "\n";
+                }
 
 
                 /********************************* getters  *********************************/

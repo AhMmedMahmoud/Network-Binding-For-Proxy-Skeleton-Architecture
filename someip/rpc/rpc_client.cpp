@@ -70,30 +70,14 @@ namespace ara
                     auto _itr{mSessionIds.find(_messageId)};
                     uint16_t _sessionId{(_itr != mSessionIds.end()) ? _itr->second : cInitialSessionId};
 
-                    SomeIpRpcMessage _request(
-                        _messageId,
-                        clientId,
-                        _sessionId,
-                        mProtocolVersion,
-                        mInterfaceVersion,
-                        rpcPayload);
+                    // create message that represents a request
+                    SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
 
-
-                    /*
+                    // for printing
                     std::cout << "\n------------------------------------------------\n";
-                    std::cout << ".....requesting message..... \n";
-                    std::cout << "sevice id: " << (_request.MessageId() >> 16) << std::endl;
-                    std::cout << "method id: "<< ((_request.MessageId() << 16) >> 16) << std::endl;
-                    std::cout << "lenght: " << _request.Length() << std::endl;
-                    std::cout << "client id: " << _request.ClientId() << std::endl;
-                    std::cout << "session id: " << _request.SessionId() << std::endl;
-                    std::cout << "protocol version: " << 12 << std::endl;
-                    std::cout << "interface version: " << 1 << std::endl;
-                    std::cout << "message type: " << static_cast<int>(_request.MessageType()) << std::endl;
-                    std::cout << "return code: " << static_cast<int>(_request.ReturnCode()) << std::endl;
-                    std::cout << "------------------------------------------------\n\n";
-                    */
-
+                    std::cout << ".....sent message..... \n";
+                    _request.print();
+                    std::cout << "--------------------------------------------------\n";
 
                     Send(_request.Payload());
 

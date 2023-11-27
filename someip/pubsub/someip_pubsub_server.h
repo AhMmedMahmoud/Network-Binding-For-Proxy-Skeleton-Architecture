@@ -1,11 +1,11 @@
 #ifndef SOMEIP_PUBSUB_SERVER
 #define SOMEIP_PUBSUB_SERVER
 
-#include "../../helper/finite_state_machine.h"
 #include "../../helper/network_layer.h"
 #include "../sd/someip_sd_message.h"
 #include "../../entry/eventgroup_entry.h"
 #include "../../option/ipv4_endpoint_option.h"
+#include "../../helper/finite_state_machine.h"
 #include "./fsm/service_down_state.h"
 #include "./fsm/notsubscribed_state.h"
 #include "./fsm/subscribed_state.h"
@@ -38,7 +38,13 @@ namespace ara
                     fsm::NotSubscribedState mNotSubscribedState;
                     fsm::SubscribedState mSubscribedState;
 
+
+                    /******************** function take any someip/sd message *****************/
+
                     void onMessageReceived(sd::SomeIpSdMessage &&message);
+
+
+
                     void processEntry(const entry::EventgroupEntry *entry);
 
                 public:

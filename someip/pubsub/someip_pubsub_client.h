@@ -28,7 +28,7 @@ namespace ara
 
                     /******************************* useful variables ************************/
 
-                    // queue that we put message inside it
+                    // queue that we get get received messages that contained acknowledging entry
                     helper::ConcurrentQueue<sd::SomeIpSdMessage> mMessageBuffer;
 
                     // mutex object
@@ -42,7 +42,7 @@ namespace ara
 
 
 
-                    /************************ helps in fundemental functions *****************/
+                    /******************** function take any someip/sd message *****************/
 
                     void onMessageReceived(sd::SomeIpSdMessage &&message);
 

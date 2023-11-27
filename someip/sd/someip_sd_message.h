@@ -85,7 +85,7 @@ namespace ara
 
                     virtual std::vector<uint8_t> Payload() const override;
      
-     
+                    virtual void print() const noexcept override;
 
                     /********************************** static functions **************************/
 

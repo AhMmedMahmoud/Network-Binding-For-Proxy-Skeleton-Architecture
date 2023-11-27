@@ -1,4 +1,5 @@
 #include "./someip_pubsub_client.h"
+#include <iostream>
 
 namespace ara
 {
@@ -8,16 +9,16 @@ namespace ara
         {
             namespace pubsub
             {
-                /************************ helps in fundemental functions *****************/
+                /******************** function take any someip/sd message *****************/
 
-                /*
-                    this function 
-                    - takes someip/sd message
-                    - for all entries that represent response to subscrition
-                        - add message in queue
-                */
                 void SomeIpPubSubClient::onMessageReceived(sd::SomeIpSdMessage &&message)
                 {
+                    // for printing
+                    std::cout << "\n------------------------------------------------\n";
+                    std::cout << ".....received message..... \n";
+                    message.print();
+                    std::cout << "-------------------------------------------------\n\n";
+                    
                     for (auto &entry : message.Entries())
                     {
                         if (entry->Type() == entry::EntryType::Acknowledging)
@@ -71,6 +72,7 @@ namespace ara
                     // add this entry to someip/sd message
                     _message.AddEntry(std::move(_entry));
 
+                    // put this message into queue
                     mCommunicationLayer->Send(_message);
                 }
 
@@ -102,15 +104,16 @@ namespace ara
 
                     if (mMessageBuffer.Empty())
                     {
+                        std::cout << "-- buffer of received messages is empty --\n";
                         mSubscriptionLock.lock();
-                        std::cv_status _status =
-                            mSubscriptionConditionVariable.wait_for(
+                        std::cv_status _status = mSubscriptionConditionVariable.wait_for(
                                 mSubscriptionLock, std::chrono::milliseconds(duration));
                         mSubscriptionLock.unlock();
                         _result = mValidNotify && (_status != std::cv_status::timeout);
                     }
                     else
                     {
+                        std::cout << "-- buffer of receiver messages has messages --\n";
                         // There are still processed subscription messages in the buffer, so no need to wait.
                         _result = true;
                     }
@@ -118,6 +121,7 @@ namespace ara
                     // In the case of successful get, set the first processed subscription to the output argument
                     if (_result)
                     {
+                        std::cout << "-- fill passed message with received message --\n";
                         _result = mMessageBuffer.TryDequeue(message);
                     }
 

@@ -1,11 +1,11 @@
-#ifndef SD_NETWORK_LAYER_H
-#define SD_NETWORK_LAYER_H
+#ifndef SOCKET_PUBSUB_H
+#define SOCKET_PUBSUB_H
 
 #include "../../asyncbsdsocket/include/poller.h"
 #include "../../asyncbsdsocket/include/udp_client.h"
 #include "../../helper/concurrent_queue.h"
 #include "../../helper/network_layer.h"
-#include "./someip_sd_message.h"
+#include "../sd/someip_sd_message.h"
 
 namespace ara
 {
@@ -17,8 +17,7 @@ namespace ara
             /// @note The namespace is not part of the ARA standard.
             namespace sd
             {
-                /// @brief SOME/IP service discovery multicast network layer
-                class SdNetworkLayer : public helper::NetworkLayer<SomeIpSdMessage>
+                class SockeKPubSub : public helper::NetworkLayer<SomeIpSdMessage>
                 {
                     /******************************* inherited ********************************
                         ////// private attribures //////
@@ -73,7 +72,7 @@ namespace ara
                     /// @param multicastGroup Multicast group IPv4 address
                     /// @param port Multicast UDP port number
                     /// @throws std::runtime_error Throws when the UDP socket configuration failed
-                    SdNetworkLayer(
+                    SockeKPubSub(
                         AsyncBsdSocketLib::Poller *poller,
                         std::string nicIpAddress,
                         std::string multicastGroup,
@@ -89,7 +88,7 @@ namespace ara
 
                     /**************************** override deconstructor  ************************/
 
-                    ~SdNetworkLayer() override;
+                    ~SockeKPubSub() override;
                 };
             }
         }

@@ -1,6 +1,7 @@
 #include "./someip_sd_message.h"
 #include "../../entry/entry_deserializer.h"
 #include "../../option/option_deserializer.h"
+#include <iostream>
 
 namespace ara
 {
@@ -165,6 +166,26 @@ namespace ara
                     return _result;
                 }
 
+                void SomeIpSdMessage::print() const noexcept
+                {
+                    std::cout << "------------SOMEIP/SD message------------\n";
+                    SomeIpMessage::print();
+
+                   for (auto &entry : Entries())
+                    {
+                        if (entry->Type() == entry::EntryType::Acknowledging 
+                        || entry->Type() == entry::EntryType::Subscribing)
+                        {
+                            std::cout << "Entry:Type : " << static_cast<int>(entry->Type()) << std::endl;
+                            auto _eventgroupEntry = dynamic_cast<entry::EventgroupEntry *>(entry.get());
+                            std::cout << "Entry:ServiceId: " << _eventgroupEntry->ServiceId() << std::endl;
+                            std::cout << "Entry:InstanceId: " << _eventgroupEntry->InstanceId() << std::endl;
+                            std::cout << "Entry:MajorVersion: " << _eventgroupEntry->MajorVersion() << std::endl;
+                            std::cout << "Entry:EventgroupId: " << _eventgroupEntry->EventgroupId() << std::endl;
+                            std::cout << "Entry:TTL: " << _eventgroupEntry->TTL() << std::endl;
+                        }
+                    }
+                }
 
 
                 /********************************** static functions **************************/
