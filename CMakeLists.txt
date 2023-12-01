@@ -9,28 +9,21 @@ add_library(
    araCom
 
    ##### sockets #####
-   asyncbsdsocket/include/communicator.h
-   asyncbsdsocket/include/network_socket.h
-   asyncbsdsocket/include/poller.h
-   asyncbsdsocket/include/tcp_client.h
-   asyncbsdsocket/include/tcp_listener.h
-   asyncbsdsocket/include/udp_client.h
-   asyncbsdsocket/src/communicator.cpp
-   asyncbsdsocket/src/network_socket.cpp
-   asyncbsdsocket/src/poller.cpp
-   asyncbsdsocket/src/tcp_client.cpp
-   asyncbsdsocket/src/tcp_listener.cpp
-   asyncbsdsocket/src/udp_client.cpp
+   sockets/include/communicator.h
+   sockets/include/network_socket.h
+   sockets/include/poller.h
+   sockets/include/tcp_client.h
+   sockets/include/tcp_listener.h
+   sockets/include/udp_client.h
+   sockets/src/communicator.cpp
+   sockets/src/network_socket.cpp
+   sockets/src/poller.cpp
+   sockets/src/tcp_client.cpp
+   sockets/src/tcp_listener.cpp
+   sockets/src/udp_client.cpp
 
-   #### entry ####
-   entry/entry_deserializer.h
-   entry/entry.cpp
-   entry/entry.h
-   entry/eventgroup_entry.cpp
-   entry/eventgroup_entry.h
-   entry/service_entry.cpp
-   entry/service_entry.h
-
+   
+   
    #### helper ####
    helper/abstract_state_machine.h
    helper/concurrent_queue.h
@@ -44,41 +37,56 @@ add_library(
    helper/ttl_timer.h
    helper/ttl_timer.cpp
 
-   #### option ####
-   option/ipv4_endpoint_option.cpp
-   option/ipv4_endpoint_option.h
-   option/loadbalancing_option.cpp
-   option/loadbalancing_option.h
-   option/option_deserializer.h
-   option/option.cpp
-   option/option.h
 
-   #### someip message ####
-   someip/someip_message.h
-   someip/someip_message.cpp
+   ############  someip message ############ 
+   someip/someipMsg/someip_message.h
+   someip/someipMsg/someip_message.cpp
 
-   #### someip_rpc_message ####
-   someip/rpc/someip_rpc_message.cpp
-   someip/rpc/someip_rpc_message.h
+   ############  someip_rpc_message ############ 
+   someip/someipRpcMsg/someip_rpc_message.cpp
+   someip/someipRpcMsg/someip_rpc_message.h
 
-   #### receiver for someip_rpc_message ####
-   someip/rpc/rpc_server.h
-   someip/rpc/rpc_server.cpp
+   ## receiver for someip_rpc_message ##
+   someip/rpc/rpcs_responser.h
+   someip/rpc/rpcs_responser.cpp
    someip/rpc/socket_rpc_server.h
    someip/rpc//socket_rpc_server.cpp
 
-   #### sender for someip_rpc_message ####
-   someip/rpc/rpc_client.h
-   someip/rpc/rpc_client.cpp
+   ## sender for someip_rpc_message ##
+   someip/rpc/rpcs_requester.h
+   someip/rpc/rpcs_requester.cpp
    someip/rpc/socket_rpc_client.h
    someip/rpc/socket_rpc_client.cpp
 
-   #### someip_sd message ####
+   ############ someip_sd message ############
+   someip/someipSdMsg/someip_sd_message.cpp
+   someip/someipSdMsg/someip_sd_message.h
+
+   ## entry ##
+   someip/someipSdMsg/entry/entry_deserializer.h
+   someip/someipSdMsg/entry/entry.cpp
+   someip/someipSdMsg/entry/entry.h
+   someip/someipSdMsg/entry/eventgroup_entry.cpp
+   someip/someipSdMsg/entry/eventgroup_entry.h
+   someip/someipSdMsg/entry/service_entry.cpp
+   someip/someipSdMsg/entry/service_entry.h
+
+   ## option ##
+   someip/someipSdMsg/option/ipv4_endpoint_option.cpp
+   someip/someipSdMsg/option/ipv4_endpoint_option.h
+   someip/someipSdMsg/option/loadbalancing_option.cpp
+   someip/someipSdMsg/option/loadbalancing_option.h
+   someip/someipSdMsg/option/option_deserializer.h
+   someip/someipSdMsg/option/option.cpp
+   someip/someipSdMsg/option/option.h
+
+
+   ################# sd ##################
+
    someip/sd/sd_network_layer.cpp
    someip/sd/sd_network_layer.h
    someip/sd/someip_sd_agent.h
-   someip/sd/someip_sd_message.cpp
-   someip/sd/someip_sd_message.h
+   
    someip/sd/someip_sd_server.cpp
    someip/sd/someip_sd_server.h
 
@@ -111,12 +119,17 @@ add_library(
    someip/pubsub/fsm/subscribed_state.cpp
    someip/pubsub/fsm/subscribed_state.h
 
-   someip/pubsub/socket_pubSub.cpp
-   someip/pubsub/socket_pubSub.h
-   someip/pubsub/someip_pubsub_server.cpp
-   someip/pubsub/someip_pubsub_server.h
-   someip/pubsub/someip_pubsub_client.cpp
-   someip/pubsub/someip_pubsub_client.h
+   someip/pubsub/socket_pubSub_client.cpp
+   someip/pubsub/socket_pubSub_client.h
+
+   someip/pubsub/socket_pubSub_server.cpp
+   someip/pubsub/socket_pubSub_server.h
+
+   someip/pubsub/event_provider.cpp
+   someip/pubsub/event_provider.h
+   
+   someip/pubsub/event_requester.cpp
+   someip/pubsub/event_requester.h
 )
 
 ######################### samples ##################################
