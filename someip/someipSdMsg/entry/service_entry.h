@@ -2,7 +2,7 @@
 #define SERVICE_ENTRY_H
 
 #include <stdint.h>
-#include "./entry.h"
+#include "entry.h"
 
 namespace ara
 {
@@ -46,16 +46,8 @@ namespace ara
 
                 virtual bool ValidateOption(const option::Option *option) const noexcept override;
 
+
             public:
-                
-                /*************** override virtual functions inherited from parent*************/
-
-                virtual std::vector<uint8_t> Payload(uint8_t &optionIndex) const override;
-
-                virtual void print() const noexcept override;
-
-
-
                 /********************************** static functions **************************/
 
                 /// @brief Find a service entry factory
@@ -116,6 +108,14 @@ namespace ara
                     uint16_t instanceId,
                     uint32_t ttl,
                     uint8_t majorVersion);
+
+
+
+                /*************** override virtual functions inherited from parent*************/
+
+                virtual std::vector<uint8_t> Payload(uint8_t &optionIndex) const override;
+
+                virtual void print() const noexcept override;
 
 
 

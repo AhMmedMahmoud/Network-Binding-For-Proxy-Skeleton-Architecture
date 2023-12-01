@@ -33,7 +33,7 @@ namespace ara
 
 
 
-                   /************************* pure virtual functions **************************/
+                   /****************** functions that my child will implement *****************/
 
                     /// @brief Start the service discovery agent
                     /// @param state Current FSM state before start
@@ -50,18 +50,6 @@ namespace ara
                     /// @param networkLayer Network communication abstraction layer
                     SomeIpSdAgent(helper::NetworkLayer<SomeIpSdMessage> *networkLayer) : CommunicationLayer{networkLayer}
                     {}
-
-
-
-                    /********************************** getters *********************************/
-
-                    /// @brief Get the current server state
-                    /// @returns Server machine state
-                    T GetState() const noexcept
-                    {
-                        return StateMachine.GetState();
-                    }
-
 
 
 
@@ -98,6 +86,16 @@ namespace ara
                         StopAgent();
                     }
 
+
+
+                    /********************************** getters *********************************/
+
+                    /// @brief Get the current server state
+                    /// @returns Server machine state
+                    T GetState() const noexcept
+                    {
+                        return StateMachine.GetState();
+                    }
 
 
 

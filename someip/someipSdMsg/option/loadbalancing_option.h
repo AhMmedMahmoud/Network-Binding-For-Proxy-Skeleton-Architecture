@@ -2,7 +2,7 @@
 #define LOADBALANCING_OPTION_H
 
 #include <memory>
-#include "./option.h"
+#include "option.h"
 
 namespace ara
 {

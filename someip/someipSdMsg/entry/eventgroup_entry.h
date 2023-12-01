@@ -1,7 +1,7 @@
 #ifndef EVENTGROUP_ENTRY_H
 #define EVENTGROUP_ENTRY_H
 
-#include "./entry.h"
+#include "entry.h"
 
 namespace ara
 {
@@ -43,32 +43,14 @@ namespace ara
 
                 bool isAcknowledge() const noexcept;
 
+
             protected:
                 /*************** override virtual functions inherited from parent*************/
 
                 virtual bool ValidateOption(const option::Option *option) const noexcept override;
 
-            public:
-                /********************************** getters *********************************/
 
-                /// @brief Get the subscriber counter
-                /// @returns A 4-bit unsinged integer wrapped as a byte
-                uint8_t Counter() const noexcept;
-
-                /// @brief Get event-group ID
-                /// @returns Event-group ID for subscription/unsubscription
-                uint16_t EventgroupId() const noexcept;
-
-
-
-                /*************** override virtual functions inherited from parent*************/
-
-                virtual std::vector<uint8_t> Payload(uint8_t &optionIndex) const override;
-
-                virtual void print() const noexcept override;
-
-
-
+            public:      
                 /********************************** static functions **************************/
 
                 /// @brief Subscribe to an event-group entry factory
@@ -131,6 +113,26 @@ namespace ara
                     uint16_t instanceId,
                     uint32_t ttl,
                     uint8_t majorVersion);
+
+
+
+                /********************************** getters *********************************/
+
+                /// @brief Get the subscriber counter
+                /// @returns A 4-bit unsinged integer wrapped as a byte
+                uint8_t Counter() const noexcept;
+
+                /// @brief Get event-group ID
+                /// @returns Event-group ID for subscription/unsubscription
+                uint16_t EventgroupId() const noexcept;
+
+
+
+                /*************** override virtual functions inherited from parent*************/
+
+                virtual std::vector<uint8_t> Payload(uint8_t &optionIndex) const override;
+
+                virtual void print() const noexcept override;
 
 
                 

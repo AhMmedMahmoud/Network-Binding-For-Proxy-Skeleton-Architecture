@@ -1,6 +1,6 @@
 #include <stdexcept>
-#include "../../option/ipv4_endpoint_option.h"
-#include "./someip_sd_client.h"
+#include "../someipSdMsg/option/ipv4_endpoint_option.h"
+#include "someip_sd_client.h"
 
 namespace ara
 {

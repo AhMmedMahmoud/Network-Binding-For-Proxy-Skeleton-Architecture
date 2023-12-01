@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <thread>
-#include "./someip_sd_server.h"
+#include "someip_sd_server.h"
 
 namespace ara
 {

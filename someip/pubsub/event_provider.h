@@ -6,9 +6,9 @@
 #include "../someipSdMsg/entry/eventgroup_entry.h"
 #include "../someipSdMsg/option/ipv4_endpoint_option.h"
 #include "../../helper/finite_state_machine.h"
-#include "./fsm/service_down_state.h"
-#include "./fsm/notsubscribed_state.h"
-#include "./fsm/subscribed_state.h"
+#include "fsm/service_down_state.h"
+#include "fsm/notsubscribed_state.h"
+#include "fsm/subscribed_state.h"
 
 
 namespace ara

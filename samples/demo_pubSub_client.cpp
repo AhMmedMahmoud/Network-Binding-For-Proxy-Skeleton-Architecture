@@ -9,12 +9,20 @@ using namespace ara::com::someip::sd;
 using namespace AsyncBsdSocketLib;
 
 
+/************************************ constants ******************************/
+
 const std::string cAnyIpAddress{"0.0.0.0"};
 const std::string cNicIpAddress{"127.0.0.1"};
 const std::string cMulticastGroup{"239.0.0.1"};
 const uint16_t cPort{5555};
-const uint8_t cMajorVersion = 12;
+
 const int cTimeoutMs = 1;
+
+const uint16_t cServiceId = 4500;
+const uint16_t cInstanceId = 1000;
+const uint16_t cEventGroupId = 2000;
+const uint8_t cMajorVersion = 12;
+
 
 
 int main()
@@ -24,13 +32,7 @@ int main()
   
   SockeKPubSubClient client(poller,cNicIpAddress,cMulticastGroup,cPort,cMajorVersion);
 
-  
-  /*
-    uint16_t serviceId = 4369
-    uint16_t instanceId = 1234
-    uint16_t eventgroupId = 1234
-  */
-  client.RequestSubscribe(4369, 1234, cMajorVersion, 1234);
+  client.RequestSubscribe(cServiceId, cInstanceId, cMajorVersion, cEventGroupId);
 
   // Create thread using a lambda expression
   std::thread t1([poller]()

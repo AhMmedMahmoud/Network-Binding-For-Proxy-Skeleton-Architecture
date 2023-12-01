@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 #include <memory>
-#include "./option.h"
+#include "option.h"
 #include "../../../helper/ipv4_address.h"
 
 namespace ara
@@ -45,36 +45,6 @@ namespace ara
                 {}
 
             public:
-                /* instances of this class cannot be created without providing specific arguments to a constructor. */
-                Ipv4EndpointOption() = delete;
-
-
-
-                /*************** override virtual functions inherited from parent*************/
-
-                virtual uint16_t Length() const noexcept override;
-
-                virtual std::vector<uint8_t> Payload() const override;
-
-
-
-                /************************************* getters *******************************/
-
-                /// @brief Get IP address
-                /// @returns IPv4 address
-                helper::Ipv4Address IpAddress() const noexcept;
-
-                /// @brief Get protocol
-                /// @returns OSI layer-4 protocol
-                Layer4ProtocolType L4Proto() const noexcept;
-
-                /// @brief Get port
-                /// @returns Network port number
-                uint16_t Port() const noexcept;
-
-
-                
-
                 /********************************** static functions **************************/
 
                 /// @brief Unitcast endpoint factory
@@ -123,6 +93,36 @@ namespace ara
                     std::size_t &offset,
                     OptionType type,
                     bool discardable);
+
+
+
+                /*************** override virtual functions inherited from parent*************/
+
+                virtual uint16_t Length() const noexcept override;
+
+                virtual std::vector<uint8_t> Payload() const override;
+
+
+
+                /************************************* getters *******************************/
+
+                /// @brief Get IP address
+                /// @returns IPv4 address
+                helper::Ipv4Address IpAddress() const noexcept;
+
+                /// @brief Get protocol
+                /// @returns OSI layer-4 protocol
+                Layer4ProtocolType L4Proto() const noexcept;
+
+                /// @brief Get port
+                /// @returns Network port number
+                uint16_t Port() const noexcept;
+
+
+
+                /********************************** disable empty constructor ******************/
+                
+                Ipv4EndpointOption() = delete;
             };
         }
     }

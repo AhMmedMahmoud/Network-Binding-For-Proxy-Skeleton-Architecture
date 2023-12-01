@@ -14,16 +14,19 @@ using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
 
+/************************************ constants ******************************/
 
 const std::string cAnyIpAddress{"0.0.0.0"};
 const std::string cNicIpAddress{"127.0.0.1"};
 const std::string cMulticastGroup{"239.0.0.1"};
 const uint16_t cPort{5555};
-uint16_t cServiceId = 4369;
-uint16_t cInstanceId = 1234;
-uint8_t cMajorVersion = 12;
-uint16_t cEventgroupId = 1234;
+
 const int cTimeoutMs = 1;
+
+uint16_t cServiceId = 4500;
+uint16_t cInstanceId = 1000;
+uint16_t cEventgroupId = 2000;
+uint8_t cMajorVersion = 12;
 
 int main()
 {

@@ -8,6 +8,22 @@ using namespace std;
 using HandlerType = std::function<bool(const std::vector<uint8_t> &, std::vector<uint8_t> &)>;
 
 
+/************************************ constants ******************************/
+
+const std::string cIpAddresss{"127.0.0.1"};
+const uint16_t cPort{9900};
+
+const int cTimeoutMs = 1;
+
+const uint16_t cServiceId = 4500;
+const uint16_t cSumationOverVectorMethodId = 1000;
+const uint16_t cMultiplicationOverVectorMethodID = 2000;
+const uint8_t cProtocolVersion = 20;
+const uint16_t cInterfaceVersion = 2;
+const uint16_t cClientId = 1;
+
+
+/*************************** methods that i provide ***************************/
 
 uint8_t summationOverVectorImp(const std::vector<uint8_t> &list)
 {
@@ -15,7 +31,6 @@ uint8_t summationOverVectorImp(const std::vector<uint8_t> &list)
    for (int i = 0; i < list.size(); i++) {
         sum += list[i];
    }
-   
    return sum;
 }
 
@@ -26,7 +41,6 @@ uint8_t multiplicationOverVectorImp(const std::vector<uint8_t> &list)
     for (int i = 0; i < list.size(); i++) {
         sum *= list[i];
     }
-   
    return sum;
 }
 
@@ -55,30 +69,22 @@ bool multiplicationOverVector(const std::vector<uint8_t> &input, std::vector<uin
 }
 
 
-const std::string cIpAddresss{"127.0.0.1"};
-const uint16_t cPort{9900};
-const uint8_t cProtocolVersion = 20;
-const uint16_t cInterfaceVersion = 2;
-const int cTimeoutMs = 1;
 
 int main()
 {
-    Poller* poller;
-    poller = new Poller();
+    Poller* poller = new Poller();
  
     SocketRpcServer server(poller,cIpAddresss, cPort, cProtocolVersion, cInterfaceVersion);
     
-    
-    server.SetHandler(4660, 1000, (HandlerType)summationOverVector);
+    server.SetHandler(cServiceId, cSumationOverVectorMethodId, (HandlerType)summationOverVector);
 
-    server.SetHandler(4660, 2000, (HandlerType)multiplicationOverVector);
+    server.SetHandler(cServiceId, cMultiplicationOverVectorMethodID, (HandlerType)multiplicationOverVector);
 
 
     while(1)
     {
         poller->TryPoll(cTimeoutMs);
     }
-
-
+    delete poller;
     return 0;
 }

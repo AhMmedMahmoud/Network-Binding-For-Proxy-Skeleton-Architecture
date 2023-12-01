@@ -1,8 +1,8 @@
 #ifndef ENTRY_DESERIALIZER_H
 #define ENTRY_DESERIALIZER_H
 
-#include "./eventgroup_entry.h"
-#include "./service_entry.h"
+#include "eventgroup_entry.h"
+#include "service_entry.h"
 
 namespace ara
 {

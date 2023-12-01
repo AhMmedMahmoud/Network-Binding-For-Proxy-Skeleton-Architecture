@@ -4,7 +4,7 @@
 #include "../../core/optional.h"
 #include "../../helper/ipv4_address.h"
 #include "../../helper/ttl_timer.h"
-#include "../../entry/service_entry.h"
+#include "../someipSdMsg/entry/service_entry.h"
 #include "./fsm/service_notseen_state.h"
 #include "./fsm/service_seen_state.h"
 #include "./fsm/client_initial_wait_state.h"

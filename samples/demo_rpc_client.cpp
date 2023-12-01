@@ -6,6 +6,23 @@ using namespace ara::com::someip::rpc;
 using namespace AsyncBsdSocketLib;
 using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
 
+/************************************ constants ******************************/
+
+const std::string cIpAddresss{"127.0.0.1"};
+const uint16_t cPort{9900};
+
+const int cTimeoutMs = 1;
+
+const uint16_t cServiceId = 4500;
+const uint16_t cSumationOverVectorMethodId = 1000;
+const uint16_t cMultiplicationOverVectorMethodID = 2000;
+const uint8_t cProtocolVersion = 20;
+const uint16_t cInterfaceVersion = 2;
+const uint16_t cClientId = 1;
+
+
+Poller* poller = new Poller();
+SocketRpcClient client(poller, cIpAddresss, cPort, cProtocolVersion, cInterfaceVersion);
 
 
 /// @brief Invoke when server sent message
@@ -19,7 +36,7 @@ void myHandle(const SomeIpRpcMessage &message)
     message.print();
     std::cout << "--------------------------------------------------\n";
 
-    if(  message.MessageId() == ((((uint32_t)4660) <<16) | ((uint32_t)4369))  )   
+    if(  message.MessageId() == ((((uint32_t)cServiceId) <<16) | ((uint32_t)cSumationOverVectorMethodId))  )   
     {
         std::vector<uint8_t> payload = message.RpcPayload();
         // Print each element in the payload of response message
@@ -29,7 +46,7 @@ void myHandle(const SomeIpRpcMessage &message)
         }
         std::cout << std::endl;
     }
-    else if(  message.MessageId() == ((((uint32_t)1000) <<16) | ((uint32_t)2000))  )   
+    else if(  message.MessageId() == ((((uint32_t)cServiceId) <<16) | ((uint32_t)cMultiplicationOverVectorMethodID))  )   
     {
          std::vector<uint8_t> payload = message.RpcPayload();
         // Print each element in the payload of response message
@@ -41,52 +58,44 @@ void myHandle(const SomeIpRpcMessage &message)
     }
 }
 
+class sumOverVector
+{
+    public:
+    void operator() (const std::vector<uint8_t> &payload)
+    {
+        client.Request(cServiceId, cSumationOverVectorMethodId, cClientId, payload);
+    }
+};
 
-const std::string cIpAddresss{"127.0.0.1"};
-const uint16_t cPort{9900};
-const uint8_t cProtocolVersion = 20;
-const uint16_t cInterfaceVersion = 2;
-const int cTimeoutMs = 1;
+class multiplicationOverVector
+{
+    public:
+    void operator() (const std::vector<uint8_t> &payload)
+    {
+        client.Request(cServiceId, cMultiplicationOverVectorMethodID, cClientId, payload);
+    }
+};
 
 int main()
 {
-    Poller* poller;
-    poller = new Poller();
-
-
-    SocketRpcClient client(poller, cIpAddresss, cPort, cProtocolVersion, cInterfaceVersion);
-
     // regist handler for result of a method that calculates sum of all elements in vector
-    // this method of service whose id is 4660
-    // this method has id 1000
-    client.SetHandler(4660, 1000,(HandlerType)myHandle);
+    client.SetHandler(cServiceId, cSumationOverVectorMethodId, (HandlerType)myHandle);
     
-
     // regist handler for result of a method that calculates sum of all elements in vector
-    // this method of service whose id is 4660
-    // this method has id 2000
-    client.SetHandler(4660, 2000,(HandlerType)myHandle);
+    client.SetHandler(cServiceId, cMultiplicationOverVectorMethodID, (HandlerType)myHandle);
 
+    sumOverVector sumOverVector;
+    multiplicationOverVector multiplicationOverVector;
 
-    /*  
-        serviceId = 4660
-        methodId = 4369      
-        clientId = 1           
-    */
-    std::vector<uint8_t> payload1 = {1, 2, 3, 4, 5};
-    std::vector<uint8_t> payload2 = {5, 5, 0, 0, 10};
+    std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
 
-    client.Request(4660, 1000, 1, payload1);
-
-    client.Request(4660, 1000, 1, payload2);
-
-
-
-    const int cTimeoutMs = 1;
+    sumOverVector(payload);
+    multiplicationOverVector(payload);
+ 
     while(1)
     {
         poller->TryPoll(cTimeoutMs);
     }
-
+    delete poller;
     return 0;
 }
