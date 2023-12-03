@@ -22,30 +22,78 @@ namespace ara
                 /// @brief SOME/IP service discovery server
                 class SomeIpSdServer : public SomeIpSdAgent<helper::SdServerState>
                 {
+                /*
+                    ********** inherited : private ****************************
+
+                    helper::FiniteStateMachine<T> StateMachine;
+                    std::future<void> Future;
+                    helper::NetworkLayer<SomeIpSdMessage> *CommunicationLayer;
+
+                    ********** inherited  : public ****************************
+
+                    /// @brief Join to the timer's thread
+                    void Join()
+                    {
+                        // If the future is valid, block unitl its result becomes
+                        // avialable after the timer expiration.
+                        if (Future.valid())
+                        {
+                            Future.get();
+                        }
+                    }
+
+                    /// @brief Start the service discovery agent
+                    void Start()
+                    {
+                        // Valid future means the timer is not expired yet.
+                        if (Future.valid())
+                        {
+                            throw std::logic_error("The state has been already activated.");
+                        }
+                        else
+                        {
+                            StartAgent(GetState());
+                        }
+                    }
+
+                    void Stop() {   StopAgent();    }
+                */
                 private:
-                    helper::ConcurrentQueue<SomeIpSdMessage> mMessageBuffer;
-                    SomeIpSdMessage mOfferServiceMessage;
-                    SomeIpSdMessage mStopOfferMessage;
-                    fsm::NotReadyState mNotReadyState;
-                    fsm::InitialWaitState<helper::SdServerState> mInitialWaitState;
-                    fsm::RepetitionState<helper::SdServerState> mRepetitionState;
-                    fsm::MainState mMainState;
+                    /******************************* extra attributes ******************************/
+
                     const uint16_t mServiceId;
                     const uint16_t mInstanceId;
                     const uint8_t mMajorVersion;
                     const uint32_t mMinorVersion;
 
+
+
+                    helper::ConcurrentQueue<SomeIpSdMessage> mMessageBuffer;
+
+                    SomeIpSdMessage mOfferServiceMessage;
+                    SomeIpSdMessage mStopOfferMessage;
+                    
+                    
+                    fsm::NotReadyState mNotReadyState;
+                    fsm::InitialWaitState<helper::SdServerState> mInitialWaitState;
+                    fsm::RepetitionState<helper::SdServerState> mRepetitionState;
+                    fsm::MainState mMainState;
+
+
+                    bool hasFindingEntry(const SomeIpSdMessage &message) const;
+
                     void sendOffer();
-                    bool matchOfferingService(const SomeIpSdMessage &message) const;
                     void receiveFind(SomeIpSdMessage &&message);
                     void onServiceStopped();
 
                 protected:
+                    /******************** function that parent need *****************/
+
                     void StartAgent(helper::SdServerState state) override;
                     void StopAgent() override;
 
                 public:
-                    SomeIpSdServer() = delete;
+                    /******************************* constructor  *******************************/
 
                     /// @brief Constructor
                     /// @param networkLayer Network communication abstraction layer
@@ -73,6 +121,16 @@ namespace ara
                         int repetitionBaseDelay = 30,
                         int cycleOfferDelay = 1000,
                         uint32_t repetitionMax = 3);
+
+
+
+                    /********************************** disable empty constructor  ********************/
+
+                    SomeIpSdServer() = delete;
+
+
+
+                    /****************** override desctructor  ********************/
 
                     ~SomeIpSdServer() override;
                 };

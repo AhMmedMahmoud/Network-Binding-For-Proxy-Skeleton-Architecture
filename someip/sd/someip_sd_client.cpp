@@ -10,6 +10,8 @@ namespace ara
         {
             namespace sd
             {
+                /******************************* constructor  *******************************/
+
                 SomeIpSdClient::SomeIpSdClient(
                     helper::NetworkLayer<SomeIpSdMessage> *networkLayer,
                     uint16_t serviceId,
@@ -17,6 +19,7 @@ namespace ara
                     int initialDelayMax,
                     int repetitionBaseDelay,
                     uint32_t repetitionMax) : SomeIpSdAgent<helper::SdClientState>(networkLayer),
+                                              mServiceId{serviceId},
                                               mValidState{true},
                                               mServiceNotseenState(&mTtlTimer, &mStopOfferingConditionVariable),
                                               mServiceSeenState(&mTtlTimer, &mOfferingConditionVariable),
@@ -34,7 +37,6 @@ namespace ara
                                               mServiceReadyState(&mTtlTimer, &mOfferingConditionVariable),
                                               mOfferingLock(mOfferingMutex, std::defer_lock),
                                               mStopOfferingLock(mStopOfferingMutex, std::defer_lock),
-                                              mServiceId{serviceId},
                                               mEndpointLock(mEndpointMutex, std::defer_lock)
                 {
                     this->StateMachine.Initialize(
@@ -57,13 +59,17 @@ namespace ara
                     this->CommunicationLayer->SetReceiver(this, _receiver);
                 }
 
+
+
+                /************************* fundemental functions  ********************************/
+
                 void SomeIpSdClient::sendFind()
                 {
                     this->CommunicationLayer->Send(mFindServieMessage);
                     mFindServieMessage.IncrementSessionId();
                 }
 
-                bool SomeIpSdClient::matchRequestedService(
+                bool SomeIpSdClient::hasOfferingEntry(
                     const SomeIpSdMessage &message, uint32_t &ttl) const
                 {
                     // Iterate over all the message entry to search for the first Service Offering entry
@@ -134,7 +140,7 @@ namespace ara
                     if (mValidState)
                     {
                         uint32_t _ttl;
-                        bool _successful = matchRequestedService(message, _ttl);
+                        bool _successful = hasOfferingEntry(message, _ttl);
                         if (_successful)
                         {
                             onOfferChanged(_ttl);
@@ -142,10 +148,7 @@ namespace ara
                             mEndpointLock.lock();
                             std::string _ipAddress;
                             uint16_t _port;
-                            _successful =
-                                tryExtractOfferedEndpoint(
-                                    message, _ipAddress, _port);
-
+                            _successful = tryExtractOfferedEndpoint(message, _ipAddress, _port);
                             if (_successful)
                             {
                                 mOfferedIpAddress = _ipAddress;
@@ -155,6 +158,10 @@ namespace ara
                         }
                     }
                 }
+
+
+
+                /************************* functions that parent need ************************/
 
                 void SomeIpSdClient::StartAgent(helper::SdClientState state)
                 {
@@ -184,6 +191,10 @@ namespace ara
                     // Send a synchronized cancel signal to all the state
                     mTtlTimer.SetRequested(false);
                 }
+
+
+                
+                /************************* fundemental functions  ********************************/
 
                 bool SomeIpSdClient::TryWaitUntiServiceOffered(int duration)
                 {
@@ -280,6 +291,10 @@ namespace ara
                         return false;
                     }
                 }
+
+
+
+                /****************** override desctructor  ********************/
 
                 SomeIpSdClient::~SomeIpSdClient()
                 {

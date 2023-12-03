@@ -24,12 +24,56 @@ namespace ara
                 /// @brief SOME/IP service discovery client
                 class SomeIpSdClient : public SomeIpSdAgent<helper::SdClientState>
                 {
+                /*
+                    ********** inherited : private ****************************
+
+                    helper::FiniteStateMachine<T> StateMachine;
+                    std::future<void> Future;
+                    helper::NetworkLayer<SomeIpSdMessage> *CommunicationLayer;
+
+                    ********** inherited  : public ****************************
+
+                    /// @brief Join to the timer's thread
+                    void Join()
+                    {
+                        // If the future is valid, block unitl its result becomes
+                        // avialable after the timer expiration.
+                        if (Future.valid())
+                        {
+                            Future.get();
+                        }
+                    }
+
+                    /// @brief Start the service discovery agent
+                    void Start()
+                    {
+                        // Valid future means the timer is not expired yet.
+                        if (Future.valid())
+                        {
+                            throw std::logic_error("The state has been already activated.");
+                        }
+                        else
+                        {
+                            StartAgent(GetState());
+                        }
+                    }
+
+                    void Stop() {   StopAgent();    }
+                */
                 private:
+                    /******************************* extra attributes ******************************/
+
+                    const uint16_t mServiceId;
+
+
+
                     helper::TtlTimer mTtlTimer;
                     bool mValidState;
+
                     std::mutex mOfferingMutex;
                     std::unique_lock<std::mutex> mOfferingLock;
                     std::condition_variable mOfferingConditionVariable;
+                    
                     std::mutex mStopOfferingMutex;
                     std::unique_lock<std::mutex> mStopOfferingLock;
                     std::condition_variable mStopOfferingConditionVariable;
@@ -42,25 +86,32 @@ namespace ara
                     fsm::ServiceReadyState mServiceReadyState;
 
                     SomeIpSdMessage mFindServieMessage;
-                    const uint16_t mServiceId;
+
                     std::mutex mEndpointMutex;
                     std::unique_lock<std::mutex> mEndpointLock;
+                    
                     core::Optional<std::string> mOfferedIpAddress;
                     core::Optional<uint16_t> mOfferedPort;
 
+
+
                     void sendFind();
-                    bool matchRequestedService(const SomeIpSdMessage &message, uint32_t &ttl) const;
+                    bool hasOfferingEntry(const SomeIpSdMessage &message, uint32_t &ttl) const;
+                    void receiveSdMessage(SomeIpSdMessage &&message);
                     bool tryExtractOfferedEndpoint(
                         const SomeIpSdMessage &message, std::string &ipAddress, uint16_t &port) const;
+                    
+                    
                     void onOfferChanged(uint32_t ttl);
-                    void receiveSdMessage(SomeIpSdMessage &&message);
 
                 protected:
+                    /******************** function that parent need *****************/
+
                     void StartAgent(helper::SdClientState state) override;
                     void StopAgent() override;
 
                 public:
-                    SomeIpSdClient() = delete;
+                    /******************************* constructor  *******************************/
 
                     /// @brief Constructor
                     /// @param networkLayer Network communication abstraction layer
@@ -76,6 +127,10 @@ namespace ara
                         int initialDelayMax,
                         int repetitionBaseDelay = 30,
                         uint32_t repetitionMax = 3);
+
+
+
+                    /************************* fundemental functions  ********************************/
 
                     /// @brief Try to wait unitl the server offers the service
                     /// @param duration Waiting timeout in milliseconds
@@ -96,6 +151,16 @@ namespace ara
                     /// @remark The arguments won't be touched while returning 'false'.
                     /// @note The endpoint WON'T be invalidated after receiving the stop offer.
                     bool TryGetOfferedEndpoint(std::string &ipAddress, uint16_t &port);
+
+
+
+                    /********************************** disable empty constructor  ********************/
+
+                    SomeIpSdClient() = delete;
+
+
+
+                    /****************** override desctructor  ********************/
 
                     ~SomeIpSdClient() override;
                 };

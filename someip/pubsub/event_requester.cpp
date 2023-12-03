@@ -24,24 +24,33 @@ namespace ara
 
 
                 /******************** function take any someip/sd message *****************/
-
+                static bool gotAck = false;
                 void EventRequester::InvokeEventHandler(sd::SomeIpSdMessage &&message)
                 {
                     // for printing
-                    std::cout << "\n------------------------------------------------\n";
-                    std::cout << ".....received message..... \n";
-                    message.print();
-                    std::cout << "-------------------------------------------------\n\n";
-                    
+                    if(message.Entries().size() == 0)
+                    {
+                        std::cout << "\n------------------------------------------------\n";
+                        std::cout << ".t.t.t.t.received message.t.t.t.t. \n";
+                        message.print();
+                        std::cout << "-------------------------------------------------\n\n";
+                    }
+
                     for (auto &entry : message.Entries())
                     {
-                        if (entry->Type() == entry::EntryType::Acknowledging)
+                        if (entry->Type() == entry::EntryType::Acknowledging && !gotAck)
                         {
+                            std::cout << "\n------------------------------------------------\n";
+                            std::cout << ".....received message..... \n";
+                            message.print();
+                            std::cout << "-------------------------------------------------\n\n";
                             bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
                             if (_enqueued)
                             {
                                 mSubscriptionConditionVariable.notify_one();
                             }
+
+                            gotAck = true;
                         }
                     }
                 }

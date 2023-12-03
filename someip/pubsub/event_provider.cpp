@@ -32,17 +32,17 @@ namespace ara
 
                 void EventProvider::InvokeEventHandler(sd::SomeIpSdMessage &&message)
                 {     
-                    // for printing
-                    std::cout << "\n------------------------------------------------\n";
-                    std::cout << ".....received message..... \n";
-                    message.print();
-                    std::cout << "-------------------------------------------------\n\n";
-
                     // Iterate over all the message entry to search for the first Event-group Subscribing entry
                     for (auto &_entry : message.Entries())
                     {
                         if (_entry->Type() == entry::EntryType::Subscribing)
                         {
+                            // for printing
+                            std::cout << "\n------------------------------------------------\n";
+                            std::cout << ".....received message..... \n";
+                            message.print();
+                            std::cout << "-------------------------------------------------\n\n";
+                            
                             if (auto _eventgroupEntry = dynamic_cast<entry::EventgroupEntry *>(_entry.get()))
                             {
                                 // Compare service ID, instance ID, major version, and event-group ID
@@ -81,13 +81,19 @@ namespace ara
                     sd::SomeIpSdMessage _acknowledgeMessage;
 
                     helper::PubSubState _state = GetState();
+                    printCurrentState();
+                    
                     if (_state == helper::PubSubState::NotSubscribed)
                     {
+                        std::cout <<"$$$$ current state NotSubscribed $$$$\n";
                         mNotSubscribedState.Subscribed();
+                        printCurrentState();
                     }
                     else if (_state == helper::PubSubState::Subscribed)
                     {
+                        std::cout <<"$$$$ current state Subscribed $$$$\n";
                         mSubscribedState.Subscribed();
+                        printCurrentState();
                     }
 
                     // Acknowledge the subscription if the service is up
@@ -98,6 +104,7 @@ namespace ara
                     // If the service is not down, add a multicast endpoint option to the acknowledgement entry
                     if (_state != helper::PubSubState::ServiceDown)
                     {
+                        std::cout <<"$$$$ current state !ServiceDown $$$$\n";
                         helper::Ipv4Address mEndpointIp("239.0.0.1");
                         uint16_t mEndpointPort = 5555;                       
                         auto _multicastEndpoint = option::Ipv4EndpointOption::CreateMulticastEndpoint(
@@ -111,6 +118,27 @@ namespace ara
                 }
 
 
+                
+                void EventProvider::printCurrentState()
+                {
+                    switch(mStateMachine.GetState())
+                    {
+                        case helper::PubSubState::NotSubscribed:
+                        std::cout << "current state: NotSubscribed\n";
+                        break;
+
+                        case helper::PubSubState::Subscribed:
+                        std::cout << "current state: Subscribed\n";
+                        break;
+
+                        case helper::PubSubState::ServiceDown :
+                        std::cout << "current state: ServiceDown\n";
+                        break;
+
+                        default:
+                        break;
+                    }
+                }
 
                 /******************************* fundemental functions *********************/
 

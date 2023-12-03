@@ -10,6 +10,72 @@ namespace ara
         {
             namespace sd
             {
+                bool SomeIpSdServer::hasFindingEntry(const SomeIpSdMessage &message) const
+                {
+                    // Iterate over all the message entry to search for the first Service Finding entry
+                    for (auto &_entry : message.Entries())
+                    {
+                        if (_entry->Type() == entry::EntryType::Finding)
+                        {
+                            if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
+                            {
+                                // Compare service ID, instance ID, major version, and minor version
+                                bool _result =
+                                    (_serviceEnty->ServiceId() == mServiceId) &&
+                                    (_serviceEnty->InstanceId() == entry::Entry::cAnyInstanceId ||
+                                     _serviceEnty->InstanceId() == mInstanceId) &&
+                                    (_serviceEnty->MajorVersion() == entry::Entry::cAnyMajorVersion ||
+                                     _serviceEnty->MajorVersion() == mMajorVersion) &&
+                                    (_serviceEnty->MinorVersion() == entry::ServiceEntry::cAnyMinorVersion ||
+                                     _serviceEnty->MinorVersion() == mMinorVersion);
+
+                                return _result;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+                void SomeIpSdServer::receiveFind(SomeIpSdMessage &&message)
+                {
+                    bool _matches = hasFindingEntry(message);
+                    // Enqueue the offer if the finding message matches the service
+                    if (_matches)
+                    {
+                        while (!mMessageBuffer.TryEnqueue(std::move(message)))
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                        }
+                    }
+                }
+
+                void SomeIpSdServer::sendOffer()
+                {
+                    // Avoid starvation
+                    while (!mMessageBuffer.Empty())
+                    {
+                        SomeIpSdMessage _message;
+                        if (mMessageBuffer.TryDequeue(_message))
+                        {
+                            this->CommunicationLayer->Send(mOfferServiceMessage);
+                            mOfferServiceMessage.IncrementSessionId();
+                        }
+
+                        std::this_thread::yield();
+                    }
+                }
+
+                void SomeIpSdServer::onServiceStopped()
+                {
+                    this->CommunicationLayer->Send(mStopOfferMessage);
+                    mStopOfferMessage.IncrementSessionId();
+                }
+
+
+  
+                /******************************* constructor  *******************************/
+
                 SomeIpSdServer::SomeIpSdServer(
                     helper::NetworkLayer<SomeIpSdMessage> *networkLayer,
                     uint16_t serviceId,
@@ -75,17 +141,21 @@ namespace ara
                             option::Layer4ProtocolType::Tcp,
                             port)};
 
+
                     _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));
                     mOfferServiceMessage.AddEntry(std::move(_offerServiceEntry));
 
+
                     _stopOfferEntry->AddFirstOption(std::move(_stopOfferEndpointOption));
                     mStopOfferMessage.AddEntry(std::move(_stopOfferEntry));
+
 
                     this->StateMachine.Initialize({&mNotReadyState,
                                                    &mInitialWaitState,
                                                    &mRepetitionState,
                                                    &mMainState},
                                                   helper::SdServerState::NotReady);
+
 
                     auto _receiver =
                         std::bind(
@@ -95,67 +165,9 @@ namespace ara
                     this->CommunicationLayer->SetReceiver(this, _receiver);
                 }
 
-                bool SomeIpSdServer::matchOfferingService(const SomeIpSdMessage &message) const
-                {
-                    // Iterate over all the message entry to search for the first Service Finding entry
-                    for (auto &_entry : message.Entries())
-                    {
-                        if (_entry->Type() == entry::EntryType::Finding)
-                        {
-                            if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
-                            {
-                                // Compare service ID, instance ID, major version, and minor version
-                                bool _result =
-                                    (_serviceEnty->ServiceId() == mServiceId) &&
-                                    (_serviceEnty->InstanceId() == entry::Entry::cAnyInstanceId ||
-                                     _serviceEnty->InstanceId() == mInstanceId) &&
-                                    (_serviceEnty->MajorVersion() == entry::Entry::cAnyMajorVersion ||
-                                     _serviceEnty->MajorVersion() == mMajorVersion) &&
-                                    (_serviceEnty->MinorVersion() == entry::ServiceEntry::cAnyMinorVersion ||
-                                     _serviceEnty->MinorVersion() == mMinorVersion);
 
-                                return _result;
-                            }
-                        }
-                    }
 
-                    return false;
-                }
-
-                void SomeIpSdServer::sendOffer()
-                {
-                    // Avoid starvation
-                    while (!mMessageBuffer.Empty())
-                    {
-                        SomeIpSdMessage _message;
-                        if (mMessageBuffer.TryDequeue(_message))
-                        {
-                            this->CommunicationLayer->Send(mOfferServiceMessage);
-                            mOfferServiceMessage.IncrementSessionId();
-                        }
-
-                        std::this_thread::yield();
-                    }
-                }
-
-                void SomeIpSdServer::receiveFind(SomeIpSdMessage &&message)
-                {
-                    bool _matches = matchOfferingService(message);
-                    // Enqueue the offer if the finding message matches the service
-                    if (_matches)
-                    {
-                        while (!mMessageBuffer.TryEnqueue(std::move(message)))
-                        {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                        }
-                    }
-                }
-
-                void SomeIpSdServer::onServiceStopped()
-                {
-                    this->CommunicationLayer->Send(mStopOfferMessage);
-                    mStopOfferMessage.IncrementSessionId();
-                }
+                /************************* functions that parent need ************************/
 
                 void SomeIpSdServer::StartAgent(helper::SdServerState state)
                 {
@@ -177,6 +189,10 @@ namespace ara
                     mMainState.ServiceStopped();
                     Join();
                 }
+
+
+
+                /************************ override desctructor  *****************************/
 
                 SomeIpSdServer::~SomeIpSdServer()
                 {

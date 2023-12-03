@@ -46,7 +46,7 @@ namespace ara
                     
                     void processEntry(const entry::EventgroupEntry *entry);
 
-
+                    void printCurrentState();
                 protected:
                     /****************** function that child will implement it *****************/
 
@@ -59,7 +59,7 @@ namespace ara
                     void InvokeEventHandler(sd::SomeIpSdMessage &&message);
 
 
-
+                    
                 public:
                     /******************************* constructor ******************************/
 

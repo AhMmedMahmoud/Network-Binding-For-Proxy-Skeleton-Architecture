@@ -55,15 +55,21 @@ int main()
     }
   });
 
-  bool counter = false;
+  int counter = false;
   while(1)
   {    
     if(server.GetState() == PubSubState::Subscribed && counter == false)
     {
       // Introduce a delay of 7 seconds
       std::this_thread::sleep_for(std::chrono::seconds(7));
-      std::cout << "---preparing sample to send---\n";
+      std::cout << "---preparing sample1 to send---\n";
       server.update();
+
+      // Introduce a delay of 7 seconds
+      std::this_thread::sleep_for(std::chrono::seconds(7));
+      std::cout << "\n---preparing sample2 to send---\n";
+      server.update();
+
       counter = true;
     } 
   }

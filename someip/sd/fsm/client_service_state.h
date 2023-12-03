@@ -26,8 +26,7 @@ namespace ara
                         /// @brief Constructor
                         /// @param timer Finite machine state global TTL timer pointer
                         ClientServiceState(helper::TtlTimer *timer) : Timer{timer}
-                        {
-                        }
+                        {}
 
                     public:
                         ClientServiceState(const ClientServiceState &) = delete;
