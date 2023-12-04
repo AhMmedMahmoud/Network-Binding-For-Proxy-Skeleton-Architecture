@@ -34,7 +34,7 @@ enum class return_code_e : uint8_t {
 
 
 
-class message: public serializable 
+class message: public serializable , public deserializable
 {
 private:
     uint16_t service_;
@@ -48,6 +48,18 @@ private:
     return_code_e code_;
 
 public:
+    message()
+    {
+        this->service_ = 0;
+        this->method_ = 0;
+        this->length_ = 0;
+        this->client_ = 0;
+        this->session_ = 0;
+        this->protocol_version_ = 0;
+        this->interface_version_ = 0;
+        this->type_ = message_type_e::MT_ERROR;
+        this->code_ = return_code_e::E_NOT_OK;
+    }
     message( uint16_t service_,
              uint32_t method_,
              uint32_t length_,
@@ -109,6 +121,18 @@ public:
         return is_successful;
     }
 
+    void print()
+    {
+        std::cout << "service id " << this->service_ << std::endl;
+        std::cout << "method id " << this->method_ << std::endl;
+        std::cout << "lenght " << this->length_ << std::endl;
+        std::cout << "client id " << this->client_ << std::endl;
+        std::cout << "session id " << this->session_ << std::endl;
+        std::cout << "protocol_version " << static_cast<std::uint32_t>(this->protocol_version_) << std::endl;
+        std::cout << "interface_version " << static_cast<std::uint32_t>(this->interface_version_) << std::endl;
+        std::cout << "message type " << static_cast<std::uint32_t>(this->type_) << std::endl;
+        std::cout << "error code " << static_cast<std::uint32_t>(this->code_) << std::endl;
+    }
 
 
 };
@@ -128,5 +152,13 @@ int main()
     }
     
     //mySerializer.print();
+    
+    std::cout << "------------------------------------\n\n";
+    deserializer d(50); // create a deserializer with buffer shrink threshold of 100
+    d.set_data(data, mySerializer.get_size()); // set the data to be deserialized
+    message msg1;
+    msg1.deserialize(&d); // deserialize a uint16_t value from the data
+    msg1.print();
+
     return 0;
 }
