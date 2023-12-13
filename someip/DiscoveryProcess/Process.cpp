@@ -1,0 +1,455 @@
+#include <algorithm>
+#include "Process.h"
+#include <iostream>
+
+namespace ara
+{
+    namespace com
+    {
+        namespace someip
+        {
+            namespace sd
+            {
+                const size_t ServiceRegistryProcess::cBufferSize{256};
+                const std::string ServiceRegistryProcess::cAnyIpAddress("0.0.0.0");
+
+
+                /******************************* constructors  ******************************/
+
+                ServiceRegistryProcess::ServiceRegistryProcess(
+                    AsyncBsdSocketLib::Poller *poller,
+                    std::string nicIpAddress,
+                    std::string multicastGroup,
+                    uint16_t offeringPort,
+                    uint16_t findingPort) : cNicIpAddress{nicIpAddress},
+                                     cMulticastGroup{multicastGroup},
+                                     cOfferingPort{offeringPort},
+                                     cFindingPort{findingPort},
+                                     mPoller{poller},
+                                     mOfferingUdpSocket(cAnyIpAddress, offeringPort, nicIpAddress, multicastGroup),
+                                     mFindingUdpSocket(cAnyIpAddress, findingPort, nicIpAddress, multicastGroup)
+                {
+                    bool _successful{mFindingUdpSocket.TrySetup()};
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("UDP socket setup failed.");
+                    }
+
+                    auto _receiver{std::bind(&ServiceRegistryProcess::onReceiveFinding, this)};
+                    _successful = mPoller->TryAddReceiver(&mFindingUdpSocket, _receiver);
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("Adding UDP socket receiver failed.");
+                    }
+
+                    auto _sender{std::bind(&ServiceRegistryProcess::onSendOfferingOrAck, this)};
+                    _successful = mPoller->TryAddSender(&mFindingUdpSocket, _sender);
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("Adding UDP socket sender failed.");
+                    }
+
+
+                    _successful = mOfferingUdpSocket.TrySetup();
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("UDP socket setup failed.");
+                    }
+
+                    auto _receiver2{std::bind(&ServiceRegistryProcess::onReceiveOffering, this)};
+                    _successful = mPoller->TryAddReceiver(&mOfferingUdpSocket, _receiver2);
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("Adding UDP socket receiver failed.");
+                    }
+
+                    /*
+                    auto _sender2{std::bind(&ServiceRegistryProcess::onSendSubscribing, this)};
+                    _successful = mPoller->TryAddSender(&mOfferingUdpSocket, _sender2);
+                    if (!_successful)
+                    {
+                        throw std::runtime_error("Adding UDP socket sender failed.");
+                    }
+                    */
+                }
+
+
+
+                /**************************** poller functions  **********************************/
+
+                void ServiceRegistryProcess::onReceiveOffering()
+                {
+                    std::cout << "------------ onReceiveOffering ------------------\n";
+
+                    // define array to receive serialized SOMEIP/SD message
+                    std::array<uint8_t, cBufferSize> _buffer;
+
+                    std::string _ipAddress;
+                    uint16_t _port;
+
+                    // receive serialized SOMEIP/SD message in form of array not vector
+                    ssize_t _receivedSize{mOfferingUdpSocket.Receive(_buffer, _ipAddress, _port)};
+                    std::cout << "_port " << cOfferingPort << std::endl; 
+                    if (_receivedSize > 0 && _port == cOfferingPort && _ipAddress == cNicIpAddress)
+                    {
+                        std::cout << "inside offeringPort\n";
+                        const std::vector<uint8_t> cRequestPayload(
+                            std::make_move_iterator(_buffer.begin()),
+                            std::make_move_iterator(_buffer.begin() + _receivedSize));
+
+                        // Create the received message from the received payload
+                        sd::SomeIpSdMessage _receivedMessage{sd::SomeIpSdMessage::Deserialize(cRequestPayload)};
+                        
+                        _receivedMessage.print();
+
+                        // call function that contain what to do with received message
+                        handleOffering(std::move(_receivedMessage));
+                        //handleFinding(std::move(_receivedMessage));
+
+                        printRegistry();
+                    }
+                }
+
+                void ServiceRegistryProcess::onReceiveFinding()
+                {
+                    std::cout << "------------ onReceiveFinding ----------------\n";
+
+                    // define array to receive serialized SOMEIP/SD message
+                    std::array<uint8_t, cBufferSize> _buffer;
+
+                    std::string _ipAddress;
+                    uint16_t _port;
+
+                    ssize_t _receivedSize{mFindingUdpSocket.Receive(_buffer, _ipAddress, _port)};
+                    std::cout << "_port " << cFindingPort << std::endl; 
+                    if (_receivedSize > 0 && _port == cFindingPort && _ipAddress == cNicIpAddress)
+                    {
+                        std::cout << "inside findPort\n";
+                        const std::vector<uint8_t> cRequestPayload(
+                            std::make_move_iterator(_buffer.begin()),
+                            std::make_move_iterator(_buffer.begin() + _receivedSize));
+
+                        // Create the received message from the received payload
+                        sd::SomeIpSdMessage _receivedMessage{sd::SomeIpSdMessage::Deserialize(cRequestPayload)};
+                        
+                        _receivedMessage.print();
+
+                        // call function that contain what to do with received message
+                        //handleOffering(std::move(_receivedMessage));
+                        handleFinding(std::move(_receivedMessage));
+                        //handleSubscribing(std::move(_receivedMessage));
+
+                        printRegistry();
+                    }
+                }
+
+                void ServiceRegistryProcess::onSendOfferingOrAck()
+                {
+                    while (!mSendingQueueForOffering.Empty())
+                    {
+                        std::cout << "-------- onSendOfferingOrAck -------------\n";
+
+                        std::vector<uint8_t> _payload;
+                        bool _dequeued{mSendingQueueForOffering.TryDequeue(_payload)};
+                        if (_dequeued)
+                        {
+                            std::array<uint8_t, cBufferSize> _buffer;
+                            std::copy_n(
+                                std::make_move_iterator(_payload.begin()),
+                                _payload.size(),
+                                _buffer.begin());
+
+                            mFindingUdpSocket.Send(_buffer, cMulticastGroup, cFindingPort);
+                        }
+                    }
+                }
+
+                /*
+                void ServiceRegistryProcess::onSendSubscribing()
+                {
+                    while (!mSendingQueueForSubscring.Empty())
+                    {
+                        std::cout << "-------- onSendOfferingOrAck -------------\n";
+
+                        std::vector<uint8_t> _payload;
+                        bool _dequeued{mSendingQueueForSubscring.TryDequeue(_payload)};
+                        if (_dequeued)
+                        {
+                            std::array<uint8_t, cBufferSize> _buffer;
+                            std::copy_n(
+                                std::make_move_iterator(_payload.begin()),
+                                _payload.size(),
+                                _buffer.begin());
+
+                            mOfferingUdpSocket.Send(_buffer, cMulticastGroup, cOfferingPort);
+                        }
+                    }
+                }
+                */
+
+
+
+                /***************************** main functions ****************************/
+
+                // function take any someip/sd message 
+                void ServiceRegistryProcess::handleOffering(SomeIpSdMessage &&message)
+                {
+                    uint32_t _ttl;
+                    bool _successful = hasOfferingEntry(message, _ttl);
+                    if (_successful)
+                    {
+                        std::string _ipAddress;
+                        uint16_t _port;
+                        uint16_t _serviceId;
+                        uint16_t _instanceId;
+                        _successful = ExtractInfoToStore(message, _ipAddress, _port,_serviceId,_instanceId);
+                        if (_successful)
+                        {
+                            storeInfoOfServiceInstance({_serviceId,_instanceId},{_ipAddress,_port,protocol::tcp});
+                        }
+                    }
+                }
+
+                bool ServiceRegistryProcess::hasOfferingEntry(
+                    const SomeIpSdMessage &message, uint32_t &ttl) const
+                {
+                    // Iterate over all the message entry to search for the first Service Offering entry
+                    for (auto &_entry : message.Entries())
+                    {
+                        if (_entry->Type() == entry::EntryType::Offering)
+                        {
+                            if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
+                            {
+                                // Compare service 
+                                bool _result = table.find( {_serviceEnty->ServiceId(),_serviceEnty->InstanceId()} ) == table.end();
+                                if(_result)
+                                {
+                                    ttl = _serviceEnty->TTL();
+                                }
+                                return _result;
+                            }
+                        }
+                    }
+                    return false;
+                }
+
+
+                bool ServiceRegistryProcess::ExtractInfoToStore(
+                    const SomeIpSdMessage &message,
+                    std::string &ipAddress,
+                    uint16_t &port,
+                    uint16_t &_serviceId, uint16_t &_instanceId) const
+                {
+                    for (size_t i = 0; i < message.Entries().size(); ++i)
+                    {
+                        auto entry = message.Entries().at(i).get();
+
+                        // Endpoints are end-up in the first options
+                        for (size_t j = 0; entry->FirstOptions().size(); ++j)
+                        {
+                            auto option = entry->FirstOptions().at(j).get();
+
+                            if (option->Type() == option::OptionType::IPv4Endpoint)
+                            {
+                                auto cEndpoint{
+                                    dynamic_cast<const option::Ipv4EndpointOption *>(
+                                        option)};
+
+                                if (cEndpoint &&
+                                    cEndpoint->L4Proto() == option::Layer4ProtocolType::Tcp)
+                                {
+                                    _serviceId = entry->ServiceId();
+                                    _instanceId = entry->InstanceId();
+                                    ipAddress = cEndpoint->IpAddress().ToString();
+                                    port = cEndpoint->Port();
+
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+
+
+
+                bool ServiceRegistryProcess::hasFindingEntry(const SomeIpSdMessage &message,
+                 transportInfo &info,
+                 uint16_t &serviceId,
+                 uint16_t &instanceId,
+                 uint8_t &majorVersion,
+                 uint32_t &minorVersion ) const
+                {
+                    // Iterate over all the message entry to search for the first Service Finding entry
+                    for (auto &_entry : message.Entries())
+                    {
+                        if (_entry->Type() == entry::EntryType::Finding)
+                        {
+                            if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
+                            {
+                                myKey k{_serviceEnty->ServiceId(),_serviceEnty->InstanceId()};
+                                serviceId = _serviceEnty->ServiceId() ;
+                                instanceId = _serviceEnty->InstanceId();
+                                majorVersion = _serviceEnty->MajorVersion();
+                                minorVersion = _serviceEnty->MinorVersion();
+                                bool _result = isRegisted(k, info);
+                                return _result;
+                                /*
+                                // Compare service ID, instance ID, major version, and minor version
+                                bool _result =
+                                    (_serviceEnty->ServiceId() == mServiceId) &&
+                                    (_serviceEnty->InstanceId() == entry::Entry::cAnyInstanceId ||
+
+                                     _serviceEnty->InstanceId() == mInstanceId) &&
+                                    (_serviceEnty->MajorVersion() == entry::Entry::cAnyMajorVersion ||
+
+                                     _serviceEnty->MajorVersion() == mMajorVersion) &&
+                                    (_serviceEnty->MinorVersion() == entry::ServiceEntry::cAnyMinorVersion ||
+                                     _serviceEnty->MinorVersion() == mMinorVersion);
+
+                                return _result;
+                                */
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+                void ServiceRegistryProcess::handleFinding(SomeIpSdMessage &&message)
+                {
+                    std::cout << "-----handleFinding is called----\n";
+                    transportInfo info;
+                    uint16_t serviceId;
+                    uint16_t instanceId;
+                    uint8_t majorVersion;
+                    uint32_t minorVersion; 
+                    bool _matches = hasFindingEntry(message,info,serviceId,instanceId,majorVersion,minorVersion);
+                    // Enqueue the offer if the finding message matches the service
+                    if (_matches)
+                    {
+                        SomeIpSdMessage mOfferServiceMessage;
+
+                        // prepare offering entry
+                        auto _offerServiceEntry
+                        { 
+                            entry::ServiceEntry::CreateOfferServiceEntry( serviceId,
+                                                                        instanceId,
+                                                                        majorVersion,
+                                                                        minorVersion
+                                                                        )
+                        };
+                        
+                        
+                        // prepare unicast endpoint option
+                        auto _offerEndpointOption
+                        {
+                            option::Ipv4EndpointOption::CreateUnitcastEndpoint( false,
+                                                                                info.ipAddress,
+                                                                                option::Layer4ProtocolType::Tcp,
+                                                                                info.port
+                                                                            )
+                        };
+
+                        // prepare SOMEIP/SD message contain offering entry to use at need
+                        _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));
+                        mOfferServiceMessage.AddEntry(std::move(_offerServiceEntry));
+
+                        SendOfferingOrAck(mOfferServiceMessage);
+                        std::cout << "offer message from process is sent\n";
+                    }
+                }
+
+                bool ServiceRegistryProcess::hasSubscribingEntry(const SomeIpSdMessage &message)
+                {
+                    // Iterate over all the message entry to search for the first Event-group Subscribing entry
+                    for (auto &_entry : message.Entries())
+                    {
+                        if (_entry->Type() == entry::EntryType::Subscribing)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                /*
+                void ServiceRegistryProcess::handleSubscribing(sd::SomeIpSdMessage &&message)
+                {
+                    bool _matches = hasSubscribingEntry(message);
+                    // Enqueue the offer if the finding message matches the service
+                    if (_matches)
+                    {
+                        std::cout << "has subscribing entry\n";
+                        SendSubscring(message);
+                        std::cout << "offer message from process is sent\n";
+                    }
+                }
+                */
+
+
+                bool ServiceRegistryProcess::isRegisted(const myKey& k, transportInfo &info) const
+                {
+                    auto it = table.find(k);
+                    if (it != table.end()) {
+                        std::cout << "Data found:" << std::endl;
+                        std::cout << "Service ID: " << it->first.serviceId << std::endl;
+                        std::cout << "Instance ID: " << it->first.instanceId << std::endl;
+                        std::cout << "IP Address: " << it->second.ipAddress << std::endl;
+                        std::cout << "Port: " << it->second.port << std::endl;
+                        std::cout << "Protocol: " << (it->second.proto == protocol::tcp ? "TCP" : "UDP") << std::endl;
+                        // Return the data associated with the key
+                        info = it->second;
+                        return true;
+                    } else {
+                        std::cout << "Data not found" << std::endl;
+                        return false;
+                    }
+                }
+
+                void ServiceRegistryProcess::printRegistry()
+                {
+                    // myKey key1 = {123, 456};
+                    // transportInfo value1 = {"192.168.1.1", 8080, protocol::tcp};
+
+                    // // Insert the key-value pair into the map
+                    // table[key1] = value1;
+
+                    // Print the data in the map
+                    for (const auto& entry : table) 
+                    {
+                        std::cout << entry.first.serviceId << ", " << entry.first.instanceId;
+                        std::cout << "     " << entry.second.ipAddress << "  " 
+                        << entry.second.port << "   " << static_cast<int>(entry.second.proto) << std::endl;
+                    }
+                }
+
+
+
+                void ServiceRegistryProcess::SendOfferingOrAck(const SomeIpSdMessage &message)
+                {
+                    std::vector<uint8_t> _payload{message.Payload()};
+                    mSendingQueueForOffering.TryEnqueue(std::move(_payload));
+                }
+
+                /*
+                void ServiceRegistryProcess::SendSubscring(const SomeIpSdMessage &message)
+                {
+                    std::vector<uint8_t> _payload{message.Payload()};
+                    mSendingQueueForSubscring.TryEnqueue(std::move(_payload));
+                }
+                */
+
+
+
+                /****************************  deconstructor  ************************/
+
+                ServiceRegistryProcess::~ServiceRegistryProcess()
+                {
+                    mPoller->TryRemoveSender(&mFindingUdpSocket);
+                    mPoller->TryRemoveReceiver(&mFindingUdpSocket);
+                }
+            }
+        }
+    }
+}

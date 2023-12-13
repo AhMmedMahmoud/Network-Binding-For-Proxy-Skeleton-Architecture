@@ -22,16 +22,13 @@ add_library(
    sockets/src/tcp_listener.cpp
    sockets/src/udp_client.cpp
 
-   
-   
    #### helper ####
    helper/abstract_state_machine.h
+   helper/abstract_network_layer.h
    helper/concurrent_queue.h
-   helper/finite_state_machine.h
+   helper/state.h
+   helper/fsm.h
    helper/ipv4_address.h
-   helper/ipv4_address.cpp
-   helper/machine_state.h
-   helper/network_layer.h
    helper/payload_helper.h
    helper/payload_helper.cpp
    helper/ttl_timer.h
@@ -50,7 +47,7 @@ add_library(
    someip/rpc/rpcs_responser.h
    someip/rpc/rpcs_responser.cpp
    someip/rpc/socket_rpc_server.h
-   someip/rpc//socket_rpc_server.cpp
+   someip/rpc/socket_rpc_server.cpp
 
    ## sender for someip_rpc_message ##
    someip/rpc/rpcs_requester.h
@@ -83,53 +80,67 @@ add_library(
 
    ################# sd ##################
 
-   someip/sd/sd_network_layer.cpp
-   someip/sd/sd_network_layer.h
-   someip/sd/someip_sd_agent.h
-   
-   someip/sd/someip_sd_server.cpp
-   someip/sd/someip_sd_server.h
-
-   someip/sd/fsm/timer_set_state.h
-   someip/sd/fsm/client_service_state.h
+   someip/sd/network_layer.cpp
+   someip/sd/network_layer.h
+   someip/sd/SomeIpSdAgent.h
+   someip/sd/SomeIpSdServer.cpp
+   someip/sd/SomeIpSdServer.h
+   someip/sd/SomeIpSdClient.cpp
+   someip/sd/SomeIpSdClient.h
+   ## fsm for sd client ##
+   someip/sd/fsm/fsmClient/client_service_state.h
+   someip/sd/fsm/fsmClient/client_initial_wait_state.h
+   someip/sd/fsm/fsmClient/client_initial_wait_state.cpp
+   someip/sd/fsm/fsmClient/client_repetition_state.h
+   someip/sd/fsm/fsmClient/client_repetition_state.cpp
+   someip/sd/fsm/fsmClient/service_notseen_state.h
+   someip/sd/fsm/fsmClient/service_notseen_state.cpp
+   someip/sd/fsm/fsmClient/service_ready_state.h
+   someip/sd/fsm/fsmClient/service_ready_state.cpp
+   someip/sd/fsm/fsmClient/service_seen_state.h
+   someip/sd/fsm/fsmClient/service_seen_state.cpp
+   someip/sd/fsm/fsmClient/stopped_state.h
+   someip/sd/fsm/fsmClient/stopped_state.cpp
+   ## fsm for sd server ##
    someip/sd/fsm/notready_state.h
-   someip/sd/fsm/notready_state.cpp
+   someip/sd/fsm/timer_set_state.h
    someip/sd/fsm/initial_wait_state.h
-   someip/sd/fsm/client_initial_wait_state.h
-   someip/sd/fsm/client_initial_wait_state.cpp
-   someip/sd/fsm/repetition_state.h
-   someip/sd/fsm/client_repetition_state.h
-   someip/sd/fsm/client_repetition_state.cpp
+   someip/sd/fsm/repetition_state.h   
    someip/sd/fsm/main_state.h
-   someip/sd/fsm/main_state.cpp
-   someip/sd/fsm/stopped_state.h
-   someip/sd/fsm/stopped_state.cpp
-   someip/sd/fsm/service_notseen_state.h
-   someip/sd/fsm/service_notseen_state.cpp
-   someip/sd/fsm/service_ready_state.h
-   someip/sd/fsm/service_ready_state.cpp
-   someip/sd/fsm/service_seen_state.h
-   someip/sd/fsm/service_seen_state.cpp
-
+   
+  
+   
    #### provider and subscripter for events ####
-   someip/pubsub/fsm/notsubscribed_state.cpp
    someip/pubsub/fsm/notsubscribed_state.h
-   someip/pubsub/fsm/service_down_state.cpp
    someip/pubsub/fsm/service_down_state.h
-   someip/pubsub/fsm/subscribed_state.cpp
    someip/pubsub/fsm/subscribed_state.h
 
+   someip/pubsub/event_requester.cpp
+   someip/pubsub/event_requester.h
    someip/pubsub/socket_pubSub_client.cpp
    someip/pubsub/socket_pubSub_client.h
 
    someip/pubsub/socket_pubSub_server.cpp
    someip/pubsub/socket_pubSub_server.h
-
    someip/pubsub/event_provider.cpp
    someip/pubsub/event_provider.h
    
-   someip/pubsub/event_requester.cpp
-   someip/pubsub/event_requester.h
+
+
+   ####### DiscoveryProcess #####
+   someip/DiscoveryProcess/Process.h
+   someip/DiscoveryProcess/Process.cpp   
+
+   #### provider ####
+   someip/service/fsm/notsubscribed_state.h
+   someip/service/fsm/service_down_state.h
+   someip/service/fsm/subscribed_state.h
+   someip/service/provider.h
+   someip/service/provider.cpp
+
+   #### requester ####
+   someip/service/requester.h
+   someip/service/requester.cpp
 )
 
 ######################### samples ##################################
@@ -146,3 +157,21 @@ target_link_libraries(client_pubSub araCom)
 
 add_executable(server_pubSub samples/demo_pubSub_server.cpp)
 target_link_libraries(server_pubSub araCom)
+
+#### execuatables for demo ####
+add_executable(sd samples/demo_sd.cpp)
+target_link_libraries(sd araCom)
+
+#### execuatables for demo ####
+add_executable(process samples/demo_process.cpp)
+target_link_libraries(process araCom)
+
+
+#### execuatables for demo ####
+add_executable(provider samples/demo_provider.cpp)
+target_link_libraries(provider araCom)
+
+
+#### execuatables for demo ####
+add_executable(requester samples/demo_requester.cpp)
+target_link_libraries(requester araCom)
