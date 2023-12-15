@@ -18,6 +18,8 @@ const int cTimeoutMs = 1;
 const uint16_t cServiceId = 4500;
 const uint16_t cSumationOverVectorMethodId = 1000;
 const uint16_t cMultiplicationOverVectorMethodID = 2000;
+const uint16_t cGetSumMethodID = 3000;
+
 const uint8_t cProtocolVersion = 20;
 const uint16_t cInterfaceVersion = 2;
 const uint16_t cClientId = 1;
@@ -68,6 +70,27 @@ bool multiplicationOverVector(const std::vector<uint8_t> &input, std::vector<uin
     return true;
 }
 
+uint8_t getSumImp(const std::vector<uint8_t> &list)
+{
+    uint8_t sum = 0;
+    for (int i = 0; i < list.size(); i++) {
+        sum += list[i];
+    }
+
+    return sum;
+}
+
+
+bool getSum(const std::vector<uint8_t> &input, std::vector<uint8_t> &output) 
+{
+    std::cout << "\ngetSum is called\n";
+
+    uint8_t funcResult = getSumImp(input);
+
+    output.push_back(funcResult); // Put the sum in the output vector
+
+    return true;
+}
 
 
 int main()
@@ -80,6 +103,7 @@ int main()
 
     server.SetHandler(cServiceId, cMultiplicationOverVectorMethodID, (HandlerType)multiplicationOverVector);
 
+    server.SetHandler(cServiceId, cGetSumMethodID, (HandlerType)getSum);
 
     while(1)
     {

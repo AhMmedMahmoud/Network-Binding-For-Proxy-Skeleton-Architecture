@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.14)
-
-project(demo)
-
+project(CommunicationManager)
 set(CMAKE_CXX_STANDARD 14)
 
 ######################### source files ##################################
 add_library(
    araCom
 
-   ##### sockets #####
+   ################### sockets ##############
    sockets/include/communicator.h
    sockets/include/network_socket.h
    sockets/include/poller.h
@@ -24,7 +22,6 @@ add_library(
 
    #### helper ####
    helper/abstract_state_machine.h
-   helper/abstract_network_layer.h
    helper/concurrent_queue.h
    helper/state.h
    helper/fsm.h
@@ -35,9 +32,10 @@ add_library(
    helper/ttl_timer.cpp
 
 
-   ############  someip message ############ 
+   ###############  someip message ############ 
    someip/someipMsg/someip_message.h
    someip/someipMsg/someip_message.cpp
+
 
    ############  someip_rpc_message ############ 
    someip/someipRpcMsg/someip_rpc_message.cpp
@@ -54,6 +52,8 @@ add_library(
    someip/rpc/rpcs_requester.cpp
    someip/rpc/socket_rpc_client.h
    someip/rpc/socket_rpc_client.cpp
+
+
 
    ############ someip_sd message ############
    someip/someipSdMsg/someip_sd_message.cpp
@@ -78,38 +78,6 @@ add_library(
    someip/someipSdMsg/option/option.h
 
 
-   ################# sd ##################
-
-   someip/sd/network_layer.cpp
-   someip/sd/network_layer.h
-   someip/sd/SomeIpSdAgent.h
-   someip/sd/SomeIpSdServer.cpp
-   someip/sd/SomeIpSdServer.h
-   someip/sd/SomeIpSdClient.cpp
-   someip/sd/SomeIpSdClient.h
-   ## fsm for sd client ##
-   someip/sd/fsm/fsmClient/client_service_state.h
-   someip/sd/fsm/fsmClient/client_initial_wait_state.h
-   someip/sd/fsm/fsmClient/client_initial_wait_state.cpp
-   someip/sd/fsm/fsmClient/client_repetition_state.h
-   someip/sd/fsm/fsmClient/client_repetition_state.cpp
-   someip/sd/fsm/fsmClient/service_notseen_state.h
-   someip/sd/fsm/fsmClient/service_notseen_state.cpp
-   someip/sd/fsm/fsmClient/service_ready_state.h
-   someip/sd/fsm/fsmClient/service_ready_state.cpp
-   someip/sd/fsm/fsmClient/service_seen_state.h
-   someip/sd/fsm/fsmClient/service_seen_state.cpp
-   someip/sd/fsm/fsmClient/stopped_state.h
-   someip/sd/fsm/fsmClient/stopped_state.cpp
-   ## fsm for sd server ##
-   someip/sd/fsm/notready_state.h
-   someip/sd/fsm/timer_set_state.h
-   someip/sd/fsm/initial_wait_state.h
-   someip/sd/fsm/repetition_state.h   
-   someip/sd/fsm/main_state.h
-   
-  
-   
    #### provider and subscripter for events ####
    someip/pubsub/fsm/notsubscribed_state.h
    someip/pubsub/fsm/service_down_state.h
@@ -125,6 +93,22 @@ add_library(
    someip/pubsub/event_provider.cpp
    someip/pubsub/event_provider.h
    
+
+   ############# events ###########
+   someip/events/fsm/notsubscribed_state.h
+   someip/events/fsm/service_down_state.h
+   someip/events/fsm/subscribed_state.h
+
+   someip/events/event_requester.cpp
+   someip/events/event_requester.h
+   someip/events/socket_event_client.cpp
+   someip/events/socket_event_client.h
+
+   someip/events/socket_event_server.cpp
+   someip/events/socket_event_server.h
+   someip/events/event_provider.cpp
+   someip/events/event_provider.h
+
 
 
    ####### DiscoveryProcess #####
@@ -143,13 +127,17 @@ add_library(
    someip/service/requester.cpp
 )
 
-######################### samples ##################################
+
+
+######################### execuatables ##################################
+
 #### execuatables for rpc ####
 add_executable(server_rpc samples/demo_rpc_server.cpp)
 target_link_libraries(server_rpc araCom)
 
 add_executable(client_rpc samples/demo_rpc_client.cpp)
 target_link_libraries(client_rpc araCom)
+
 
 #### executables for pubSub ####
 add_executable(client_pubSub samples/demo_pubSub_client.cpp)
@@ -158,20 +146,25 @@ target_link_libraries(client_pubSub araCom)
 add_executable(server_pubSub samples/demo_pubSub_server.cpp)
 target_link_libraries(server_pubSub araCom)
 
-#### execuatables for demo ####
-add_executable(sd samples/demo_sd.cpp)
-target_link_libraries(sd araCom)
 
 #### execuatables for demo ####
 add_executable(process samples/demo_process.cpp)
 target_link_libraries(process araCom)
 
 
-#### execuatables for demo ####
-add_executable(provider samples/demo_provider.cpp)
+#### execuatables for service provider ####
+add_executable(provider samples/demo_service_provider.cpp)
 target_link_libraries(provider araCom)
 
 
-#### execuatables for demo ####
-add_executable(requester samples/demo_requester.cpp)
+#### execuatables for service requester ####
+add_executable(requester samples/demo_service_requester.cpp)
 target_link_libraries(requester araCom)
+
+
+#### executables for events ####
+add_executable(client_event samples/demo_event_client.cpp)
+target_link_libraries(client_event araCom)
+
+add_executable(server_event samples/demo_event_server.cpp)
+target_link_libraries(server_event araCom)

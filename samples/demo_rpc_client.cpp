@@ -16,6 +16,8 @@ const int cTimeoutMs = 1;
 const uint16_t cServiceId = 4500;
 const uint16_t cSumationOverVectorMethodId = 1000;
 const uint16_t cMultiplicationOverVectorMethodID = 2000;
+const uint16_t cGetSumMethodID = 3000;
+
 const uint8_t cProtocolVersion = 20;
 const uint16_t cInterfaceVersion = 2;
 const uint16_t cClientId = 1;
@@ -56,6 +58,10 @@ void myHandle(const SomeIpRpcMessage &message)
         }
         std::cout << std::endl;
     }
+    else
+    {
+        std::cout << "else\n";
+    }
 }
 
 class sumOverVector
@@ -76,8 +82,30 @@ class multiplicationOverVector
     }
 };
 
+
+class getSum
+{
+    public:
+    std::future<bool> operator() ( const std::vector<uint8_t> &payload,
+                                   std::vector<uint8_t> &data)
+    {
+        return client.RequestWithoutHandler(cServiceId, cGetSumMethodID, cClientId, payload, data);
+    }
+};
+
+
 int main()
 {
+      // Create thread using a lambda expression
+    std::thread t1([](){
+       while(1)
+       {
+         poller->TryPoll(cTimeoutMs);
+       }
+    });
+
+    
+    /*
     // regist handler for result of a method that calculates sum of all elements in vector
     client.SetHandler(cServiceId, cSumationOverVectorMethodId, (HandlerType)myHandle);
     
@@ -92,11 +120,33 @@ int main()
     std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
     sumOverVector(payload);
     multiplicationOverVector(payload);
- 
-    while(1)
+    */
+
+    getSum getSum;
+    std::vector<uint8_t> input = {1, 2, 3, 4, 5};
+    std::vector<uint8_t> output;
+
+    std::cout << "before calling getSum\n";
+    std::future<bool> futureObj = getSum(input, output);
+    std::cout << "after calling getSum\n";
+    if(futureObj.get())
     {
-        poller->TryPoll(cTimeoutMs);
+        std::cout << "inside if\n";
+        for (uint8_t val : output) {
+          std::cout << static_cast<int>(val) ;
+        }
+        std::cout << "\n";
     }
+    else
+    {
+        std::cout << "rrrrrrrr\n";
+    }
+
+    std::cout << "done\n\n";
+
+    // Join the thread with the main thread
+    t1.join();
+
     delete poller;
     return 0;
 }

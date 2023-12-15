@@ -1,6 +1,9 @@
 #include <iostream>
 #include "../someip/DiscoveryProcess/Process.h"
 #include <thread>
+// for delay
+#include <thread>
+#include <chrono>
 
 using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
@@ -31,6 +34,17 @@ int main()
 
     const int cTimeoutMs = 100;
 
+   /*
+   std::thread t2([registry,cTimeoutMs](){
+       while(1)
+       {
+         registry->run();
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(1));
+       }
+    });
+   */
+
     // Create thread using a lambda expression
     std::thread t1([poller,cTimeoutMs](){
        while(1)
@@ -42,6 +56,7 @@ int main()
     
     // Join the thread with the main thread
     t1.join();
+    //t2.join();
 
    delete poller;
    return 0;
