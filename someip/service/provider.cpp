@@ -11,6 +11,7 @@ namespace ara
             {
                 /*************************** methods that i provide ***************************/
 
+#if(EXAMPLE == RPCS)
                 uint8_t summationOverVectorImp(const std::vector<uint8_t> &list)
                 {
                     uint8_t sum = 0;
@@ -51,7 +52,27 @@ namespace ara
                     return true;
                 }
 
+                uint8_t getSumImp(const std::vector<uint8_t> &list)
+                {
+                    uint8_t sum = 0;
+                    for (int i = 0; i < list.size(); i++) {
+                        sum += list[i];
+                    }
 
+                    return sum;
+                }
+
+                bool getSum(const std::vector<uint8_t> &input, std::vector<uint8_t> &output) 
+                {
+                    std::cout << "\ngetSum is called\n";
+
+                    uint8_t funcResult = getSumImp(input);
+
+                    output.push_back(funcResult); // Put the sum in the output vector
+
+                    return true;
+                }
+#endif
               
                 /******************************* constructors  ******************************/
 
@@ -104,13 +125,12 @@ namespace ara
                     }
                 }
 
-
-
                 /******************************* fundemental functions *********************/
     
                 void Provider::init()
                 {
-                    /********* initilization for rpcs */
+#if(EXAMPLE == RPCS)
+                    /********* initilization for rpcs ****************/
                     rpcServer = new rpc::SocketRpcServer( mPoller,
                                                          "127.0.0.1",
                                                           mEndpointRpcsPort,
@@ -124,9 +144,12 @@ namespace ara
                 
                     rpcServer->SetHandler(mServiceId, cMultiplicationOverVectorMethodID, (HandlerTypeFunc)multiplicationOverVector);
 
+                    rpcServer->SetHandler(mServiceId, cGetSumMethodID, (HandlerTypeFunc)getSum);
+
+#elif(EXAMPLE == PUBSUB)
                     /************** initialization for events ***************/            
                     /*
-                    SockeKEventServer server(mServiceId,
+                    eventServer = new SockeKEventServer(mServiceId,
                                             mInstanceId,
                                             mMajorVersion,
                                             mEventgroupId,
@@ -135,10 +158,11 @@ namespace ara
                                             cMulticastGroup,
                                             mEndpointEventPort,
                                             mProtocolVersion);
-                    
-                    eventServer->Start();
                     */
+                    //eventServer->Start();
+#endif
                 }
+
 
                 void Provider::offerService(helper::Ipv4Address ipAddress)
                 {                    
@@ -154,8 +178,9 @@ namespace ara
                                                                       mMinorVersion
                                                                     )
                     };
-                               
-                    // prepare unicast endpoint option
+
+#if(EXAMPLE == RPCS)
+                    // prepare endpoint option
                     auto _offerEndpointOption
                     {
                         option::Ipv4EndpointOption::CreateUnitcastEndpoint( false,
@@ -164,6 +189,17 @@ namespace ara
                                                                             mEndpointRpcsPort
                                                                           )
                     };
+#elif(EXAMPLE == PUBSUB)
+                    // prepare endpoint option
+                    auto _offerEndpointOption
+                    {
+                        option::Ipv4EndpointOption::CreateUnitcastEndpoint( false,
+                                                                            ipAddress,
+                                                                            option::Layer4ProtocolType::Tcp,
+                                                                            mEndpointEventPort
+                                                                          )
+                    };
+#endif
 
                     // add created option to created entry 
                     _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));

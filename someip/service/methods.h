@@ -53,6 +53,35 @@ class multiplicationOverVector
     }
 };
 
+
+class getSum
+{
+    private:
+    SocketRpcClient *mRpcClient;
+    uint16_t mserviceId;
+    uint16_t mClientId;
+    uint16_t mMethodId;
+
+    public:
+    getSum(SocketRpcClient* client, uint16_t serviceId, uint16_t clientId, uint16_t methodId) 
+    {
+       this->mRpcClient = client;
+       this->mMethodId = methodId;
+       this->mserviceId = serviceId;
+       this->mClientId = clientId;
+    }
+
+    std::future<bool> operator() ( const std::vector<uint8_t> &payload,
+                                   std::vector<uint8_t> &data)
+    {
+        return mRpcClient->RequestWithoutHandler(mserviceId, mMethodId, mClientId, payload, data);
+    }
+};
+
+
+
+
+
 class method
 {
 private:

@@ -4,6 +4,8 @@
 #include <mutex>
 #include <queue>
 #include <atomic>
+#include <iostream>
+
 
 namespace ara
 {
@@ -32,6 +34,7 @@ namespace ara
                 /// @returns True if the queue is empty, otherwise false
                 bool Empty() const noexcept
                 {
+                    //std::cout << "is queue empty\n";
                     return mSize == 0;
                 }
 
@@ -64,6 +67,7 @@ namespace ara
                     std::unique_lock<std::mutex> _lock(mMutex, std::defer_lock);
                     if (_lock.try_lock())
                     {
+                        std::cout << "hi hi hi\n";
                         mQueue.emplace(element);
                         ++mSize;
                         _lock.unlock();
@@ -71,6 +75,7 @@ namespace ara
                     }
                     else
                     {
+                        std::cout << "ti ti ti\n";
                         return false;
                     }
                 }

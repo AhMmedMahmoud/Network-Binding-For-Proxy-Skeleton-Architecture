@@ -1,6 +1,7 @@
-#include <algorithm>
-#include "./socket_rpc_client.h"
+
+#include "socket_rpc_client.h"
 #include <iostream>
+#include <algorithm>
 
 namespace ara
 {
@@ -58,17 +59,28 @@ namespace ara
                 {
                     while (!mSendingQueue.Empty())
                     {
-                        std::vector<uint8_t> _payload;
-                        bool _dequeued{mSendingQueue.TryDequeue(_payload)};
-                        if (_dequeued)
-                        {
-                            std::array<uint8_t, cBufferSize> _buffer;
-                            std::copy_n(
-                                std::make_move_iterator(_payload.begin()),
-                                _payload.size(),
-                                _buffer.begin());
+                        try
+                        {  
+                            std::vector<uint8_t> _payload;
+                            bool _dequeued{mSendingQueue.TryDequeue(_payload)};
+                            if (_dequeued)
+                            {
+                                std::array<uint8_t, cBufferSize> _buffer;
+                                std::copy_n(
+                                    std::make_move_iterator(_payload.begin()),
+                                    _payload.size(),
+                                    _buffer.begin());
 
-                            mClient.Send(_buffer);
+                                mClient.Send(_buffer);
+                            }
+                            else
+                            {
+                                std::cout << "cannot dequeue the message\n";
+                            }
+                        }
+                        catch(const std::exception& e)
+                        {
+                            std::cerr << "ahmed ahmed ahmed\n" << '\n';
                         }
                     }
                 }
@@ -98,7 +110,21 @@ namespace ara
 
                 void SocketRpcClient::Send(const std::vector<uint8_t> &payload)
                 {
-                    mSendingQueue.TryEnqueue(payload);
+                    //mSendingQueue.TryEnqueue(payload);
+
+                    try
+                    {
+                        std::cout << "before putting data in mSendingQueue\n";
+                        bool result = mSendingQueue.TryEnqueue(payload);
+                        if(!result)
+                        {
+                            std::cout << "failed to enqueue\n";
+                        }
+                        std::cout << "after putting data in mSendingQueue\n";
+                    }
+                    catch (const std::exception& e) {
+                        std::cout << "333333333333333\n";
+                    }
                 }
 
 

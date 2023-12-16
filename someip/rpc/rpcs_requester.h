@@ -17,12 +17,13 @@ namespace ara
         {
             namespace rpc
             {
+                /// @brief SOME/IP RPC response handler type
+                using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
+
                 /// @brief SOME/IP RPC abstract client
                 class RpcsRequester
                 {
-                public:
-                    /// @brief SOME/IP RPC response handler type
-                    using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
+                //public:
 
                 private:
                     /**************************  attributes ******************************/

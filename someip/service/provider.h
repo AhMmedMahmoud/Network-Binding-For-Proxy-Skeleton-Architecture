@@ -19,6 +19,11 @@
 #include <algorithm>
 #include <iostream>
 
+#define RPCS      0
+#define PUBSUB    1
+
+#define EXAMPLE RPCS
+
 namespace ara
 {
     namespace com
@@ -29,17 +34,27 @@ namespace ara
             /// @note The namespace is not part of the ARA standard.
             namespace sd
             {
-                using HandlerTypeFunc = std::function<bool(const std::vector<uint8_t> &, std::vector<uint8_t> &)>;
 
+#if(EXAMPLE == RPCS)
+                using HandlerTypeFunc = std::function<bool(const std::vector<uint8_t> &, std::vector<uint8_t> &)>;
+                const uint16_t cSumationOverVectorMethodId = 1000;
+                const uint16_t cMultiplicationOverVectorMethodID = 2000;
+                const uint16_t cGetSumMethodID = 3000;
+
+#endif
                 class Provider
                 {
-                private:
-                    /************************** rpcs and events ********************/
-                   
-                    rpc::SocketRpcServer *rpcServer;
-                    SockeKEventServer *eventServer;
-                    
 
+                public:
+#if(EXAMPLE == RPCS)
+                    /******************************* rpcs **************************/
+                    rpc::SocketRpcServer *rpcServer;
+#elif(EXAMPLE == PUBSUB)
+                    /**************************  events *****************************/
+                    SockeKEventServer *eventServer;
+#endif                    
+                
+                private:
                     /******************* attributes ********************************/
 
                     uint16_t mServiceId;
@@ -54,11 +69,6 @@ namespace ara
                     const uint8_t mProtocolVersion;
                     const uint8_t mInterfaceVersion;
 
-                    const uint16_t cSumationOverVectorMethodId = 1000;
-                    const uint16_t cMultiplicationOverVectorMethodID = 2000;
-
-
-
                     /*********************** poller attributes  ********************/
 
                     static const size_t cBufferSize{256};
@@ -70,17 +80,13 @@ namespace ara
                     const std::string cNicIpAddress;
                     const std::string cMulticastGroup;
                     const uint16_t cPort;
-                    
-
-                    
+                                 
                     /********************** poller functions  *********************/
 
                     void onReceive();
                     void onSend();
                     void Send(const SomeIpSdMessage &message);   
 
-                    
-        
                 public:
                     /******************* constructor  *******************************/
 
@@ -106,13 +112,11 @@ namespace ara
                         uint8_t interfaceVersion = 1);
 
 
-
                     /************************ fundemental functions *********************/
 
                     void offerService(helper::Ipv4Address ipAddress);
 
                     void init();
-
 
 
                     /******************************  deconstructor  *********************/

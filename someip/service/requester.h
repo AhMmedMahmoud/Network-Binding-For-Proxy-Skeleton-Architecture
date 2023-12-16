@@ -18,8 +18,14 @@
 #include "../someipRpcMsg/someip_rpc_message.h"
 #include "methods.h"
 
-
 #include "../rpc/socket_rpc_client.h"
+
+#include "../events/socket_event_client.h"
+
+#define RPCS      0
+#define PUBSUB    1
+
+#define EXAMPLE RPCS
 
 namespace ara
 {
@@ -34,12 +40,27 @@ namespace ara
                 using HandlerType = std::function<void(sd::SomeIpSdMessage)>;
                 using HandlerTypeFunc = std::function<void(const rpc::SomeIpRpcMessage &)>;
 
+#if(EXAMPLE == RPCS)
+                    const uint16_t cSumationOverVectorMethodId = 1000;
+                    const uint16_t cMultiplicationOverVectorMethodID = 2000;
+                    const uint16_t cGetSumMethodID = 3000;
+
+#elif(EXAMPLE == PUBSUB)
+
+#endif
                 class Requester
                 {
-                private: 
-                    rpc::SocketRpcClient *rpcClient;
 
-                   /******************************* attributes ******************************/
+                public: 
+#if(EXAMPLE == RPCS)
+                    rpc::SocketRpcClient *rpcClient;
+#elif(EXAMPLE == PUBSUB)
+                    /**************************  events *****************************/
+                    SockeKEventClient *eventClient;
+#endif
+                
+                private: 
+                    /******************************* attributes ******************************/
                     uint16_t mServiceId;
                     uint16_t mInstanceId;
                     uint8_t mMajorVersion;
@@ -49,9 +70,6 @@ namespace ara
                     const uint8_t mProtocolVersion;
                     const uint8_t mInterfaceVersion;
                     const uint8_t mCounter;
-
-                    const uint16_t cSumationOverVectorMethodId = 1000;
-                    const uint16_t cMultiplicationOverVectorMethodID = 2000;
 
                     /******************************* useful variables ************************/
 
@@ -103,8 +121,8 @@ namespace ara
 
                     /******************************* internal functions *********************/
 
-                    // function take any someip/sd message
-                    void InvokeEventHandler(SomeIpSdMessage &&message);
+                    /** function take any someip/sd message **/
+                    //void InvokeEventHandler(SomeIpSdMessage &&message);
 
                     void InvokeOfferingHandler(SomeIpSdMessage &&message);
 
@@ -113,6 +131,7 @@ namespace ara
                         std::string &ipAddress,
                         uint16_t &port) const;
 
+                    bool init();
 
 
                 public:
@@ -145,6 +164,7 @@ namespace ara
 
                     /******************************* fundemental functions *********************/
 
+                    /*
                     /// @brief Subscribe to an event-group
                     /// @param serviceId Service in interest ID
                     /// @param instanceId Service in interest instance ID
@@ -159,7 +179,11 @@ namespace ara
                     /// @param duration Waiting timeout in milliseconds
                     /// @param message The first processed subscription message in the buffer
                     /// @returns True, if the service offering is stopped before the timeout; otherwise false
+                    
                     bool TryGetProcessedSubscription(int duration, sd::SomeIpSdMessage &message);
+                    */
+
+
 
                     bool TryGetTransportInfo(int duration, std::string &ipAddress,uint16_t &port);
 
@@ -167,15 +191,20 @@ namespace ara
 
                     void findService();
 
-                    bool init();
+
+                    /********************** rpc methods  ***************************/
 
                     void myHandle(const rpc::SomeIpRpcMessage &message);
 
+                    
                     void sum(const std::vector<uint8_t> &payload);
 
                     void multiply(const std::vector<uint8_t> &payload);
+                    
+                    std::future<bool> calculateSum(const std::vector<uint8_t> &payload,
+                                   std::vector<uint8_t> &data);
 
-                    /****************  deconstructor  *********************/
+                    /*************************  deconstructor  *********************/
 
                     ~Requester();
                 };

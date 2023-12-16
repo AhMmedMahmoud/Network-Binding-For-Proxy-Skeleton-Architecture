@@ -1,6 +1,7 @@
 #include "requester.h"
 #include "../someipSdMsg/option/ipv4_endpoint_option.h"
 
+#define debuging 0
 
 namespace ara
 {
@@ -12,17 +13,20 @@ namespace ara
             {
                 const std::string Requester::cAnyIpAddress("0.0.0.0");
 
+#if(EXAMPLE == RPCS)
                 /// @brief Invoke when server sent message
                 /// @param message response message
                 void Requester::myHandle(const rpc::SomeIpRpcMessage &message) 
                 {
+                    
+#if(debuging == 1)
                     // for printing
                     std::cout << "\n------------------------------------------------\n";
                     std::cout << "....myHandle is executed...\n";
                     std::cout << ".....received message..... \n";
                     message.print();
                     std::cout << "--------------------------------------------------\n";
-
+#endif
                     if(  message.MessageId() == ((((uint32_t)mServiceId) <<16) | ((uint32_t)cSumationOverVectorMethodId))  )   
                     {
                         std::vector<uint8_t> payload = message.RpcPayload();
@@ -44,7 +48,27 @@ namespace ara
                         std::cout << std::endl;
                     }
                 }
+                
+                void Requester::sum(const std::vector<uint8_t> &payload)
+                {
+                    sumOverVector sumOverVector(rpcClient,mServiceId,1,cSumationOverVectorMethodId);
+                    sumOverVector(payload);
+                }
+                
+                void Requester::multiply(const std::vector<uint8_t> &payload)
+                {
+                    multiplicationOverVector multiplicationOverVector(rpcClient,mServiceId,1,cMultiplicationOverVectorMethodID);
+                    multiplicationOverVector(payload);
+                }
 
+                std::future<bool> Requester::calculateSum(const std::vector<uint8_t> &payload,
+                                   std::vector<uint8_t> &data)
+                {
+                    getSum getSum(rpcClient,mServiceId,1,cGetSumMethodID);
+                    return getSum(payload, data);
+                }                
+                
+#endif
                 
                 bool Requester::init()
                 {
@@ -56,6 +80,7 @@ namespace ara
                     std::cout << "service discovery sends ip address and port nuumber\n";
                     if(_result)
                     {
+#if(EXAMPLE == RPCS)
                         rpcClient = new rpc::SocketRpcClient(mPoller,
                                                       ip,
                                                       port,
@@ -64,39 +89,55 @@ namespace ara
                         
               
                         // regist handler for result of a method that calculates sum of all elements in vector
+                        
                         rpcClient->SetHandler( mServiceId,
                                                cSumationOverVectorMethodId,
                                                 [this](const rpc::SomeIpRpcMessage &message) 
                                                 {
-                                                    myHandle(message);
+                                                    /* original */
+                                                    //myHandle(message);
+
+                                                    try {
+                                                        myHandle(message);
+                                                    } catch (const std::exception &e) {
+                                                        std::cerr << "14244 Exception caught in lambda: " << e.what() << std::endl;
+                                                    }
+
                                                 }
                                             );
-
                         
                         // regist handler for result of a method that calculates sum of all elements in vector
                         rpcClient->SetHandler( mServiceId,
                                                cMultiplicationOverVectorMethodID,
                                                [this](const rpc::SomeIpRpcMessage &message) 
                                                {
-                                                  myHandle(message);
+                                                  //myHandle(message);
+                                                  
+                                                  try {
+                                                        myHandle(message);
+                                                    } catch (const std::exception &e) {
+                                                        std::cerr << "14244 Exception caught in lambda: " << e.what() << std::endl;
+                                                    }
                                                }
                                             );
+#elif(EXAMPLE == PUBSUB)
+                    eventClient = new SockeKEventClient( mServiceId,
+                                                         mInstanceId,
+                                                         mMajorVersion,
+                                                         mMinorVersion,
+                                                         mEventgroupId,
+                                                         mCounter,
+                                                         mPoller,
+                                                         cNicIpAddress,
+                                                         cMulticastGroup,
+                                                         cPort,
+                                                         mProtocolVersion);
+#endif
                     }
                     return _result;
                 }
                 
-
-                void Requester::sum(const std::vector<uint8_t> &payload)
-                {
-                    sumOverVector sumOverVector(rpcClient,mServiceId,1,cSumationOverVectorMethodId);
-                    sumOverVector(payload);
-                }
-
-                void Requester::multiply(const std::vector<uint8_t> &payload)
-                {
-                    multiplicationOverVector multiplicationOverVector(rpcClient,mServiceId,1,cMultiplicationOverVectorMethodID);
-                    multiplicationOverVector(payload);
-                }
+                
 
                 /******************************* constructors  ******************************/
 
@@ -156,7 +197,7 @@ namespace ara
 
 
                 /******************************* fundemental functions *********************/
-
+                /*
                 void Requester::RequestSubscribe(
                     uint16_t serviceId,
                     uint16_t instanceId,
@@ -229,9 +270,10 @@ namespace ara
 
                     return _result;
                 }
+                */
 
                 /******************** function take any someip/sd message *****************/
-                
+                /*
                 static bool gotAck = false;
                 void Requester::InvokeEventHandler(SomeIpSdMessage &&message)
                 {
@@ -262,19 +304,11 @@ namespace ara
                         }
                     }
                 }
+                */
 
+                
                 void Requester::InvokeOfferingHandler(sd::SomeIpSdMessage &&message)
                 {
-                    
-                    // for printing
-                    if(message.Entries().size() == 0)
-                    {
-                        std::cout << "\n------------------------------------------------\n";
-                        std::cout << ".t.t.t.t.received message.t.t.t.t. \n";
-                        message.print();
-                        std::cout << "-------------------------------------------------\n\n";
-                    }
-
                     for (auto &entry : message.Entries())
                     {
                         if (entry->Type() == entry::EntryType::Offering)
@@ -288,12 +322,11 @@ namespace ara
                             {
                                 mOfferingConditionVariable.notify_one();
                             }
-
                             break;
                         }
                     }
                 }
-
+                
 
                 void Requester::findService()
                 {
@@ -309,7 +342,15 @@ namespace ara
                     // send the message
                     Send(mFindServieMessage);
 
-                    init();
+                    bool _result = init();
+                    if(_result)
+                    {
+                        std::cout << "connecting to service instace is done\n";
+                    }
+                    else
+                    {
+                        std::cout << "connecting to service instace is fail\n";
+                    }
                 }
 
                 bool Requester::tryExtractOfferedEndpoint(

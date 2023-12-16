@@ -5,6 +5,8 @@
 #include "../../sockets/include/tcp_client.h"
 #include "../../helper/concurrent_queue.h"
 #include "rpcs_requester.h"
+#include <iostream>
+#include <algorithm>
 
 namespace ara
 {
