@@ -32,7 +32,7 @@ const uint16_t cClientId = 1;
 #define RPCS      0
 #define PUBSUB    1
 
-#define EXAMPLE RPCS
+#define EXAMPLE PUBSUB
 #define debuging 0
 
 int main()
@@ -146,7 +146,7 @@ int main()
     
 
 #elif(EXAMPLE == PUBSUB)    
-    requester->eventClient->Subscribe(1);
+    requester->eventClient->Subscribe();
 
     SomeIpRpcMessage message;
     if(requester->eventClient->isSubscribed(3000,message) == 1)
@@ -181,8 +181,8 @@ int main()
         // Introduce a delay of 7 seconds
         std::this_thread::sleep_for(std::chrono::seconds(4));
         std::vector<uint8_t> data3 = {99,102,88};
-        std::future<bool>futureObj3 = requester->eventClient->setter(data3);
         std::cout << "waiting for setting function\n";
+        std::future<bool>futureObj3 = requester->eventClient->setter(data3);
         if(futureObj3.get())
         {
         std::cout << "setter function is executed\n";

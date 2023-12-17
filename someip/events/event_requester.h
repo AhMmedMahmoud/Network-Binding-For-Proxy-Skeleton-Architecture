@@ -82,9 +82,7 @@ namespace ara
                 public:
                     /******************************* fundemental functions *********************/
 
-                    void Subscribe(uint16_t clientId);
-
-                    //void RequestUnsubscribe();
+                    void Subscribe();
                     
                     /// @brief Try to wait unitl the server processes a subscription request
                     /// @param duration Waiting timeout in milliseconds

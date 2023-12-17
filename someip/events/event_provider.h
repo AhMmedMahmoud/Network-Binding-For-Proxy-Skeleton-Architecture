@@ -34,10 +34,7 @@ namespace ara
                     uint8_t mMajorVersion;
                     uint16_t mEventgroupId;
                     const uint8_t mProtocolVersion;
-                    const uint8_t mInterfaceVersion;
-                    //helper::Ipv4Address mEndpointIp;
-                    //uint16_t mEndpointPort;
-                    
+                    const uint8_t mInterfaceVersion;                    
                     uint16_t cInitialSessionId{1};
 
                     std::mutex mCurrentValueMutex;

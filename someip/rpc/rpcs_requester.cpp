@@ -1,5 +1,8 @@
 #include "./rpcs_requester.h"
 #include <iostream>
+// for delay
+#include <thread>
+#include <chrono>
 
 #define debuging 0
 
@@ -47,6 +50,7 @@ namespace ara
                             bool _enqueued = mMessageBuffer.TryEnqueue(std::move(_message));
                             if (_enqueued)
                             {
+                               std::this_thread::sleep_for(std::chrono::milliseconds(100));
                                std::cout << "wake up thread that setting promise\n";
                                mConditionVariable.notify_one();
                             }
@@ -84,6 +88,10 @@ namespace ara
                     catch(const std::bad_function_call& ex)
                     {
                         std::cerr << "111111111111111" << ex.what() << std::endl;
+                    }
+                    catch(const std::exception& e)
+                    {
+                        std::cerr << "aaaaaaaaaaaa" << e.what() << std::endl;
                     }
 
 
@@ -187,7 +195,7 @@ namespace ara
 
 
 
- std::future<bool> RpcsRequester::RequestWithoutHandler(
+                std::future<bool> RpcsRequester::RequestWithoutHandler(
                     uint16_t serviceId,
                     uint16_t methodId,
                     uint16_t clientId,

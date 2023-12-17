@@ -69,7 +69,7 @@ int main()
                              cPort,
                              cProtocolVersion);
 
-  client.Subscribe(cClientId);
+  client.Subscribe();
 
   // Create thread using a lambda expression
   std::thread t1([poller]()

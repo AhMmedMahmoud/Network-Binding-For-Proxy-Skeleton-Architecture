@@ -22,7 +22,7 @@
 #define RPCS      0
 #define PUBSUB    1
 
-#define EXAMPLE RPCS
+#define EXAMPLE PUBSUB
 
 namespace ara
 {
@@ -49,6 +49,7 @@ namespace ara
 #if(EXAMPLE == RPCS)
                     /******************************* rpcs **************************/
                     rpc::SocketRpcServer *rpcServer;
+                    
 #elif(EXAMPLE == PUBSUB)
                     /**************************  events *****************************/
                     SockeKEventServer *eventServer;

@@ -81,6 +81,7 @@ namespace ara
                     if(_result)
                     {
 #if(EXAMPLE == RPCS)
+                        try {
                         rpcClient = new rpc::SocketRpcClient(mPoller,
                                                       ip,
                                                       port,
@@ -120,6 +121,11 @@ namespace ara
                                                     }
                                                }
                                             );
+                }
+                catch (const std::exception &e) {
+                    std::cerr << "hhhhhhh Exception caught in lambda: " << e.what() << std::endl;
+                }
+
 #elif(EXAMPLE == PUBSUB)
                     eventClient = new SockeKEventClient( mServiceId,
                                                          mInstanceId,
@@ -130,7 +136,7 @@ namespace ara
                                                          mPoller,
                                                          cNicIpAddress,
                                                          cMulticastGroup,
-                                                         cPort,
+                                                         port+1000,
                                                          mProtocolVersion);
 #endif
                     }

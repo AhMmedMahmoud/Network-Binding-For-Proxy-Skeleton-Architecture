@@ -148,7 +148,7 @@ namespace ara
 
 #elif(EXAMPLE == PUBSUB)
                     /************** initialization for events ***************/            
-                    /*
+                    
                     eventServer = new SockeKEventServer(mServiceId,
                                             mInstanceId,
                                             mMajorVersion,
@@ -158,8 +158,17 @@ namespace ara
                                             cMulticastGroup,
                                             mEndpointEventPort,
                                             mProtocolVersion);
-                    */
-                    //eventServer->Start();
+                    
+                    std::vector<uint8_t> currentValue = {47,48,49};
+                    bool _result = eventServer->putCurrentValue(currentValue);
+                    if(_result)
+                    {
+                        eventServer->Start();
+                    }
+                    else
+                    {
+                        std::cout << "fail ti put current value\n";
+                    }
 #endif
                 }
 
@@ -179,7 +188,7 @@ namespace ara
                                                                     )
                     };
 
-#if(EXAMPLE == RPCS)
+
                     // prepare endpoint option
                     auto _offerEndpointOption
                     {
@@ -189,7 +198,8 @@ namespace ara
                                                                             mEndpointRpcsPort
                                                                           )
                     };
-#elif(EXAMPLE == PUBSUB)
+
+/*
                     // prepare endpoint option
                     auto _offerEndpointOption
                     {
@@ -199,7 +209,7 @@ namespace ara
                                                                             mEndpointEventPort
                                                                           )
                     };
-#endif
+*/
 
                     // add created option to created entry 
                     _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));

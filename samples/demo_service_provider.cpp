@@ -25,12 +25,6 @@ const uint16_t cInterfaceVersion = 2;
 const uint16_t cClientId = 1;
 
 
-#define RPCS      0
-#define PUBSUB    1
-
-#define EXAMPLE RPCS
-
-
 int main()
 {
     Poller* poller;
@@ -62,8 +56,8 @@ int main()
                              cNicIpAddress,
                              cMulticastGroup,
                              cServiceDiscoveryOfferingPort,
-                             8888,
-                             4444,
+                             7000,
+                             8000,
                              cProtocolVersion);
 
 
@@ -78,44 +72,41 @@ int main()
    });
 
    provider->init();
+
+   std::cout << "before offering the service\n";
+
    provider->offerService(endpointIp);
    
-   /*
-   std::vector<uint8_t> currentValue = {47,48,49};
-   bool _result = provider->eventServer->putCurrentValue(currentValue);
-   if(_result)
-   {
-      provider->eventServer->Start();
-      
-      int counter = false;
-      std::vector<uint8_t> data;
-      while(1)
-      {    
-         if(provider->eventServer->GetState() == PubSubState::Subscribed && counter == false)
-         {
-            // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(7));
-            std::cout << "---preparing sample1 to send---\n";
-            data= {1,2,3,4};
-            provider->eventServer->update(data);
+   std::cout << "after offering the service\n";
 
-            // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(7));
-            std::cout << "\n---preparing sample2 to send---\n";
-            data= {4,5,6,7};
-            provider->eventServer->update(data);
+   int counter = false;
+   std::vector<uint8_t> data;
+   while(1)
+   {    
+      if(provider->eventServer->GetState() == PubSubState::Subscribed && counter == false)
+      {
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "---preparing sample1 to send---\n";
+         data= {1,2,3,4};
+         provider->eventServer->update(data);
 
-            // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(7));
-            std::cout << "\n---preparing sample2 to send---\n";
-            data= {8,9,10,11};
-            provider->eventServer->update(data);
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "\n---preparing sample2 to send---\n";
+         data= {4,5,6,7};
+         provider->eventServer->update(data);
 
-            counter = true;
-         } 
-      }
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "\n---preparing sample2 to send---\n";
+         data= {8,9,10,11};
+         provider->eventServer->update(data);
+
+         counter = true;
+      } 
    }
-   */
+   
 
 
 
@@ -123,8 +114,6 @@ int main()
 
    // Join the thread with the main thread
    t1.join();
-
-   
    delete poller;
    return 0;
 }

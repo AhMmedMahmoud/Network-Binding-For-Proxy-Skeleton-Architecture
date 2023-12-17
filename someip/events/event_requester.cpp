@@ -1,5 +1,7 @@
 #include "event_requester.h"
 
+#define debuging 1
+
 namespace ara
 {
     namespace com
@@ -88,11 +90,13 @@ namespace ara
                 {
                     if(isValidNotification(message))
                     {
+#if(debuging == 1)
                         std::cout << "it is notification\n";
                         std::cout << "------------------------------------------------\n";
                         std::cout << ".....received message..... \n";
                         message.print();
                         std::cout << "-------------------------------------------------\n\n";
+#endif
                         bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
                         if (_enqueued)
                         {
@@ -101,11 +105,13 @@ namespace ara
                     }
                     else if(isResponseToSettingValue(message))
                     {
+#if(debuging == 1)
                         std::cout << "it is ResponseToSettingValue\n";
                         std::cout << "------------------------------------------------\n";
                         std::cout << ".....received message..... \n";
                         message.print();
                         std::cout << "-------------------------------------------------\n\n";
+#endif
                     }
                     else
                     {
@@ -117,14 +123,14 @@ namespace ara
                 
                 /******************************* fundemental functions *********************/
 
-                void EventSubscripter::Subscribe(uint16_t clientId)
+                void EventSubscripter::Subscribe()
                 {
                     std::vector<uint8_t> data;
                     uint32_t _serviceId = mServiceId;
                     uint32_t _eventgroupId =  mEventgroupId;
                     rpc::SomeIpRpcMessage message(
                                                 ( (((uint32_t)_serviceId)<<16) | ((uint32_t)_eventgroupId)),
-                                                   clientId,
+                                                   mCounter,
                                                    cInitialSessionId++,
                                                    mProtocolVersion,
                                                    mInterfaceVersion,
@@ -133,23 +139,6 @@ namespace ara
                     Send(message);
                 }
 
-                /*
-                void EventRequester::RequestUnsubscribe()
-                {
-                    // create someip/sd message with no entries and options
-                    sd::SomeIpSdMessage _message;
-
-                    // make entry to request subsription
-                    auto _entry{
-                        entry::EventgroupEntry::CreateUnsubscribeEventEntry(
-                            mServiceId, mInstanceId, mMajorVersion, mCounter, mEventgroupId)};
-
-                    // add this entry to someip/sd message
-                    _message.AddEntry(std::move(_entry));
-
-                    Send(_message);
-                }
-                */
 
                 bool EventSubscripter::isSubscribed(
                     int duration,
@@ -227,17 +216,7 @@ namespace ara
 
                     return future;
                 }
-
-                /*
-                std::future<bool> EventSubscripter::setter(const std::vector<uint8_t> &data)
-                {
-                    requestSetting(data);
-
-                    std::vector<uint8_t> received;
-                    return (getter(received));
-                } 
-                */
-                
+             
                 std::future<bool> EventSubscripter::setter(const std::vector<uint8_t> &data)
                 {
                     auto promise_ = std::make_shared<std::promise<bool>>(); // Create a local shared_ptr

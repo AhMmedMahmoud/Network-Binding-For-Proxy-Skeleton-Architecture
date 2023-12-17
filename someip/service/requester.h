@@ -25,7 +25,7 @@
 #define RPCS      0
 #define PUBSUB    1
 
-#define EXAMPLE RPCS
+#define EXAMPLE PUBSUB
 
 namespace ara
 {
@@ -195,8 +195,7 @@ namespace ara
                     /********************** rpc methods  ***************************/
 
                     void myHandle(const rpc::SomeIpRpcMessage &message);
-
-                    
+            
                     void sum(const std::vector<uint8_t> &payload);
 
                     void multiply(const std::vector<uint8_t> &payload);
