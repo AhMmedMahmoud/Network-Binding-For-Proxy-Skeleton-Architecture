@@ -34,12 +34,12 @@ namespace ara
                    udp
                 };
                 
-                struct myKey
+                struct registryKey
                 {
                     uint16_t serviceId;
                     uint16_t instanceId;
 
-                    bool operator<(const myKey& other) const {
+                    bool operator<(const registryKey& other) const {
                         if (serviceId != other.serviceId) {
                             return serviceId < other.serviceId;
                         } else {
@@ -52,19 +52,19 @@ namespace ara
                 {
                     uint16_t serviceId;
                     uint16_t instanceId;
-                    uint8_t majorVersion;
-                    uint32_t minorVersion;
+                    //uint8_t majorVersion;
+                    //uint32_t minorVersion;
 
                     bool operator<(const requestData& other) const {
                         if (serviceId != other.serviceId) {
                             return serviceId < other.serviceId;
                         } else if (instanceId != other.instanceId) {
                             return instanceId < other.instanceId;
-                        } else if (majorVersion != other.majorVersion) {
+                        } /* else if (majorVersion != other.majorVersion) {
                             return majorVersion < other.majorVersion;
                         } else {
                             return minorVersion < other.minorVersion;
-                        }
+                        }*/
                     }
                 };
 
@@ -78,11 +78,11 @@ namespace ara
                 class ServiceDiscoveryProcess
                 {
                 private:
-                    std::map<myKey, transportInfo> serviceRegistry;
+                    std::map<registryKey, transportInfo> serviceRegistry;
 
-                    std::vector<requestData> mFindingRequestsToNotOfferedServices;
+                    //std::vector<requestData> mFindingRequestsToNotOfferedServices;
 
-                    void storeInfoOfServiceInstance(myKey k, transportInfo info)
+                    void storeInfoOfServiceInstance(registryKey k, transportInfo info)
                     {
                         serviceRegistry[k] = info;
                     }
@@ -155,7 +155,7 @@ namespace ara
 
                     void handleFinding(sd::SomeIpSdMessage &&message);
 
-                    bool isRegisted(const myKey& k, transportInfo &info) const;
+                    bool isRegisted(const registryKey& k, transportInfo &info) const;
 
                 public:
                     void printRegistry();

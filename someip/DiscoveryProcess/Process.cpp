@@ -286,7 +286,7 @@ namespace ara
                         {
                             if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
                             {
-                                myKey k{_serviceEnty->ServiceId(),_serviceEnty->InstanceId()};
+                                registryKey k{_serviceEnty->ServiceId(),_serviceEnty->InstanceId()};
                                 serviceId = _serviceEnty->ServiceId() ;
                                 instanceId = _serviceEnty->InstanceId();
                                 majorVersion = _serviceEnty->MajorVersion();
@@ -456,7 +456,7 @@ namespace ara
                 */
 
 
-                bool ServiceDiscoveryProcess::isRegisted(const myKey& k, transportInfo &info) const
+                bool ServiceDiscoveryProcess::isRegisted(const registryKey& k, transportInfo &info) const
                 {
                     auto it = serviceRegistry.find(k);
                     if (it != serviceRegistry.end()) {
@@ -477,12 +477,7 @@ namespace ara
 
                 void ServiceDiscoveryProcess::printRegistry()
                 {
-                    // myKey key1 = {123, 456};
-                    // transportInfo value1 = {"192.168.1.1", 8080, protocol::tcp};
-
-                    // // Insert the key-value pair into the map
-                    // table[key1] = value1;
-
+                    std::cout << "\n--------------- Service Registry -----------\n";
                     // Print the data in the map
                     for (const auto& entry : serviceRegistry) 
                     {
@@ -490,6 +485,7 @@ namespace ara
                         std::cout << "     " << entry.second.ipAddress << "  " 
                         << entry.second.port << "   " << static_cast<int>(entry.second.proto) << std::endl;
                     }
+                   std::cout << "------------------------------------------------\n";
                 }
 
 

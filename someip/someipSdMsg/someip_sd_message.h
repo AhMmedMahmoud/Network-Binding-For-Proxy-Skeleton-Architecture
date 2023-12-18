@@ -26,12 +26,11 @@ namespace ara
                     static const SomeIpMessageType cMessageType = SomeIpMessageType::Notification;
                     static const uint32_t cRebootedFlag = 0xc0000000;
                     static const uint32_t cNotRebootedFlag = 0x40000000;
-
+                    bool mRebooted;
 
 
                     /****************************** extra attributes ***************************/
 
-                    bool mRebooted;
                     std::vector<std::unique_ptr<entry::Entry>> mEntries;
 
 
