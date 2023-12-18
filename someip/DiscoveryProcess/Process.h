@@ -75,16 +75,16 @@ namespace ara
                     protocol proto;
                 };
 
-                class ServiceRegistryProcess
+                class ServiceDiscoveryProcess
                 {
                 private:
-                    std::map<myKey, transportInfo> table;
+                    std::map<myKey, transportInfo> serviceRegistry;
 
                     std::vector<requestData> mFindingRequestsToNotOfferedServices;
 
                     void storeInfoOfServiceInstance(myKey k, transportInfo info)
                     {
-                        table[k] = info;
+                        serviceRegistry[k] = info;
                     }
 
 
@@ -116,13 +116,14 @@ namespace ara
                     /**************************** poller functions  ***************************/
 
                     void onReceiveOffering();
+
                     void onReceiveFinding();
+
                     void onSendOfferingOrAck();
-                    
-                    // void onSendSubscribing();
                     
                     void SendOfferingOrAck(const SomeIpSdMessage &message); 
                    
+                    // void onSendSubscribing();
                     // void SendSubscring(const SomeIpSdMessage &message); 
 
 
@@ -130,6 +131,8 @@ namespace ara
                     /***************************** main functions ****************************/
 
                     void handleSubscribing(sd::SomeIpSdMessage &&message);
+
+                    bool hasSubscribingEntry(const SomeIpSdMessage &message);
 
                     void handleOffering(sd::SomeIpSdMessage &&message);
                     
@@ -152,8 +155,6 @@ namespace ara
 
                     void handleFinding(sd::SomeIpSdMessage &&message);
 
-                    bool hasSubscribingEntry(const SomeIpSdMessage &message);
-
                     bool isRegisted(const myKey& k, transportInfo &info) const;
 
                 public:
@@ -167,7 +168,7 @@ namespace ara
                     /// @param multicastGroup Multicast group IPv4 address
                     /// @param port Multicast UDP port number
                     /// @throws std::runtime_error Throws when the UDP socket configuration failed
-                    ServiceRegistryProcess(
+                    ServiceDiscoveryProcess(
                         AsyncBsdSocketLib::Poller *poller,
                         std::string nicIpAddress,
                         std::string multicastGroup,
@@ -179,7 +180,7 @@ namespace ara
 
                     /**************************** deconstructor  ************************/
 
-                    ~ServiceRegistryProcess();
+                    ~ServiceDiscoveryProcess();
                 };
             }
         }

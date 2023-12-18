@@ -8,13 +8,13 @@ namespace ara
         {
             namespace sd
             {
-                const size_t ServiceRegistryProcess::cBufferSize{256};
-                const std::string ServiceRegistryProcess::cAnyIpAddress("0.0.0.0");
+                const size_t ServiceDiscoveryProcess::cBufferSize{256};
+                const std::string ServiceDiscoveryProcess::cAnyIpAddress("0.0.0.0");
 
 
                 /******************************* constructors  ******************************/
 
-                ServiceRegistryProcess::ServiceRegistryProcess(
+                ServiceDiscoveryProcess::ServiceDiscoveryProcess(
                     AsyncBsdSocketLib::Poller *poller,
                     std::string nicIpAddress,
                     std::string multicastGroup,
@@ -34,14 +34,14 @@ namespace ara
                         throw std::runtime_error("UDP socket setup failed.");
                     }
 
-                    auto _receiver{std::bind(&ServiceRegistryProcess::onReceiveFinding, this)};
+                    auto _receiver{std::bind(&ServiceDiscoveryProcess::onReceiveFinding, this)};
                     _successful = mPoller->TryAddReceiver(&mFindingUdpSocket, _receiver);
                     if (!_successful)
                     {
                         throw std::runtime_error("Adding UDP socket receiver failed.");
                     }
 
-                    auto _sender{std::bind(&ServiceRegistryProcess::onSendOfferingOrAck, this)};
+                    auto _sender{std::bind(&ServiceDiscoveryProcess::onSendOfferingOrAck, this)};
                     _successful = mPoller->TryAddSender(&mFindingUdpSocket, _sender);
                     if (!_successful)
                     {
@@ -55,7 +55,7 @@ namespace ara
                         throw std::runtime_error("UDP socket setup failed.");
                     }
 
-                    auto _receiver2{std::bind(&ServiceRegistryProcess::onReceiveOffering, this)};
+                    auto _receiver2{std::bind(&ServiceDiscoveryProcess::onReceiveOffering, this)};
                     _successful = mPoller->TryAddReceiver(&mOfferingUdpSocket, _receiver2);
                     if (!_successful)
                     {
@@ -76,7 +76,7 @@ namespace ara
 
                 /**************************** poller functions  **********************************/
 
-                void ServiceRegistryProcess::onReceiveOffering()
+                void ServiceDiscoveryProcess::onReceiveOffering()
                 {
                     std::cout << "------------ onReceiveOffering ------------------\n";
 
@@ -109,7 +109,7 @@ namespace ara
                     }
                 }
 
-                void ServiceRegistryProcess::onReceiveFinding()
+                void ServiceDiscoveryProcess::onReceiveFinding()
                 {
                     std::cout << "------------ onReceiveFinding ----------------\n";
 
@@ -142,7 +142,7 @@ namespace ara
                     }
                 }
 
-                void ServiceRegistryProcess::onSendOfferingOrAck()
+                void ServiceDiscoveryProcess::onSendOfferingOrAck()
                 {
                     while (!mSendingQueueForOffering.Empty())
                     {
@@ -191,7 +191,7 @@ namespace ara
                 /***************************** main functions ****************************/
 
                 // function take any someip/sd message 
-                void ServiceRegistryProcess::handleOffering(SomeIpSdMessage &&message)
+                void ServiceDiscoveryProcess::handleOffering(SomeIpSdMessage &&message)
                 {
                     uint32_t _ttl;
                     bool _successful = hasOfferingEntry(message, _ttl);
@@ -209,7 +209,7 @@ namespace ara
                     }
                 }
 
-                bool ServiceRegistryProcess::hasOfferingEntry(
+                bool ServiceDiscoveryProcess::hasOfferingEntry(
                     const SomeIpSdMessage &message, uint32_t &ttl) const
                 {
                     // Iterate over all the message entry to search for the first Service Offering entry
@@ -220,7 +220,7 @@ namespace ara
                             if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
                             {
                                 // Compare service 
-                                bool _result = table.find( {_serviceEnty->ServiceId(),_serviceEnty->InstanceId()} ) == table.end();
+                                bool _result = serviceRegistry.find( {_serviceEnty->ServiceId(),_serviceEnty->InstanceId()} ) == serviceRegistry.end();
                                 if(_result)
                                 {
                                     ttl = _serviceEnty->TTL();
@@ -233,7 +233,7 @@ namespace ara
                 }
 
 
-                bool ServiceRegistryProcess::ExtractInfoToStore(
+                bool ServiceDiscoveryProcess::ExtractInfoToStore(
                     const SomeIpSdMessage &message,
                     std::string &ipAddress,
                     uint16_t &port,
@@ -272,7 +272,7 @@ namespace ara
 
 
 
-                bool ServiceRegistryProcess::hasFindingEntry(const SomeIpSdMessage &message,
+                bool ServiceDiscoveryProcess::hasFindingEntry(const SomeIpSdMessage &message,
                  transportInfo &info,
                  uint16_t &serviceId,
                  uint16_t &instanceId,
@@ -384,7 +384,7 @@ namespace ara
                 }
                 */
 
-                void ServiceRegistryProcess::handleFinding(SomeIpSdMessage &&message)
+                void ServiceDiscoveryProcess::handleFinding(SomeIpSdMessage &&message)
                 {
                     std::cout << "-----handleFinding is called----\n";
                     transportInfo info;
@@ -428,7 +428,7 @@ namespace ara
                     }
                 }
 
-                bool ServiceRegistryProcess::hasSubscribingEntry(const SomeIpSdMessage &message)
+                bool ServiceDiscoveryProcess::hasSubscribingEntry(const SomeIpSdMessage &message)
                 {
                     // Iterate over all the message entry to search for the first Event-group Subscribing entry
                     for (auto &_entry : message.Entries())
@@ -456,10 +456,10 @@ namespace ara
                 */
 
 
-                bool ServiceRegistryProcess::isRegisted(const myKey& k, transportInfo &info) const
+                bool ServiceDiscoveryProcess::isRegisted(const myKey& k, transportInfo &info) const
                 {
-                    auto it = table.find(k);
-                    if (it != table.end()) {
+                    auto it = serviceRegistry.find(k);
+                    if (it != serviceRegistry.end()) {
                         std::cout << "Data found:" << std::endl;
                         std::cout << "Service ID: " << it->first.serviceId << std::endl;
                         std::cout << "Instance ID: " << it->first.instanceId << std::endl;
@@ -475,7 +475,7 @@ namespace ara
                     }
                 }
 
-                void ServiceRegistryProcess::printRegistry()
+                void ServiceDiscoveryProcess::printRegistry()
                 {
                     // myKey key1 = {123, 456};
                     // transportInfo value1 = {"192.168.1.1", 8080, protocol::tcp};
@@ -484,7 +484,7 @@ namespace ara
                     // table[key1] = value1;
 
                     // Print the data in the map
-                    for (const auto& entry : table) 
+                    for (const auto& entry : serviceRegistry) 
                     {
                         std::cout << entry.first.serviceId << ", " << entry.first.instanceId;
                         std::cout << "     " << entry.second.ipAddress << "  " 
@@ -494,7 +494,7 @@ namespace ara
 
 
 
-                void ServiceRegistryProcess::SendOfferingOrAck(const SomeIpSdMessage &message)
+                void ServiceDiscoveryProcess::SendOfferingOrAck(const SomeIpSdMessage &message)
                 {
                     std::vector<uint8_t> _payload{message.Payload()};
                     mSendingQueueForOffering.TryEnqueue(std::move(_payload));
@@ -512,7 +512,7 @@ namespace ara
 
                 /****************************  deconstructor  ************************/
 
-                ServiceRegistryProcess::~ServiceRegistryProcess()
+                ServiceDiscoveryProcess::~ServiceDiscoveryProcess()
                 {
                     mPoller->TryRemoveSender(&mFindingUdpSocket);
                     mPoller->TryRemoveReceiver(&mFindingUdpSocket);

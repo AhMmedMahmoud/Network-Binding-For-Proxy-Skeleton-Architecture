@@ -15,6 +15,7 @@ const std::string cNicIpAddress{"127.0.0.1"};
 const std::string cMulticastGroup{"239.0.0.1"};
 const uint16_t cOfferingPort{5555};
 const uint16_t cFindingPort{6666};
+const int cTimeoutMs = 100;
 
 
 int main()
@@ -23,30 +24,15 @@ int main()
     poller = new Poller();
     
 
-    ServiceRegistryProcess *registry;
-    registry = new ServiceRegistryProcess(poller,cNicIpAddress,cMulticastGroup,cOfferingPort,cFindingPort);
+    ServiceDiscoveryProcess *process;
+    process = new ServiceDiscoveryProcess(poller,cNicIpAddress,cMulticastGroup,cOfferingPort,cFindingPort);
 
 
-    registry->printRegistry();
+    process->printRegistry();
 
-
-
-
-    const int cTimeoutMs = 100;
-
-   /*
-   std::thread t2([registry,cTimeoutMs](){
-       while(1)
-       {
-         registry->run();
-         // Introduce a delay of 7 seconds
-         std::this_thread::sleep_for(std::chrono::seconds(1));
-       }
-    });
-   */
 
     // Create thread using a lambda expression
-    std::thread t1([poller,cTimeoutMs](){
+    std::thread t1([poller](){
        while(1)
        {
          poller->TryPoll(cTimeoutMs);
@@ -56,7 +42,6 @@ int main()
     
     // Join the thread with the main thread
     t1.join();
-    //t2.join();
 
    delete poller;
    return 0;
