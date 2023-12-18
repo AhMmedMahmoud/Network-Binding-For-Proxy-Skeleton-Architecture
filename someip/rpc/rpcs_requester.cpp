@@ -1,10 +1,11 @@
-#include "./rpcs_requester.h"
+#include "rpcs_requester.h"
 #include <iostream>
 // for delay
 #include <thread>
 #include <chrono>
 
-#define debuging 0
+// #define debuging 0
+#include "../../config.h" 
 
 namespace ara
 {
@@ -35,18 +36,35 @@ namespace ara
                 */
                 void RpcsRequester::InvokeHandler(const std::vector<uint8_t> &payload)
                 {
+                    std::cout << "InvokeHandler is called\n";
                     try
                     {
                         //const SomeIpRpcMessage _message{SomeIpRpcMessage::Deserialize(payload)};
                         SomeIpRpcMessage _message{SomeIpRpcMessage::Deserialize(payload)};
+                        
 
+                        bool _enqueued = mMessageBuffer.TryEnqueue(std::move(_message));
+                        if (_enqueued)
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                            std::cout << "wake up thread that setting promise\n";
+                            mConditionVariable.notify_one();
+                        }
+                        else
+                        {
+                            std::cout << "88888888888888888888888888888888\n";
+                        }  
+
+                        /*
                         auto _itr{mHandlers.find(_message.MessageId())};
                         if (_itr != mHandlers.end())
                         {
+                            std::cout << "handle is registed\n";
                             _itr->second(_message);
                         }
                         else
                         {
+                            std::cout << "handle isnot registed\n";
                             bool _enqueued = mMessageBuffer.TryEnqueue(std::move(_message));
                             if (_enqueued)
                             {
@@ -59,6 +77,7 @@ namespace ara
                                 std::cout << "88888888888888888888888888888888\n";
                             }   
                         }
+                        */
                     }
                     catch (const std::exception& e) {
                         std::cout << "error are invoKeHal\n";
@@ -66,7 +85,7 @@ namespace ara
                     /*
                     catch (std::out_of_range)
                     {
-                        std::cout << "error are invoKeHal"
+                        std::cout << "error are invoKeHal\n";
                         // Ignore the corrupted RPC server response
                     }
                     */
@@ -75,7 +94,7 @@ namespace ara
 
 
                 /**************************** fundemental functions *************************/
-
+                /*
                 void RpcsRequester::SetHandler(
                     uint16_t serviceId, uint16_t methodId, HandlerType handler)
                 {
@@ -83,7 +102,7 @@ namespace ara
                     {
                         auto _messageId{static_cast<uint32_t>(serviceId << 16)};
                         _messageId |= methodId;
-                        mHandlers[_messageId] = handler;
+                        //mHandlers[_messageId] = handler;
                     }
                     catch(const std::bad_function_call& ex)
                     {
@@ -96,13 +115,14 @@ namespace ara
 
 
                     // original
-                    /*
-                    auto _messageId{static_cast<uint32_t>(serviceId << 16)};
-                    _messageId |= methodId;
-                    mHandlers[_messageId] = handler;
-                    */
+                    
+                    //auto _messageId{static_cast<uint32_t>(serviceId << 16)};
+                    //_messageId |= methodId;
+                    //mHandlers[_messageId] = handler;
+                    
                 }
-
+                */
+                
                 void RpcsRequester::Request(
                     uint16_t serviceId,
                     uint16_t methodId,
@@ -122,22 +142,17 @@ namespace ara
                         // create message that represents a request
                         SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
 
+                        Send(_request.Payload());
+
                         // for printing
-    #if(debuging == 1)
                         std::cout << "\n------------------------------------------------\n";
                         std::cout << ".....sent message..... \n";
                         _request.print();
                         std::cout << "--------------------------------------------------\n";
-    #endif
-                        Send(_request.Payload());
-
-                        //std::cout << "tttttttttttttttttttttttttttttt\n";
 
                         // Increment the session ID for that specific message ID for the next send
                         _request.IncrementSessionId();
                         mSessionIds[_messageId] = _request.SessionId();
-
-                        std::cout << "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n";
                     }
                     catch (const std::bad_function_call& ex)
                     {
@@ -149,38 +164,6 @@ namespace ara
                     {
                         std::cerr << "2222222222222222222" << e.what() << std::endl;
                     }
-                    
-
-                    // original
-/*
-                    const uint16_t cInitialSessionId{1};
-
-                    auto _messageId{static_cast<uint32_t>(serviceId << 16)};
-                    _messageId |= methodId;
-
-                    auto _itr{mSessionIds.find(_messageId)};
-                    uint16_t _sessionId{(_itr != mSessionIds.end()) ? _itr->second : cInitialSessionId};
-
-                    // create message that represents a request
-                    SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
-
-                    // for printing
-#if(debuging == 1)
-                    std::cout << "\n------------------------------------------------\n";
-                    std::cout << ".....sent message..... \n";
-                    _request.print();
-                    std::cout << "--------------------------------------------------\n";
-#endif
-                    Send(_request.Payload());
-
-                    //std::cout << "tttttttttttttttttttttttttttttt\n";
-
-                    // Increment the session ID for that specific message ID for the next send
-                    _request.IncrementSessionId();
-                    mSessionIds[_messageId] = _request.SessionId();
-
-                    //std::cout << "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n";
-*/
                 }
 
                 
@@ -212,15 +195,14 @@ namespace ara
                     // create message that represents a request
                     SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
 
-#if(debuging == 1)
+                    std::vector<uint8_t> p = _request.Payload();
+                    Send(p);
+
                     // for printing
                     std::cout << "\n------------------------------------------------\n";
                     std::cout << ".....sent message..... \n";
                     _request.print();
                     std::cout << "--------------------------------------------------\n";
-#endif
-
-                    Send(_request.Payload());
 
                     // Increment the session ID for that specific message ID for the next send
                     _request.IncrementSessionId();
@@ -241,7 +223,6 @@ namespace ara
                             mConditionVariable.wait(mLock);
                             std::cout << "-- releasing lock the lock --\n";
                             mLock.unlock();
-                            std::cout << "-- if --\n";
                             
                             if (mValidNotify) 
                             {
@@ -271,96 +252,6 @@ namespace ara
 
                     return future;
                 }    
-
-
-
-
-
-
-
-
-
-
-                /*
-                std::future<bool> RpcsRequester::RequestWithoutHandler(
-                    uint16_t serviceId,
-                    uint16_t methodId,
-                    uint16_t clientId,
-                    const std::vector<uint8_t> &rpcPayload, std::vector<uint8_t> &data)
-                {
-                    const uint16_t cInitialSessionId{1};
-
-                    auto _messageId{static_cast<uint32_t>(serviceId << 16)};
-                    _messageId |= methodId;
-
-                    auto _itr{mSessionIds.find(_messageId)};
-                    uint16_t _sessionId{(_itr != mSessionIds.end()) ? _itr->second : cInitialSessionId};
-
-                    // create message that represents a request
-                    SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
-
-#if(debuging == 1)
-                    // for printing
-                    std::cout << "\n------------------------------------------------\n";
-                    std::cout << ".....sent message..... \n";
-                    _request.print();
-                    std::cout << "--------------------------------------------------\n";
-#endif
-
-                    Send(_request.Payload());
-
-                    // Increment the session ID for that specific message ID for the next send
-                    _request.IncrementSessionId();
-                    mSessionIds[_messageId] = _request.SessionId();
-
-
-
-                    std::shared_ptr<std::promise<bool>> promisePtr = std::make_shared<std::promise<bool>>();
-                    std::future<bool> future = promisePtr->get_future();
-
-                    // In your waiting function
-                    if (mMessageBuffer.Empty()) 
-                    {
-                        std::thread([&, promisePtr] 
-                        {
-                            //std::cout << "-- buffer of received messages is empty --\n";
-                            //std::cout << "-- acquire the lock --\n";
-                            mLock.lock();
-                            //std::cout << "----- waiting -----\n";
-                            mConditionVariable.wait(mLock);
-                            //std::cout << "-- releasing lock the lock --\n";
-                            mLock.unlock();
-                            //std::cout << "-- if --\n";
-                            
-                            if (mValidNotify) 
-                            {
-                                rpc::SomeIpRpcMessage message;
-                                bool _result = mMessageBuffer.TryDequeue(message);
-                                if (_result) 
-                                {
-                                    data = message.RpcPayload();
-                                    promisePtr->set_value(true);
-                                } else {
-                                    promisePtr->set_value(false);
-                                }
-                            } 
-                            else {  promisePtr->set_value(false);   }
-                        }).detach();
-                    } 
-                    else 
-                    {
-                        
-                        rpc::SomeIpRpcMessage message;
-                        bool _result = mMessageBuffer.TryDequeue(message);
-                        if (_result) {
-                            data = message.RpcPayload();
-                        }
-                        promisePtr->set_value(_result);
-                    }
-
-                    return future;
-                }    
-                */
             }
         }
     }

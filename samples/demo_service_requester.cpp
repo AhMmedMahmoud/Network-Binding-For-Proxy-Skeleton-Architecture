@@ -29,11 +29,7 @@ const uint8_t cProtocolVersion = 20;
 const uint16_t cInterfaceVersion = 2;
 const uint16_t cClientId = 1;
 
-#define RPCS      0
-#define PUBSUB    1
 
-#define EXAMPLE PUBSUB
-#define debuging 0
 
 int main()
 {
@@ -66,46 +62,15 @@ int main()
     std::cout << "--------- before finding ----------\n";
 
     requester->findService();
-
-    /*
-    std::string ipAddress;
-    uint16_t port;
-    if( requester->TryGetTransportInfo(4000,ipAddress,port) )
-    {
-        std::cout << "--- transport info is get ---\n";
-        std::cout << "ip address : " <<ipAddress << std::endl;
-        std::cout << "port address : " << port << std::endl;
-    }
-    else
-    {
-        std::cout << "not transport info is get\n";
-    }
-    */
-
-    //requester->RequestSubscribe(cServiceId,cInstanceId,cMajorVersion,mEventgroupId);
-    
-    /*
-    bool _result = requester->init();
-    if(_result)
-    {
-        std::vector<uint8_t> payload = {1, 2, 3, 4, 5};
-        requester->sum(payload);
-        requester->multiply(payload);
-    }
-    else{
-        std::cout << "failed in initializion \n";
-    }
-    */
-    
+  
     std::cout << "--------- after finding ----------\n";
+
 
 #if(EXAMPLE == RPCS)
 
-    //std::vector<uint8_t> data = {1,2,3,4};
-    //requester->rpcClient->SetHandler(data);
-
     std::vector<uint8_t> input = {1, 2, 3, 4, 5};
 
+/*
     requester->sum(input);
 
     std::this_thread::sleep_for(std::chrono::seconds(7));
@@ -121,23 +86,23 @@ int main()
 #if(debuging == 1)
     std::cout << "***** after 7 seconds ******\n";
 #endif
-    
+*/    
 
 #if(debuging == 1)
     std::cout << "before calling getSum\n";
 #endif
-    std::vector<uint8_t> output;
+    std::vector<uint8_t> output3;
 
-    std::future<bool> futureObj = requester->calculateSum(input,output);
+    std::future<bool> futureObj3 = requester->calculateSum(input,output3);
 
 #if(debuging == 1)
     std::cout << "after calling getSum\n";
 #endif
 
-    if(futureObj.get())
+    if(futureObj3.get())
     {
         std::cout << "result of calculateSum : ";
-        for (uint8_t val : output) {
+        for (uint8_t val : output3) {
           std::cout << static_cast<int>(val) ;
         }
         std::cout << "\n";
@@ -148,12 +113,9 @@ int main()
 #elif(EXAMPLE == PUBSUB)    
     requester->eventClient->Subscribe();
 
-    SomeIpRpcMessage message;
-    if(requester->eventClient->isSubscribed(3000,message) == 1)
+    if(requester->eventClient->isSubscribed(3000) == 1)
     {
         std::cout << "subscription is done\n";
-        //message.print();
-        // subscription is done
 
         std::vector<uint8_t> data;
         std::future<bool> futureObj = requester->eventClient->getter(data);

@@ -30,22 +30,6 @@ int main()
     Poller* poller;
     poller = new Poller();
     
-    /*
-    Provider(  uint16_t serviceId,
-               uint16_t instanceId,
-               uint8_t majorVersion,
-               uint8_t minorVersion,
-               uint16_t eventgroupId, 
-               AsyncBsdSocketLib::Poller *poller,
-               std::string nicIpAddress,
-               std::string multicastGroup,
-               uint16_t port,
-               uint16_t endpointPort,
-               uint8_t protocolVersion,
-               uint8_t interfaceVersion = 1);
-    */
-
-    Ipv4Address endpointIp("127.0.0.1");
     Provider *provider;
     provider = new Provider( cServiceId,
                              cInstanceId,
@@ -75,10 +59,12 @@ int main()
 
    std::cout << "before offering the service\n";
 
-   provider->offerService(endpointIp);
+   provider->offerService();
    
    std::cout << "after offering the service\n";
 
+
+#if(EXAMPLE == PUBSUB)
    int counter = false;
    std::vector<uint8_t> data;
    while(1)
@@ -106,10 +92,8 @@ int main()
          counter = true;
       } 
    }
+#endif
    
-
-
-
 
 
    // Join the thread with the main thread

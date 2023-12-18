@@ -11,7 +11,7 @@
 #include "../someipSdMsg/entry/service_entry.h"
 
 #include <condition_variable>
-#include <functional>
+//#include <functional>
 #include <iostream>
 #include <algorithm>
 
@@ -37,8 +37,11 @@ namespace ara
             /// @note The namespace is not part of the ARA standard.
             namespace sd
             {
-                using HandlerType = std::function<void(sd::SomeIpSdMessage)>;
-                using HandlerTypeFunc = std::function<void(const rpc::SomeIpRpcMessage &)>;
+                //using HandlerType = std::function<void(sd::SomeIpSdMessage)>;
+                
+                //using HandlerTypeFunc = std::function<void(const rpc::SomeIpRpcMessage &)>;
+                //using ttt = std::function<void(const rpc::SomeIpRpcMessage &)>;
+
 
 #if(EXAMPLE == RPCS)
                     const uint16_t cSumationOverVectorMethodId = 1000;
@@ -133,6 +136,7 @@ namespace ara
 
                     bool init();
 
+                    //void myHandle(const rpc::SomeIpRpcMessage &message);
 
                 public:
                     /******************* constructor  *******************************/
@@ -194,7 +198,6 @@ namespace ara
 
                     /********************** rpc methods  ***************************/
 
-                    void myHandle(const rpc::SomeIpRpcMessage &message);
             
                     void sum(const std::vector<uint8_t> &payload);
 

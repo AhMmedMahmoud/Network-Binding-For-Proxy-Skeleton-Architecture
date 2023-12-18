@@ -115,7 +115,7 @@ namespace ara
 
                     /************************ fundemental functions *********************/
 
-                    void offerService(helper::Ipv4Address ipAddress);
+                    void offerService();
 
                     void init();
 

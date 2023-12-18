@@ -1,7 +1,7 @@
 #ifndef RPC_CLIENT_H
 #define RPC_CLIENT_H
 
-#include <functional>
+//#include <functional>
 #include <map>
 #include <stdint.h>
 #include <vector>
@@ -18,12 +18,12 @@ namespace ara
             namespace rpc
             {
                 /// @brief SOME/IP RPC response handler type
-                using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
 
                 /// @brief SOME/IP RPC abstract client
                 class RpcsRequester
                 {
-                //public:
+                public:
+                    //using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
 
                 private:
                     /**************************  attributes ******************************/
@@ -37,7 +37,7 @@ namespace ara
 
 
                     /************ hash table to store handler for each message id*********/
-                    std::map<uint32_t, HandlerType> mHandlers;
+                    //std::map<uint32_t, HandlerType> mHandlers;
 
 
                     
@@ -86,7 +86,7 @@ namespace ara
                     /// @param serviceId Service ID that contains the requested method
                     /// @param methodId Requested method ID for invocation
                     /// @param handler Handler to be invoked at the response arrival
-                    void SetHandler(uint16_t serviceId, uint16_t methodId, HandlerType handler);
+                    //void SetHandler(uint16_t serviceId, uint16_t methodId, HandlerType handler);
 
                     /// @brief Send a request to the RPC server
                     /// @param serviceId Service ID that contains the requested method

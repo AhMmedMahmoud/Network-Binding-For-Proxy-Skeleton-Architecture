@@ -12,11 +12,14 @@ namespace ara
             namespace sd
             {
                 const std::string Requester::cAnyIpAddress("0.0.0.0");
+                //using HandlerTypeyyyyyy = std::function<void(const rpc::SomeIpRpcMessage &)>;
 
 #if(EXAMPLE == RPCS)
                 /// @brief Invoke when server sent message
                 /// @param message response message
-                void Requester::myHandle(const rpc::SomeIpRpcMessage &message) 
+                //void Requester::myHandle(const rpc::SomeIpRpcMessage &message) 
+                /*
+                void myHandle(const rpc::SomeIpRpcMessage &message) 
                 {
                     
 #if(debuging == 1)
@@ -48,7 +51,8 @@ namespace ara
                         std::cout << std::endl;
                     }
                 }
-                
+                */
+
                 void Requester::sum(const std::vector<uint8_t> &payload)
                 {
                     sumOverVector sumOverVector(rpcClient,mServiceId,1,cSumationOverVectorMethodId);
@@ -81,21 +85,18 @@ namespace ara
                     if(_result)
                     {
 #if(EXAMPLE == RPCS)
-                        try {
                         rpcClient = new rpc::SocketRpcClient(mPoller,
                                                       ip,
                                                       port,
                                                       mProtocolVersion,
                                                       mInterfaceVersion);
                         
-              
-                        // regist handler for result of a method that calculates sum of all elements in vector
-                        
+                        /*
                         rpcClient->SetHandler( mServiceId,
                                                cSumationOverVectorMethodId,
                                                 [this](const rpc::SomeIpRpcMessage &message) 
                                                 {
-                                                    /* original */
+                                                    // original //
                                                     //myHandle(message);
 
                                                     try {
@@ -121,10 +122,7 @@ namespace ara
                                                     }
                                                }
                                             );
-                }
-                catch (const std::exception &e) {
-                    std::cerr << "hhhhhhh Exception caught in lambda: " << e.what() << std::endl;
-                }
+                        */
 
 #elif(EXAMPLE == PUBSUB)
                     eventClient = new SockeKEventClient( mServiceId,

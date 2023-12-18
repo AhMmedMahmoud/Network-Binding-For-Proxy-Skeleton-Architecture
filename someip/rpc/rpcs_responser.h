@@ -6,6 +6,8 @@
 #include <set>
 #include <stdint.h>
 #include <vector>
+#include <utility>
+#include <iostream>
 #include "../someipRpcMsg/someip_rpc_message.h"
 
 namespace ara

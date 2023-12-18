@@ -90,6 +90,8 @@ namespace ara
                     /// @returns True, if the service offering is stopped before the timeout; otherwise false
                     bool isSubscribed(int duration, rpc::SomeIpRpcMessage &message);
 
+                    bool isSubscribed(int duration);
+
                     std::future<bool> getter(std::vector<uint8_t> &data); 
 
                     std::future<bool> setter(const std::vector<uint8_t> &data); 

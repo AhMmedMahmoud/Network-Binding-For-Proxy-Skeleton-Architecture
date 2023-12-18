@@ -1,7 +1,5 @@
 
 #include "socket_rpc_client.h"
-#include <iostream>
-#include <algorithm>
 
 namespace ara
 {
@@ -61,7 +59,7 @@ namespace ara
                     {
                         try
                         {  
-                            std::cout << "end end end\n";
+                            std::cout << "start --- onSend ---\n";
                             std::vector<uint8_t> _payload;
                             bool _dequeued{mSendingQueue.TryDequeue(_payload)};
                             if (_dequeued)
@@ -80,14 +78,14 @@ namespace ara
                             }
                         }catch (const std::bad_function_call& ex)
                         {
-                            std::cerr << "gggggggggggg" << ex.what() << std::endl;
+                            std::cout << "gggggggggggg" << ex.what() << std::endl;
                             // Handle the exception as needed
                         }
                         catch(const std::exception& e)
                         {
-                            std::cerr << "ahmed ahmed ahmed\n" << '\n';
+                            std::cout << "ahmed ahmed ahmed\n" << '\n';
                         }
-                        std::cout << "end end end\n";
+                        std::cout << "end --- onSend ---\n";
                     }
                 }
 
@@ -117,25 +115,8 @@ namespace ara
                 void SocketRpcClient::Send(const std::vector<uint8_t> &payload)
                 {
                     //mSendingQueue.TryEnqueue(payload);
-
-                    try
-                    {
-                        std::cout << "before putting data in mSendingQueue\n";
-                        bool result = mSendingQueue.TryEnqueue(payload);
-                        if(!result)
-                        {
-                            std::cout << "failed to enqueue\n";
-                        }
-                        std::cout << "after putting data in mSendingQueue\n";
-                    }
-                    catch (const std::bad_function_call& ex)
-                    {
-                        std::cerr << "ssssssssss" << ex.what() << std::endl;
-                        // Handle the exception as needed
-                    }
-                    catch (const std::exception& e) {
-                        std::cout << "333333333333333\n";
-                    }
+                    
+                    mSendingQueue.TryEnqueue(std::move(payload));
                 }
 
 

@@ -126,6 +126,9 @@ add_library(
    someip/service/requester.h
    someip/service/requester.cpp
    someip/service/methods.h
+
+   ###### config #######
+   config.h
 )
 
 

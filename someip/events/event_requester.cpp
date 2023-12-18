@@ -171,6 +171,30 @@ namespace ara
                     return _result;
                 }
 
+                bool EventSubscripter::isSubscribed(int duration)
+                {
+                    bool _result;
+                    if (mMessageBuffer.Empty())
+                    {
+                        std::cout << "-- buffer of received messages is empty --\n";
+                        mSubscriptionLock.lock();
+                        std::cv_status _status = mSubscriptionConditionVariable.wait_for(
+                                mSubscriptionLock, std::chrono::milliseconds(duration));
+                        mSubscriptionLock.unlock();
+                        _result = mValidNotify && (_status != std::cv_status::timeout);
+                    }
+                    else
+                    {
+                        std::cout << "-- buffer of receiver messages has messages --\n";
+                        // There are still processed subscription messages in the buffer, so no need to wait.
+                        _result = true;
+                    }
+
+                    return _result;
+                }
+
+                
+
                 std::future<bool> EventSubscripter::getter(std::vector<uint8_t> &data) 
                 {
                     std::shared_ptr<std::promise<bool>> promisePtr = std::make_shared<std::promise<bool>>();

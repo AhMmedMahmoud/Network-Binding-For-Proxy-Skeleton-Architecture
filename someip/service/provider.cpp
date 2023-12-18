@@ -173,7 +173,7 @@ namespace ara
                 }
 
 
-                void Provider::offerService(helper::Ipv4Address ipAddress)
+                void Provider::offerService()
                 {                    
                     // make SOMEIP/SD message
                     SomeIpSdMessage mOfferServiceMessage;
@@ -188,6 +188,7 @@ namespace ara
                                                                     )
                     };
 
+                    helper::Ipv4Address ipAddress("127.0.0.1");
 
                     // prepare endpoint option
                     auto _offerEndpointOption
