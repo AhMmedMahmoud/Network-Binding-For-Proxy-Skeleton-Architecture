@@ -3,26 +3,20 @@
 
 #include "../../sockets/include/poller.h"
 #include "../../sockets/include/udp_client.h"
-
 #include "../../helper/concurrent_queue.h"
 #include "../../helper/ipv4_address.h"
-
 #include "../someipSdMsg/someip_sd_message.h"
 #include "../someipSdMsg/entry/service_entry.h"
 #include "../someipSdMsg/entry/eventgroup_entry.h"
 #include "../someipSdMsg/option/ipv4_endpoint_option.h"
-
 #include "../rpc/socket_rpc_server.h"
-
 #include "../events/socket_event_server.h"
-
 #include <algorithm>
 #include <iostream>
 
 #define RPCS      0
 #define PUBSUB    1
-
-#define EXAMPLE PUBSUB
+#define EXAMPLE RPCS
 
 namespace ara
 {
@@ -40,18 +34,20 @@ namespace ara
                 const uint16_t cSumationOverVectorMethodId = 1000;
                 const uint16_t cMultiplicationOverVectorMethodID = 2000;
                 const uint16_t cGetSumMethodID = 3000;
+#elif(EXAMPLE == PUBSUB)
 
 #endif
+
                 class Provider
                 {
-
                 public:
+
 #if(EXAMPLE == RPCS)
-                    /******************************* rpcs **************************/
+                   
                     rpc::SocketRpcServer *rpcServer;
                     
 #elif(EXAMPLE == PUBSUB)
-                    /**************************  events *****************************/
+                    
                     SockeKEventServer *eventServer;
 #endif                    
                 
@@ -122,7 +118,7 @@ namespace ara
 
                     /******************************  deconstructor  *********************/
 
-                    ~Provider();    //override;
+                    ~Provider();   
                 };
             }
         }

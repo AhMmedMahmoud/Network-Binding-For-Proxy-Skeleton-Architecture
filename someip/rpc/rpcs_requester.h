@@ -1,13 +1,18 @@
 #ifndef RPC_CLIENT_H
 #define RPC_CLIENT_H
 
-//#include <functional>
+#include "../../helper/concurrent_queue.h"
+#include "../someipRpcMsg/someip_rpc_message.h"
 #include <map>
 #include <stdint.h>
 #include <vector>
-#include "../someipRpcMsg/someip_rpc_message.h"
 #include <future>
-#include "../../helper/concurrent_queue.h"
+#include <iostream>
+#include <functional>
+// for delay
+#include <thread>
+#include <chrono>
+#include "../../config.h" 
 
 namespace ara
 {
@@ -23,7 +28,7 @@ namespace ara
                 class RpcsRequester
                 {
                 public:
-                    //using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
+                    using HandlerType = std::function<void(const SomeIpRpcMessage &)>;
 
                 private:
                     /**************************  attributes ******************************/
@@ -37,10 +42,9 @@ namespace ara
 
 
                     /************ hash table to store handler for each message id*********/
-                    //std::map<uint32_t, HandlerType> mHandlers;
+                    std::map<uint32_t, HandlerType> mHandlers;
 
-
-                    
+           
                     // queue at which we get received messages that contained acknowledging entry
                     helper::ConcurrentQueue<SomeIpRpcMessage> mMessageBuffer;
 
@@ -69,14 +73,11 @@ namespace ara
                     void InvokeHandler(const std::vector<uint8_t> &payload);
 
 
-
                     /****************** function that child will implement it *****************/
 
                     /// @brief Send a SOME/IP request to the RPC server
                     /// @param payload Serialized SOME/IP request payload byte vector
                     virtual void Send(const std::vector<uint8_t> &payload) = 0;
-
-
 
 
                 public:
@@ -86,7 +87,7 @@ namespace ara
                     /// @param serviceId Service ID that contains the requested method
                     /// @param methodId Requested method ID for invocation
                     /// @param handler Handler to be invoked at the response arrival
-                    //void SetHandler(uint16_t serviceId, uint16_t methodId, HandlerType handler);
+                    void SetHandler(uint16_t serviceId, uint16_t methodId, HandlerType handler);
 
                     /// @brief Send a request to the RPC server
                     /// @param serviceId Service ID that contains the requested method

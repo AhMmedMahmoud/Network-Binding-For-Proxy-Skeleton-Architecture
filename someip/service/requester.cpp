@@ -1,5 +1,4 @@
 #include "requester.h"
-#include "../someipSdMsg/option/ipv4_endpoint_option.h"
 
 #define debuging 0
 
@@ -55,21 +54,30 @@ namespace ara
 
                 void Requester::sum(const std::vector<uint8_t> &payload)
                 {
+                    /*
                     sumOverVector sumOverVector(rpcClient,mServiceId,1,cSumationOverVectorMethodId);
                     sumOverVector(payload);
+                    */
+                    rpcClient->Request(mServiceId, cSumationOverVectorMethodId, mCounter, payload);
                 }
                 
                 void Requester::multiply(const std::vector<uint8_t> &payload)
                 {
+                    /*
                     multiplicationOverVector multiplicationOverVector(rpcClient,mServiceId,1,cMultiplicationOverVectorMethodID);
                     multiplicationOverVector(payload);
+                    */
+                    rpcClient->Request(mServiceId, cMultiplicationOverVectorMethodID, mCounter, payload);
                 }
 
                 std::future<bool> Requester::calculateSum(const std::vector<uint8_t> &payload,
                                    std::vector<uint8_t> &data)
                 {
+                    /*
                     getSum getSum(rpcClient,mServiceId,1,cGetSumMethodID);
                     return getSum(payload, data);
+                    */
+                    return rpcClient->RequestWithoutHandler(mServiceId, cGetSumMethodID, mCounter, payload, data);
                 }                
                 
 #endif
@@ -78,51 +86,38 @@ namespace ara
                 {
                     std::string ip;
                     uint16_t port;
-                    std::cout << "waiting for ip address and port number from service discovery/n";
+                    std::cout << "waiting for ip address and port number from service discovery\n";
                     bool _result = TryGetTransportInfo(4000, ip, port);
                     //bool _result = TryGetTransportInfo(ip, port);
+                    if(!_result)
+                        return false;
+                    
                     std::cout << "service discovery sends ip address and port nuumber\n";
-                    if(_result)
-                    {
 #if(EXAMPLE == RPCS)
-                        rpcClient = new rpc::SocketRpcClient(mPoller,
-                                                      ip,
-                                                      port,
-                                                      mProtocolVersion,
-                                                      mInterfaceVersion);
-                        
-                        /*
-                        rpcClient->SetHandler( mServiceId,
-                                               cSumationOverVectorMethodId,
-                                                [this](const rpc::SomeIpRpcMessage &message) 
-                                                {
-                                                    // original //
-                                                    //myHandle(message);
-
-                                                    try {
-                                                        myHandle(message);
-                                                    } catch (const std::exception &e) {
-                                                        std::cerr << "14244 Exception caught in lambda: " << e.what() << std::endl;
-                                                    }
-
-                                                }
-                                            );
-                        
-                        // regist handler for result of a method that calculates sum of all elements in vector
-                        rpcClient->SetHandler( mServiceId,
-                                               cMultiplicationOverVectorMethodID,
-                                               [this](const rpc::SomeIpRpcMessage &message) 
-                                               {
-                                                  //myHandle(message);
-                                                  
-                                                  try {
-                                                        myHandle(message);
-                                                    } catch (const std::exception &e) {
-                                                        std::cerr << "14244 Exception caught in lambda: " << e.what() << std::endl;
-                                                    }
-                                               }
-                                            );
-                        */
+                    rpcClient = new rpc::SocketRpcClient(mPoller,
+                                                    ip,
+                                                    port,
+                                                    mProtocolVersion,
+                                                    mInterfaceVersion);
+                    
+                    /*
+                    rpcClient->SetHandler( mServiceId,
+                                            cSumationOverVectorMethodId,
+                                            [this](const rpc::SomeIpRpcMessage &message) 
+                                            {
+                                                myHandle(message);
+                                            }
+                                        );
+                    
+                    // regist handler for result of a method that calculates sum of all elements in vector
+                    rpcClient->SetHandler( mServiceId,
+                                            cMultiplicationOverVectorMethodID,
+                                            [this](const rpc::SomeIpRpcMessage &message) 
+                                            {
+                                                myHandle(message);
+                                            }
+                                        );
+                    */
 
 #elif(EXAMPLE == PUBSUB)
                     eventClient = new SockeKEventClient( mServiceId,
@@ -137,7 +132,7 @@ namespace ara
                                                          port+1000,
                                                          mProtocolVersion);
 #endif
-                    }
+                    
                     return _result;
                 }
                 
@@ -201,115 +196,6 @@ namespace ara
 
 
                 /******************************* fundemental functions *********************/
-                /*
-                void Requester::RequestSubscribe(
-                    uint16_t serviceId,
-                    uint16_t instanceId,
-                    uint8_t majorVersion,
-                    uint16_t eventgroupId)
-                {
-                    // create someip/sd message with no entries and options
-                    sd::SomeIpSdMessage _message;
-
-                    // make entry to request subsription
-                    auto _entry{
-                        entry::EventgroupEntry::CreateSubscribeEventEntry(
-                            serviceId, instanceId, majorVersion, mCounter, eventgroupId)};
-                            
-                    // add this entry to someip/sd message
-                    _message.AddEntry(std::move(_entry));
-
-                    // put this message into queue
-                    Send(_message);
-                }
-
-                void Requester::RequestUnsubscribe(
-                    uint16_t serviceId,
-                    uint16_t instanceId,
-                    uint8_t majorVersion,
-                    uint16_t eventgroupId)
-                {
-                    // create someip/sd message with no entries and options
-                    sd::SomeIpSdMessage _message;
-
-                    // make entry to request subsription
-                    auto _entry{
-                        entry::EventgroupEntry::CreateUnsubscribeEventEntry(
-                            serviceId, instanceId, majorVersion, mCounter, eventgroupId)};
-
-                    // add this entry to someip/sd message
-                    _message.AddEntry(std::move(_entry));
-
-                    Send(_message);
-                }
-
-                bool Requester::TryGetProcessedSubscription(
-                    int duration,
-                    SomeIpSdMessage &message)
-                {
-                    bool _result;
-
-                    if (mMessageBuffer.Empty())
-                    {
-                        std::cout << "-- buffer of received messages is empty --\n";
-                        mSubscriptionLock.lock();
-                        std::cv_status _status = mSubscriptionConditionVariable.wait_for(
-                                mSubscriptionLock, std::chrono::milliseconds(duration));
-                        mSubscriptionLock.unlock();
-                        _result = mValidNotify && (_status != std::cv_status::timeout);
-                    }
-                    else
-                    {
-                        std::cout << "-- buffer of receiver messages has messages --\n";
-                        // There are still processed subscription messages in the buffer, so no need to wait.
-                        _result = true;
-                    }
-
-                    // In the case of successful get, set the first processed subscription to the output argument
-                    if (_result)
-                    {
-                        std::cout << "-- fill passed message with received message --\n";
-                        _result = mMessageBuffer.TryDequeue(message);
-                    }
-
-                    return _result;
-                }
-                */
-
-                /******************** function take any someip/sd message *****************/
-                /*
-                static bool gotAck = false;
-                void Requester::InvokeEventHandler(SomeIpSdMessage &&message)
-                {
-                    // for printing
-                    if(message.Entries().size() == 0)
-                    {
-                        std::cout << "\n------------------------------------------------\n";
-                        std::cout << ".t.t.t.t.received message.t.t.t.t. \n";
-                        message.print();
-                        std::cout << "-------------------------------------------------\n\n";
-                    }
-
-                    for (auto &entry : message.Entries())
-                    {
-                        if (entry->Type() == entry::EntryType::Acknowledging && !gotAck)
-                        {
-                            std::cout << "\n------------------------------------------------\n";
-                            std::cout << ".....received message..... \n";
-                            message.print();
-                            std::cout << "-------------------------------------------------\n\n";
-                            bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
-                            if (_enqueued)
-                            {
-                                mSubscriptionConditionVariable.notify_one();
-                            }
-
-                            gotAck = true;
-                        }
-                    }
-                }
-                */
-
                 
                 void Requester::InvokeOfferingHandler(sd::SomeIpSdMessage &&message)
                 {
@@ -332,7 +218,7 @@ namespace ara
                 }
                 
 
-                void Requester::findService()
+                bool Requester::findService()
                 {
                     // create SOMEIP/SD message
                     SomeIpSdMessage mFindServieMessage;
@@ -355,6 +241,7 @@ namespace ara
                     {
                         std::cout << "connecting to service instace is fail\n";
                     }
+                    return _result;
                 }
 
                 bool Requester::tryExtractOfferedEndpoint(
@@ -482,29 +369,11 @@ namespace ara
                             std::make_move_iterator(_buffer.begin()),
                             std::make_move_iterator(_buffer.begin() + _receivedSize));
 
-                        // check if received message is someip/sd or someip/rpc
-                        if(cRequestPayload[0] == 0xFF &&
-                           cRequestPayload[1] == 0XFF &&
-                           cRequestPayload[2] == 0x81 &&
-                           cRequestPayload[3] == 0x00 
-                         )
-                        {
-                            // Create the received message from the received payload
-                            sd::SomeIpSdMessage _receivedMessage{sd::SomeIpSdMessage::Deserialize(cRequestPayload)};
-                        
-                           // call function that contain what to do with received message
-                           //InvokeEventHandler(std::move(_receivedMessage));
-                           InvokeOfferingHandler(std::move(_receivedMessage));
-                        }
-                        else
-                        {
-                            /*
-                            rpc::SomeIpRpcMessage _receivedMessage{rpc::SomeIpRpcMessage::Deserialize(cRequestPayload)};
-                        
-                            // call function that contain what to do with received message
-                            InvokeEventHandler(std::move(_receivedMessage));
-                            */
-                        }
+                        // Create the received message from the received payload
+                        sd::SomeIpSdMessage _receivedMessage{sd::SomeIpSdMessage::Deserialize(cRequestPayload)};
+                    
+                        // call function that contain what to do with received message
+                        InvokeOfferingHandler(std::move(_receivedMessage));
                     }
                 }
 

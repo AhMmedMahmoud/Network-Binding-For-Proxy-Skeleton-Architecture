@@ -57,35 +57,22 @@ namespace ara
                 {
                     while (!mSendingQueue.Empty())
                     {
-                        try
-                        {  
-                            std::cout << "start --- onSend ---\n";
-                            std::vector<uint8_t> _payload;
-                            bool _dequeued{mSendingQueue.TryDequeue(_payload)};
-                            if (_dequeued)
-                            {
-                                std::array<uint8_t, cBufferSize> _buffer;
-                                std::copy_n(
-                                    std::make_move_iterator(_payload.begin()),
-                                    _payload.size(),
-                                    _buffer.begin());
+                        std::vector<uint8_t> _payload;
+                        bool _dequeued{mSendingQueue.TryDequeue(_payload)};
+                        if (_dequeued)
+                        {
+                            std::array<uint8_t, cBufferSize> _buffer;
+                            std::copy_n(
+                                std::make_move_iterator(_payload.begin()),
+                                _payload.size(),
+                                _buffer.begin());
 
-                                mClient.Send(_buffer);
-                            }
-                            else
-                            {
-                                std::cout << "cannot dequeue the message\n";
-                            }
-                        }catch (const std::bad_function_call& ex)
-                        {
-                            std::cout << "gggggggggggg" << ex.what() << std::endl;
-                            // Handle the exception as needed
+                            mClient.Send(_buffer);
                         }
-                        catch(const std::exception& e)
+                        else
                         {
-                            std::cout << "ahmed ahmed ahmed\n" << '\n';
+                            std::cout << "cannot dequeue the message\n";
                         }
-                        std::cout << "end --- onSend ---\n";
                     }
                 }
 

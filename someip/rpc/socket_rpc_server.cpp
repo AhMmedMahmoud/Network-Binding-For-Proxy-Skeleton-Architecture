@@ -1,6 +1,5 @@
-#include <algorithm>
 #include "./socket_rpc_server.h"
-#include <iostream>
+
 
 namespace ara
 {

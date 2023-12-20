@@ -67,16 +67,13 @@ namespace ara
                     std::unique_lock<std::mutex> _lock(mMutex, std::defer_lock);
                     if (_lock.try_lock())
                     {
-                        std::cout << "before mQueue.emplace\n";
                         mQueue.emplace(element);
-                        std::cout << "after mQueue.emplace\n";
                         ++mSize;
                         _lock.unlock();
                         return true;
                     }
                     else
                     {
-                        std::cout << "ti ti ti\n";
                         return false;
                     }
                 }

@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <stdexcept>
 #include "../include/poller.h"
+#include <iostream>
 
 namespace AsyncBsdSocketLib
 {
@@ -231,7 +232,15 @@ namespace AsyncBsdSocketLib
             if (_iterator != mListeners.end())
             {
                 // Launching the callback
-                (_iterator->second)();
+                try
+                {
+                    (_iterator->second)();
+                }
+                catch (const std::bad_function_call& ex)
+                {
+                    std::cout << "failed due to map of listener" << ex.what() << std::endl;
+                    // Handle the exception as needed
+                }
             }
 
             _iterator = mSenders.find(_fd);
@@ -239,7 +248,15 @@ namespace AsyncBsdSocketLib
                 static_cast<EPOLL_EVENTS>(_event & EPOLLOUT) == EPOLLOUT)
             {
                 // Launching the callback
-                (_iterator->second)();
+                try
+                {
+                    (_iterator->second)();
+                }
+                catch (const std::bad_function_call& ex)
+                {
+                    std::cout << "failed due to map of sender" << ex.what() << std::endl;
+                    // Handle the exception as needed
+                }
             }
 
             _iterator = mReceivers.find(_fd);
@@ -247,7 +264,15 @@ namespace AsyncBsdSocketLib
                 static_cast<EPOLL_EVENTS>(_event & EPOLLIN) == EPOLLIN)
             {
                 // Launching the callback
-                (_iterator->second)();
+                try
+                {
+                    (_iterator->second)();
+                }
+                catch (const std::bad_function_call& ex)
+                {
+                    std::cout << "failed due to map of receiver" << ex.what() << std::endl;
+                    // Handle the exception as needed
+                }
             }
         }
 

@@ -485,7 +485,7 @@ namespace ara
                         std::cout << "     " << entry.second.ipAddress << "  " 
                         << entry.second.port << "   " << static_cast<int>(entry.second.proto) << std::endl;
                     }
-                   std::cout << "------------------------------------------------\n";
+                   std::cout << "------------------------------------------------\n\n";
                 }
 
 

@@ -125,6 +125,8 @@ namespace ara
                     }
                 }
 
+
+
                 /******************************* fundemental functions *********************/
     
                 void Provider::init()
@@ -167,7 +169,7 @@ namespace ara
                     }
                     else
                     {
-                        std::cout << "fail ti put current value\n";
+                        std::cout << "fail to put current value\n";
                     }
 #endif
                 }
@@ -277,12 +279,12 @@ namespace ara
                     }
                 }
 
+
                 void Provider::Send(const SomeIpSdMessage &message)
                 {
                     std::vector<uint8_t> _payload{message.Payload()};
                     mSendingQueue.TryEnqueue(std::move(_payload));
                 }
-
 
 
                 /**************************** deconstructor  ************************/

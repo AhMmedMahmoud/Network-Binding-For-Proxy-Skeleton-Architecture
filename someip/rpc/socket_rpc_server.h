@@ -4,6 +4,8 @@
 #include "../../sockets/include/poller.h"
 #include "../../helper/concurrent_queue.h"
 #include "rpcs_responser.h"
+#include <algorithm>
+#include <iostream>
 
 namespace ara
 {

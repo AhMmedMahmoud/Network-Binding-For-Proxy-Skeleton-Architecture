@@ -29,13 +29,15 @@ const uint8_t cProtocolVersion = 20;
 const uint16_t cInterfaceVersion = 2;
 const uint16_t cClientId = 1;
 
+bool running = true;
+const int cTimeoutMs = 100;
+Poller* poller;
 
 
 int main()
 {
-    Poller* poller;
     poller = new Poller();
-    
+
     Requester *requester;
     requester = new Requester(cServiceId,
                               cInstanceId,
@@ -47,22 +49,28 @@ int main()
                               cMulticastGroup,
                               cServiceDiscoveryFindingPort,
                               cProtocolVersion);
-
-    const int cTimeoutMs = 100;
+  
 
     // Create thread using a lambda expression
-    std::thread t1([poller,cTimeoutMs](){
-       while(1)
-       {
-         poller->TryPoll(cTimeoutMs);
-       }
+    std::thread t1([](){
+        while(running)
+        {
+        poller->TryPoll(cTimeoutMs);
+        }
     });
 
     
     std::cout << "--------- before finding ----------\n";
 
-    requester->findService();
-  
+    bool _result = requester->findService();
+    if(!_result)
+    {
+        std::cout << "service not found\n";
+        running = false;
+        t1.join();
+        delete poller;
+        return 0;
+    }
     std::cout << "--------- after finding ----------\n";
 
 
