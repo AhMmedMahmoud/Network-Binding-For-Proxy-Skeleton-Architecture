@@ -287,12 +287,18 @@ namespace ara
                 }
 
 
+                AsyncBsdSocketLib::Poller* Provider::getPoller()
+                {
+                    return mPoller;
+                }
+
                 /**************************** deconstructor  ************************/
 
                 Provider::~Provider()
                 {
                     mPoller->TryRemoveSender(&mUdpSocket);
                     mPoller->TryRemoveReceiver(&mUdpSocket);
+                    delete mPoller;
                 }
             }
         }

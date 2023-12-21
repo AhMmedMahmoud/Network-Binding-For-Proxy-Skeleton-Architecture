@@ -30,6 +30,7 @@ add_library(
    helper/payload_helper.cpp
    helper/ttl_timer.h
    helper/ttl_timer.cpp
+   helper/instance_id.h
 
 
    ###############  someip message ############ 
@@ -129,6 +130,10 @@ add_library(
 
    ###### config #######
    config.h
+
+   ###### proxy_skeleton #####
+   Proxy_Skeleton/Proxy.h
+   Proxy_Skeleton/Skeleton.h
 )
 
 
@@ -172,3 +177,12 @@ target_link_libraries(client_event araCom)
 
 add_executable(server_event samples/demo_event_server.cpp)
 target_link_libraries(server_event araCom)
+
+
+#### executables for proxy ####
+add_executable(proxy samples/demo_proxy.cpp)
+target_link_libraries(proxy araCom)
+
+#### executables for proxy ####
+add_executable(skeleton samples/demo_skeleton.cpp)
+target_link_libraries(skeleton araCom)

@@ -13,10 +13,8 @@
 #include "../events/socket_event_server.h"
 #include <algorithm>
 #include <iostream>
+#include "../../config.h"
 
-#define RPCS      0
-#define PUBSUB    1
-#define EXAMPLE RPCS
 
 namespace ara
 {
@@ -115,6 +113,7 @@ namespace ara
 
                     void init();
 
+                    AsyncBsdSocketLib::Poller* getPoller();
 
                     /******************************  deconstructor  *********************/
 

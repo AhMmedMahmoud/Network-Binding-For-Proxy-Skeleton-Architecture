@@ -99,6 +99,13 @@ namespace ara
                         std::cout << "it is requestToSettingValue\n";
                         request.print();
 
+                        /*
+                        
+                        std::vector<uint_8> receivedData = request.RpcPayload();
+                        process(dataRecived)
+
+
+                        */
                         bool _result = putCurrentValue(request.RpcPayload());
                         if(_result)
                         {

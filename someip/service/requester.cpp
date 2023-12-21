@@ -1,6 +1,5 @@
 #include "requester.h"
 
-#define debuging 0
 
 namespace ara
 {
@@ -82,7 +81,7 @@ namespace ara
                 
 #endif
                 
-                bool Requester::init()
+                bool Requester::init(uint16_t &_port)
                 {
                     std::string ip;
                     uint16_t port;
@@ -232,7 +231,8 @@ namespace ara
                     // send the message
                     Send(mFindServieMessage);
 
-                    bool _result = init();
+                    uint16_t _port;
+                    bool _result = init(_port);
                     if(_result)
                     {
                         std::cout << "connecting to service instace is done\n";
@@ -349,6 +349,31 @@ namespace ara
                     return _result;
                 }
 
+                bool Requester::findService(uint16_t &_port)
+                {
+                    // create SOMEIP/SD message
+                    SomeIpSdMessage mFindServieMessage;
+
+                    // prepare offering entry 
+                    auto _findServiceEntry{entry::ServiceEntry::CreateFindServiceEntry(mServiceId,0xfffffff,mInstanceId,mMajorVersion,mMinorVersion)};
+                    
+                    // add this entry to the message
+                    mFindServieMessage.AddEntry(std::move(_findServiceEntry));
+
+                    // send the message
+                    Send(mFindServieMessage);
+
+                    bool _result = init(_port);
+                    if(_result)
+                    {
+                        std::cout << "connecting to service instace is done\n";
+                    }
+                    else
+                    {
+                        std::cout << "connecting to service instace is fail\n";
+                    }
+                    return _result;
+                }
 
                 /**************************** poller functions  **********************************/
 
@@ -411,6 +436,11 @@ namespace ara
                 }
 
 
+                AsyncBsdSocketLib::Poller* Requester::getPoller()
+                {
+                    return mPoller;
+                }
+
 
                 /**************************** deconstructor  ************************/
 
@@ -423,6 +453,8 @@ namespace ara
 
                     mPoller->TryRemoveSender(&mUdpSocket);
                     mPoller->TryRemoveReceiver(&mUdpSocket);
+                    
+                    delete mPoller;
                 }
             }
         }

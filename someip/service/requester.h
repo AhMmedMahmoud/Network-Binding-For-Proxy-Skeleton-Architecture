@@ -16,12 +16,7 @@
 #include <iostream>
 #include <algorithm>
 //#include "methods.h"
-
-
-
-#define RPCS      0
-#define PUBSUB    1
-#define EXAMPLE RPCS
+#include "../../config.h"
 
 namespace ara
 {
@@ -126,7 +121,7 @@ namespace ara
                         std::string &ipAddress,
                         uint16_t &port) const;
 
-                    bool init();
+                    bool init(uint16_t &_port);
 
                     //void myHandle(const rpc::SomeIpRpcMessage &message);
 
@@ -155,6 +150,9 @@ namespace ara
 
                     bool findService();
 
+                    bool findService(uint16_t &_port);
+
+                    AsyncBsdSocketLib::Poller* getPoller();
 
                     /********************** rpc methods  ***************************/
 

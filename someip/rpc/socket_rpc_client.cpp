@@ -42,6 +42,7 @@ namespace ara
                     }
 
                     auto _receiver{std::bind(&SocketRpcClient::onReceive, this)};
+                    
                     _successful = mPoller->TryAddReceiver(&mClient, _receiver);
                     if (!_successful)
                     {

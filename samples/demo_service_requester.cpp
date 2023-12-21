@@ -2,7 +2,7 @@
 #include "../someip/service/requester.h"
 #include <thread>
 
-#include "../helper/ipv4_address.h"
+//#include "../helper/ipv4_address.h"
 
 // for delay
 #include <chrono>
@@ -76,7 +76,7 @@ int main()
 
 #if(EXAMPLE == RPCS)
 
-    std::vector<uint8_t> input = {1, 2, 3, 4, 5};
+    std::vector<uint8_t> input = {4, 2, 13, 4, 45};
 
 /*
     requester->sum(input);
@@ -119,6 +119,8 @@ int main()
     
 
 #elif(EXAMPLE == PUBSUB)    
+    std::cout << "---------- requesting subscribe ---------\n";
+    
     requester->eventClient->Subscribe();
 
     if(requester->eventClient->isSubscribed(3000) == 1)
@@ -129,22 +131,22 @@ int main()
         std::future<bool> futureObj = requester->eventClient->getter(data);
         if(futureObj.get())
         {
-        std::cout << "data received\n";
-        for (int i = 0; i < data.size(); i++) {
-            std::cout << static_cast<int>(data[i])  << " ";
-        }
-        std::cout << "\n";
+            std::cout << "data received\n";
+            for (int i = 0; i < data.size(); i++) {
+                std::cout << static_cast<int>(data[i])  << " ";
+            }
+            std::cout << "\n";
         }
 
         std::vector<uint8_t> data2;
         std::future<bool> futureObj2 = requester->eventClient->getter(data2);
         if(futureObj2.get())
         {
-        std::cout << "data received\n";
-        for (int i = 0; i < data2.size(); i++) {
-            std::cout << static_cast<int>(data2[i])  << " ";
-        }
-        std::cout << "\n";
+            std::cout << "data received\n";
+            for (int i = 0; i < data2.size(); i++) {
+                std::cout << static_cast<int>(data2[i])  << " ";
+            }
+            std::cout << "\n";
         }
 
 
