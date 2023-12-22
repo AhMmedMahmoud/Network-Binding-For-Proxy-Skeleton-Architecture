@@ -202,6 +202,16 @@ namespace ara
                     {
                         if (entry->Type() == entry::EntryType::Offering)
                         {
+                            if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(entry.get()))
+                            {
+                                bool _result = (_serviceEnty->ServiceId() != mServiceId || (_serviceEnty->InstanceId() != mInstanceId));
+                                if(_result)
+                                {
+                                   std::cout << "receive offering message but not for me\n";
+                                   break;
+                                }
+                            }
+                            
                             std::cout << "\n------------------------------------------------\n";
                             std::cout << ".....received message..... \n";
                             message.print();

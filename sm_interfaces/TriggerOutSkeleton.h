@@ -7,7 +7,7 @@ const std::string c_NicIpAddress{"127.0.0.1"};
 const std::string c_MulticastGroup{"239.0.0.1"};
 const uint16_t c_ServiceDiscoveryOfferingPort{5555};
 const uint16_t c_Udp_port = 9000;
-const uint16_t c_ServiceId = 10;
+const uint16_t c_ServiceId = 11;
 const uint8_t c_MajorVersion = 10;
 const uint8_t c_MinorVersion = 4;
 const uint16_t c_EventgroupId = 5;

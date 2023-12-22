@@ -9,7 +9,7 @@ const std::string c_AnyIpAddress{"0.0.0.0"};
 const std::string c_NicIpAddress{"127.0.0.1"};
 const std::string c_MulticastGroup{"239.0.0.1"};
 const uint16_t c_ServiceDiscoveryFindingPort{6666};
-const uint16_t c_ServiceId = 10;
+const uint16_t c_ServiceId = 12;
 const uint8_t c_MajorVersion = 10;
 const uint8_t c_MinorVersion = 4;
 const uint16_t c_EventgroupId = 5;
@@ -28,7 +28,7 @@ namespace ara
             template <typename t>
             using ServiceHandleContainer = std::vector<t>;
 
-            class TriggerOutProxy
+            class TriggerInOutProxy
             {
                 public:
                     class HandleType
@@ -124,7 +124,7 @@ namespace ara
 
                     /************************* constructor **************************/
 
-                    TriggerOutProxy (HandleType &handle)
+                    TriggerInOutProxy (HandleType &handle)
                     {
                         requester = handle.getRequester();
                     }
@@ -160,13 +160,13 @@ namespace ara
 
                     /******** disable copy constructor and equal assigment operator *****/
                     
-                    TriggerOutProxy(const TriggerOutProxy &other) = delete;
-                    TriggerOutProxy& operator=(const TriggerOutProxy &other) = delete;
+                    TriggerInOutProxy(const TriggerInOutProxy &other) = delete;
+                    TriggerInOutProxy& operator=(const TriggerInOutProxy &other) = delete;
 
 
                     /********************* deconstructor *******************/
                     
-                    ~TriggerOutProxy()
+                    ~TriggerInOutProxy()
                     {
 
                     }

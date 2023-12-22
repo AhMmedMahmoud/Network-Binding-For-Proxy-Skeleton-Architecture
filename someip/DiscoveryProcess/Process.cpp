@@ -443,9 +443,15 @@ namespace ara
                     // Print the data in the map
                     for (const auto& entry : serviceRegistry) 
                     {
+                        /*
                         std::cout << entry.first.serviceId << ", " << entry.first.instanceId;
                         std::cout << "     " << entry.second.ipAddress << "  " 
                         << entry.second.port << "   " << static_cast<int>(entry.second.proto) << std::endl;
+                        */
+
+                        std::cout << entry.first.serviceId << ", " << entry.first.instanceId;
+                        std::cout << "     " << entry.second.ipAddress << "  " 
+                        << entry.second.port << std::endl;
                     }
                    std::cout << "------------------------------------------------\n\n";
                 }

@@ -213,3 +213,11 @@ target_link_libraries(TriggerInSkeleton araCom)
 #### executables for TriggerInProxy ####
 add_executable(TriggerInProxy sm_interfaces_demos/demo_TriggerInProxy.cpp)
 target_link_libraries(TriggerInProxy araCom)
+
+#### executables for TriggerOutSkeleton ####
+add_executable(TriggerOutSkeleton sm_interfaces_demos/demo_TriggerOutSkeleton.cpp)
+target_link_libraries(TriggerOutSkeleton araCom)
+
+#### executables for TriggerOutProxy ####
+add_executable(TriggerOutProxy sm_interfaces_demos/demo_TriggerOutProxy.cpp)
+target_link_libraries(TriggerOutProxy araCom)
