@@ -152,7 +152,11 @@ namespace ara
 
                     bool findService(uint16_t &_port);
 
+
+                    /************************** getter  ***************************/
+
                     AsyncBsdSocketLib::Poller* getPoller();
+
 
                     /********************** rpc methods  ***************************/
 

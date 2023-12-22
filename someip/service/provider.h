@@ -111,6 +111,8 @@ namespace ara
 
                     void offerService();
 
+                    void stopService();
+                    
                     void init();
 
                     AsyncBsdSocketLib::Poller* getPoller();

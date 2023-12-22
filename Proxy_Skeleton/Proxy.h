@@ -16,9 +16,7 @@ const uint16_t c_EventgroupId = 5;
 const uint8_t c_ProtocolVersion = 20;
 const uint16_t c_InterfaceVersion = 2;
 const uint16_t c_ClientId = 1;
-
 const int cTimeoutMs = 100;
-bool running = true;
 
 
 namespace ara 
@@ -30,7 +28,7 @@ namespace ara
             template <typename t>
             using ServiceHandleContainer = std::vector<t>;
 
-            class triggerInProxy
+            class Proxy
             {
                 public:
                     class HandleType
@@ -87,8 +85,9 @@ namespace ara
                                                 c_ProtocolVersion);
                         
                         Poller *poller = requester->getPoller();
-                        std::thread t1([poller](){
-                            while(running)
+                        bool *running = new bool(true);
+                        std::thread t1([poller,running](){
+                            while(*running)
                             {
                              poller->TryPoll(cTimeoutMs);
                             }
@@ -100,10 +99,11 @@ namespace ara
                         {
                             std::vector<HandleType> handles;
                             
-                            running = false;
-                            std::cout << "11111111111111\n";
+                            *running = false;
+                            //std::cout << "11111111111111\n";
                             t1.join();
-                            std::cout << "11111111111111\n";
+                            delete running;
+                            //std::cout << "11111111111111\n";
                             return handles;
                         }
                         else
@@ -113,17 +113,18 @@ namespace ara
                             handleTypeObj.setRequester(requester);
                             handles.push_back(handleTypeObj);
                             
-                            running = false;
-                            std::cout << "2222222222222222222\n";
+                            *running = false;
+                            //std::cout << "2222222222222222222\n";
                             t1.join();
-                            std::cout << "2222222222222222222\n";
+                            delete running;
+                            //std::cout << "2222222222222222222\n";
                             return handles;
                         }
                     }
 
                     /************************* constructor **************************/
 
-                    triggerInProxy (HandleType &handle)
+                    Proxy (HandleType &handle)
                     {
                         requester = handle.getRequester();
                     }
@@ -150,6 +151,11 @@ namespace ara
                     {
                         return requester->eventClient->getter(data);
                     }
+
+                    void requestGetting()
+                    {
+                       return requester->eventClient->requestGetting();
+                    }
 #endif
 
                     std::future<bool> calculateSum(const std::vector<uint8_t> &payload,
@@ -161,13 +167,13 @@ namespace ara
 
                     /******** disable copy constructor and equal assigment operator *****/
                     
-                    triggerInProxy(const triggerInProxy &other) = delete;
-                    triggerInProxy& operator=(const triggerInProxy &other) = delete;
+                    Proxy(const Proxy &other) = delete;
+                    Proxy& operator=(const Proxy &other) = delete;
 
 
                     /********************* deconstructor *******************/
                     
-                    ~triggerInProxy()
+                    ~Proxy()
                     {
 
                     }

@@ -25,6 +25,21 @@ namespace ara
                     return false;
                 }
 
+                bool EventServer::isRequestingToGettingValue(const rpc::SomeIpRpcMessage &request)
+                {     
+                    if(
+                        (request.MessageType() == SomeIpMessageType::Request)
+                        && (request.ProtocolVersion() == mProtocolVersion)
+                        && (request.InterfaceVersion() == mInterfaceVersion)
+                        && (request.MessageId() == ( (((uint32_t)mServiceId)<<16) | (uint32_t)cRequestGetValueBySubscriberMethodId))
+                    )
+                    {
+                        //std::cout << "isRequestingToSettingValue\n";
+                        return true;
+                    }
+                    return false;
+                }
+
                 bool EventServer::isRequestingToSubscription(const rpc::SomeIpRpcMessage &request)
                 {     
                     if(
@@ -120,6 +135,22 @@ namespace ara
 
                             Send(message.Payload());
                         }
+                    }
+                    else if(isRequestingToGettingValue(request))
+                    {
+                        std::cout << "it is requestToGettingValue\n";
+                        request.print();
+
+                        rpc::SomeIpRpcMessage message(  request.MessageId(),
+                                                        request.ClientId(),
+                                                        request.SessionId(),
+                                                        mProtocolVersion,
+                                                        mInterfaceVersion,
+                                                        SomeIpMessageType::Notification,
+                                                        SomeIpReturnCode::eOK,
+                                                        currentValue);
+
+                        Send(message.Payload());
                     }
                     else
                     {

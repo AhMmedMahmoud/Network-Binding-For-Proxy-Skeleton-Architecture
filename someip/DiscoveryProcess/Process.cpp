@@ -197,14 +197,26 @@ namespace ara
                     bool _successful = hasOfferingEntry(message, _ttl);
                     if (_successful)
                     {
+                        std::cout << "has offeringEntry\n";
                         std::string _ipAddress;
                         uint16_t _port;
                         uint16_t _serviceId;
                         uint16_t _instanceId;
                         _successful = ExtractInfoToStore(message, _ipAddress, _port,_serviceId,_instanceId);
-                        if (_successful)
+                        if (_successful && _ttl != 0)
                         {
+                            std::cout << "_ttl != 0\n";
                             storeInfoOfServiceInstance({_serviceId,_instanceId},{_ipAddress,_port,protocol::tcp});
+                        }
+                        else if(_successful && _ttl == 0)
+                        {
+                           std::cout << "_ttl == 0\n";
+                           bool _result = eraseInfoOfServiceInstance({_serviceId,_instanceId});
+                           if(_result)
+                           {
+                                SendOfferingOrAck(std::move(message));
+                                std::cout << "stop offer message from process is sent\n";
+                           }
                         }
                     }
                 }
@@ -219,6 +231,7 @@ namespace ara
                         {
                             if (auto _serviceEnty = dynamic_cast<entry::ServiceEntry *>(_entry.get()))
                             {
+                                /*
                                 // Compare service 
                                 bool _result = serviceRegistry.find( {_serviceEnty->ServiceId(),_serviceEnty->InstanceId()} ) == serviceRegistry.end();
                                 if(_result)
@@ -226,6 +239,10 @@ namespace ara
                                     ttl = _serviceEnty->TTL();
                                 }
                                 return _result;
+                                */
+
+                                ttl = _serviceEnty->TTL();
+                                return true;
                             }
                         }
                     }
@@ -328,62 +345,7 @@ namespace ara
                     return false;
                 }
 
-                /*
-                void ServiceRegistryProcess::run()
-                {
-                    if(mFindingRequestsToNotOfferedServices.size() != 0)
-                    {
-                        mFindingRequestsLock.lock();
-                        
-                        std::cout << "before mFindingRequestsConditionVariable.wait(mFindingRequestsLock);\n";
-                        
-                        mFindingRequestsConditionVariable.wait(mFindingRequestsLock);
-                        
-                        std::cout << "after mFindingRequestsConditionVariable.wait(mFindingRequestsLock);\n";
-                        
-                        for (const auto& request : mFindingRequestsToNotOfferedServices) 
-                        {
-                            myKey key = {request.serviceId, request.instanceId};
-                            transportInfo info;
-                            bool _result = isRegisted(key, info);
-                            if(_result)
-                            {
-                                SomeIpSdMessage mOfferServiceMessage;
-
-                                // prepare offering entry
-                                auto _offerServiceEntry
-                                { 
-                                    entry::ServiceEntry::CreateOfferServiceEntry( request.serviceId,
-                                                                                request.instanceId,
-                                                                                request.majorVersion,
-                                                                                request.minorVersion
-                                                                                )
-                                };
-                                
-                                
-                                // prepare unicast endpoint option
-                                auto _offerEndpointOption
-                                {
-                                    option::Ipv4EndpointOption::CreateUnitcastEndpoint( false,
-                                                                                        info.ipAddress,
-                                                                                        option::Layer4ProtocolType::Tcp,
-                                                                                        info.port
-                                                                                    )
-                                };
-
-                                // prepare SOMEIP/SD message contain offering entry to use at need
-                                _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));
-                                mOfferServiceMessage.AddEntry(std::move(_offerServiceEntry));
-
-                                SendOfferingOrAck(mOfferServiceMessage);
-                                std::cout << "offer message from process is sent\n";
-                            }
-                        }
-                        mFindingRequestsLock.unlock();
-                    }
-                }
-                */
-
+   
                 void ServiceDiscoveryProcess::handleFinding(SomeIpSdMessage &&message)
                 {
                     std::cout << "-----handleFinding is called----\n";

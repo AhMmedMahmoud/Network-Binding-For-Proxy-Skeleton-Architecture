@@ -225,6 +225,43 @@ namespace ara
                 }
 
 
+                void Provider::stopService()
+                {
+                     // make SOMEIP/SD message
+                    SomeIpSdMessage mStofServiceMessage;
+
+                    // prepare offering entry
+                    auto _offerServiceEntry
+                    {
+                        entry::ServiceEntry::CreateStopOfferEntry( mServiceId,
+                                                                   mInstanceId,
+                                                                   mMajorVersion,
+                                                                   mMinorVersion
+                                                                 )
+                    };
+
+                    helper::Ipv4Address ipAddress("127.0.0.1");
+
+                    // prepare endpoint option
+                    auto _offerEndpointOption
+                    {
+                        option::Ipv4EndpointOption::CreateUnitcastEndpoint( false,
+                                                                            ipAddress,
+                                                                            option::Layer4ProtocolType::Tcp,
+                                                                            mEndpointRpcsPort
+                                                                          )
+                    };
+
+                    // add created option to created entry 
+                    _offerServiceEntry->AddFirstOption(std::move(_offerEndpointOption));
+                    
+                    // add created entry to created message
+                    mStofServiceMessage.AddEntry(std::move(_offerServiceEntry));
+
+                    // send the message
+                    Send(mStofServiceMessage);
+                }
+
                 
                 /**************************** poller functions  **********************************/
 

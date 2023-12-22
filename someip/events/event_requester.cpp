@@ -24,6 +24,22 @@ namespace ara
                     Send(message);
                 }
 
+                void EventSubscripter::requestGetting()
+                {
+                    std::vector<uint8_t> data;
+                    rpc::SomeIpRpcMessage message(  ( (((uint32_t)mServiceId)<<16) | ((uint32_t)cRequestGetValueBySubscriberMethodId)),
+                                                    mCounter,
+                                                    cInitialSessionId++,
+                                                    mProtocolVersion,
+                                                    mInterfaceVersion,
+                                                    SomeIpMessageType::Request,
+                                                    SomeIpReturnCode::eOK,
+                                                    data);
+                    
+                    Send(message);
+                }
+
+
 
                 bool EventSubscripter::isResponseToSettingValue(const rpc::SomeIpRpcMessage &request)
                 {
@@ -100,6 +116,8 @@ namespace ara
                         bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
                         if (_enqueued)
                         {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                            std::cout << "wake up thread that setting promise\n";
                             mSubscriptionConditionVariable.notify_one();
                         }
                     }
@@ -205,12 +223,12 @@ namespace ara
                     {
                         std::thread([&, promisePtr] 
                         {
-                            //std::cout << "-- buffer of received messages is empty --\n";
-                            //std::cout << "-- acquire the lock --\n";
+                            std::cout << "-- buffer of received messages is empty --\n";
+                            std::cout << "-- acquire the lock --\n";
                             mSubscriptionLock.lock();
-                            //std::cout << "----- waiting -----\n";
+                            std::cout << "----- waiting -----\n";
                             mSubscriptionConditionVariable.wait(mSubscriptionLock);
-                            //std::cout << "-- releasing lock the lock --\n";
+                            std::cout << "-- releasing lock the lock --\n";
                             mSubscriptionLock.unlock();
                             //std::cout << "-- if --\n";
                             if (mValidNotify) 

@@ -38,10 +38,19 @@ int main()
    
    std::cout << "after offering the service\n";
 
+   std::this_thread::sleep_for(std::chrono::seconds(14));
+
+   // std::cout << "before stop offer service\n";
+
+   // mySkeleton.stopService();
+
+   // std::cout << "after stop offer service\n";
 
 #if(EXAMPLE == PUBSUB)
    int counter = false;
    std::vector<uint8_t> data;
+
+   /*
    while(1)
    {    
       if(mySkeleton.eventServer->GetState() == PubSubState::Subscribed && counter == false)
@@ -53,20 +62,11 @@ int main()
          mySkeleton.eventServer->update(data);
 
          // Introduce a delay of 7 seconds
-         std::this_thread::sleep_for(std::chrono::seconds(7));
-         std::cout << "\n---preparing sample2 to send---\n";
-         data= {4,5,6,7};
-         mySkeleton.eventServer->update(data);
-
-         // Introduce a delay of 7 seconds
-         std::this_thread::sleep_for(std::chrono::seconds(7));
-         std::cout << "\n---preparing sample2 to send---\n";
-         data= {8,9,10,11};
-         mySkeleton.eventServer->update(data);
-
+         std::this_thread::sleep_for(std::chrono::seconds(20));
          counter = true;
       } 
    }
+   */
 #endif
    
 

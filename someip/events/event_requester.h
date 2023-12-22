@@ -7,7 +7,9 @@
 #include <iostream>
 #include "../someipRpcMsg/someip_rpc_message.h"
 #include <future>
-
+// for delay
+#include <thread>
+#include <chrono>
 
 namespace ara
 {
@@ -34,6 +36,8 @@ namespace ara
                     uint16_t cInitialSessionId{1};
                     
                     const  uint16_t cRequestSetValueBySubscriberMethodId = 10;
+                    const  uint16_t cRequestGetValueBySubscriberMethodId = 11;
+
 
                     /******************************* useful variables ************************/
 
@@ -55,6 +59,7 @@ namespace ara
                     bool isResponseToSettingValue(const rpc::SomeIpRpcMessage &request);
 
                     void requestSetting(const std::vector<uint8_t> &data);
+
                 
                 protected:
                     /*********************** useful for constructor of my child *****************/
@@ -95,6 +100,8 @@ namespace ara
                     std::future<bool> getter(std::vector<uint8_t> &data); 
 
                     std::future<bool> setter(const std::vector<uint8_t> &data); 
+
+                    void requestGetting();
 
                     /************************ disable empty constructor **********************/
 

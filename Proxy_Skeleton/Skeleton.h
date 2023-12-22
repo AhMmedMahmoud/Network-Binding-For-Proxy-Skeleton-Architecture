@@ -24,10 +24,10 @@ namespace ara
     {
         namespace skelton
         {
-            class TriggerInSkelton : public ara::com::someip::sd::Provider 
+            class Skelton : public ara::com::someip::sd::Provider 
             {                    
                 public:
-                    TriggerInSkelton( ara::com::InstanceIdentifier id) : Provider
+                    Skelton( ara::com::InstanceIdentifier id) : Provider
                                                                          ( 
                                                                             c_ServiceId,        
                                                                             id.getInstanceId(),
@@ -54,13 +54,13 @@ namespace ara
 
                     /******** disable copy constructor and equal assigment operator *****/
       
-                    TriggerInSkelton(const TriggerInSkelton &other) = delete;
-                    TriggerInSkelton & operator=(const TriggerInSkelton &other) = delete;
+                    Skelton(const Skelton &other) = delete;
+                    Skelton & operator=(const Skelton &other) = delete;
                     
       
                     /********************* deconstructor *******************/
 
-                    ~TriggerInSkelton()
+                    ~Skelton()
                     {
 
                     }

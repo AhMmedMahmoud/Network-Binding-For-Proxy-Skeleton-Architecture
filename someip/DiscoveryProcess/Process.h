@@ -87,6 +87,25 @@ namespace ara
                         serviceRegistry[k] = info;
                     }
 
+                    bool eraseInfoOfServiceInstance(registryKey k)
+                    {
+                        auto it = serviceRegistry.find(k);
+                        if (it != serviceRegistry.end()) 
+                        {
+                            // The element with the specified key exists
+                            // Remove the element from the map
+                            serviceRegistry.erase(it);
+                            return true;
+                        } 
+                        else
+                        {
+                            // The element with the specified key does not exist
+                            // Handle the case where the element does not exist
+                            std::cout << "info not exist\n";
+                            return false;
+                        }
+                    }
+
 
                     /************************* poller attributes ******************************/
 
@@ -174,9 +193,6 @@ namespace ara
                         std::string multicastGroup,
                         uint16_t offeringPort,
                         uint16_t findingPort);
-
-
-                    //void run();
 
                     /**************************** deconstructor  ************************/
 

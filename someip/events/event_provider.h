@@ -41,6 +41,8 @@ namespace ara
                     std::vector<uint8_t> currentValue;
 
                     const  uint16_t cRequestSetValueBySubscriberMethodId = 10;
+                    const  uint16_t cRequestGetValueBySubscriberMethodId = 11;
+
 
                     helper::FSM<helper::PubSubState> mStateMachine;
                     fsm::ServiceDownState mServiceDownState;
@@ -54,6 +56,9 @@ namespace ara
                     bool isFromMe(const rpc::SomeIpRpcMessage &request);
                   
                     bool isRequestingToSettingValue(const rpc::SomeIpRpcMessage &request);
+
+                    bool isRequestingToGettingValue(const rpc::SomeIpRpcMessage &request);
+
 
                     void printCurrentState() const;
 

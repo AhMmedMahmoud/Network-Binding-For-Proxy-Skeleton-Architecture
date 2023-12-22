@@ -183,6 +183,14 @@ target_link_libraries(server_event araCom)
 add_executable(proxy samples/demo_proxy.cpp)
 target_link_libraries(proxy araCom)
 
-#### executables for proxy ####
+#### executables for skeleton ####
 add_executable(skeleton samples/demo_skeleton.cpp)
 target_link_libraries(skeleton araCom)
+
+#### executables for skeleton2 ####
+add_executable(skeleton2 samples/demo_skeleton2.cpp)
+target_link_libraries(skeleton2 araCom)
+
+#### executables for proxy2 ####
+add_executable(proxy2 samples/demo_proxy2.cpp)
+target_link_libraries(proxy2 araCom)

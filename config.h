@@ -5,6 +5,6 @@
 
 #define RPCS      0
 #define PUBSUB    1
-#define EXAMPLE RPCS
+#define EXAMPLE PUBSUB
 
 #endif
