@@ -23,10 +23,10 @@ namespace ara
     {
         namespace skelton
         {
-            class TriggerOutSkelton : public ara::com::someip::sd::EventServiceProvider 
+            class TriggerInOutSkelton : public ara::com::someip::sd::EventServiceProvider 
             {                    
                 public:
-                    TriggerOutSkelton( ara::com::InstanceIdentifier id) : EventServiceProvider
+                    TriggerInOutSkelton( ara::com::InstanceIdentifier id) : EventServiceProvider
                                                                          ( 
                                                                             c_ServiceId,        
                                                                             id.getInstanceId(),
@@ -52,13 +52,13 @@ namespace ara
 
                     /******** disable copy constructor and equal assigment operator *****/
       
-                    TriggerOutSkelton(const TriggerOutSkelton &other) = delete;
-                    TriggerOutSkelton & operator=(const TriggerOutSkelton &other) = delete;
+                    TriggerInOutSkelton(const TriggerInOutSkelton &other) = delete;
+                    TriggerInOutSkelton & operator=(const TriggerInOutSkelton &other) = delete;
                     
       
                     /********************* deconstructor *******************/
 
-                    ~TriggerOutSkelton()
+                    ~TriggerInOutSkelton()
                     {
 
                     }
