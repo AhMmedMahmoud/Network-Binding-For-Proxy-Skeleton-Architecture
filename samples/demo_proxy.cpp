@@ -1,11 +1,9 @@
-// headers
 #include <iostream>
-#include "../sm_interfaces/TriggerInProxy.h"
+#include "../Proxy_Skeleton/Proxy.h"
 #include <thread>
 #include <chrono> // for delay
 
 
-// namespaces
 using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
@@ -13,27 +11,22 @@ using namespace ara::com;
 using namespace ara::com::proxy;
 
 
-// global variables
 bool executing = true;
 Poller* poller;
 
 
 int main()
 {
-    std::cout << "-----------------------------------------------------------\n";
-    std::cout << "before finding \n";
-    std::cout << "-----------------------------------------------------------\n";
+    std::cout << "--------- before finding ----------\n";
 
     InstanceIdentifier id("3");
-    auto handles = TriggerInProxy::findSerivce(id);
+    auto handles = Proxy::findSerivce(id);
     
-    std::cout << "-----------------------------------------------------------\n";
-    std::cout << "after finding \n";
-    std::cout << "-----------------------------------------------------------\n\n\n";
+    std::cout << "--------- after finding ----------\n";
 
     if(!handles.empty())
     {
-        TriggerInProxy myProxy(handles[0]);
+        Proxy myProxy(handles[0]);
 
         // Create thread using a lambda expression
         poller = handles[0].getRequester()->getPoller();
@@ -44,14 +37,40 @@ int main()
             }
         });
 
- 
+#if(EXAMPLE == RPCS)
+
+#if(debuging == 1)
+    std::cout << "before calling getSum\n";
+#endif
+
+    std::vector<uint8_t> input = {4, 2, 13, 4, 45};
+
+    std::vector<uint8_t> output3;
+
+    std::future<bool> futureObj3 = myProxy.calculateSum(input,output3);
+
+#if(debuging == 1)
+    std::cout << "after calling getSum\n";
+#endif
+
+    if(futureObj3.get())
+    {
+        std::cout << "result of calculateSum : ";
+        for (uint8_t val : output3) {
+          std::cout << static_cast<int>(val) ;
+        }
+        std::cout << "\n";
+    }
+
+#elif(EXAMPLE == PUBSUB)    
         std::cout << "---------- requesting subscribe ---------\n";
+    
         myProxy.subscribe();
+
         if(myProxy.isSubscribed(3000) == 1)
         {
-            std::cout << "----------subscription is done ---------\n";
+            std::cout << "subscription is done\n";
 
-            std::cout << "---------------- getter ----------------\n";
             std::vector<uint8_t> data;
             std::future<bool> futureObj = myProxy.getter(data);
             if(futureObj.get())
@@ -63,13 +82,21 @@ int main()
                 std::cout << "\n";
             }
 
-            std::cout << "\n\n------------------------------------\n";
-            std::cout << "sleep for 10 seconds\n";
-            std::cout << "---------------------------------------\n\n\n";
+            std::vector<uint8_t> data2;
+            std::future<bool> futureObj2 = myProxy.getter(data2);
+            if(futureObj2.get())
+            {
+                std::cout << "data received\n";
+                for (int i = 0; i < data2.size(); i++) {
+                    std::cout << static_cast<int>(data2[i])  << " ";
+                }
+                std::cout << "\n";
+            }
+
 
             // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-            std::vector<uint8_t> data3 = {44,44,44};
+            std::this_thread::sleep_for(std::chrono::seconds(4));
+            std::vector<uint8_t> data3 = {99,102,88};
             std::cout << "waiting for setting function\n";
             std::future<bool>futureObj3 = myProxy.setter(data3);
             if(futureObj3.get())
@@ -80,9 +107,11 @@ int main()
         else
         {
             std::cout << "subscription is failed\n";
+            // timeout
         }
+#endif
 
-        std::cout << "\n\n\ntest is done\n";
+        std::cout << "test is done\n";
         t1.join();
     }
     else

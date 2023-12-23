@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 add_library(
    araCom
 
-   ### sockets ###
+   ## sockets ##
    sockets/include/communicator.h
    sockets/include/network_socket.h
    sockets/include/poller.h
@@ -20,7 +20,7 @@ add_library(
    sockets/src/tcp_listener.cpp
    sockets/src/udp_client.cpp
 
-   ### helper ###
+   ## helper ##
    helper/abstract_state_machine.h
    helper/concurrent_queue.h
    helper/state.h
@@ -32,64 +32,25 @@ add_library(
    helper/ttl_timer.cpp
    helper/instance_id.h
 
-   ###  someip message ### 
+   ## someip message ##
    someip/someipMsg/someip_message.h
    someip/someipMsg/someip_message.cpp
 
-   ###  someip_rpc_message ### 
+   ## someip_rpc_message ##
    someip/someipRpcMsg/someip_rpc_message.cpp
    someip/someipRpcMsg/someip_rpc_message.h
 
-   ## receiver for someip_rpc_message ##
+   ## rpcs ##
    someip/rpc/rpcs_responser.h
    someip/rpc/rpcs_responser.cpp
    someip/rpc/socket_rpc_server.h
    someip/rpc/socket_rpc_server.cpp
-
-   ## sender for someip_rpc_message ##
    someip/rpc/rpcs_requester.h
    someip/rpc/rpcs_requester.cpp
    someip/rpc/socket_rpc_client.h
    someip/rpc/socket_rpc_client.cpp
 
-   ### someip_sd message ###
-   someip/someipSdMsg/someip_sd_message.cpp
-   someip/someipSdMsg/someip_sd_message.h
-
-   ### entry ###
-   someip/someipSdMsg/entry/entry_deserializer.h
-   someip/someipSdMsg/entry/entry.cpp
-   someip/someipSdMsg/entry/entry.h
-   someip/someipSdMsg/entry/eventgroup_entry.cpp
-   someip/someipSdMsg/entry/eventgroup_entry.h
-   someip/someipSdMsg/entry/service_entry.cpp
-   someip/someipSdMsg/entry/service_entry.h
-
-   ### option ###
-   someip/someipSdMsg/option/ipv4_endpoint_option.cpp
-   someip/someipSdMsg/option/ipv4_endpoint_option.h
-   someip/someipSdMsg/option/loadbalancing_option.cpp
-   someip/someipSdMsg/option/loadbalancing_option.h
-   someip/someipSdMsg/option/option_deserializer.h
-   someip/someipSdMsg/option/option.cpp
-   someip/someipSdMsg/option/option.h
-
-
-   ### provider and subscripter for pubsub ###
-   someip/pubsub/fsm/notsubscribed_state.h
-   someip/pubsub/fsm/service_down_state.h
-   someip/pubsub/fsm/subscribed_state.h
-   someip/pubsub/event_requester.cpp
-   someip/pubsub/event_requester.h
-   someip/pubsub/socket_pubSub_client.cpp
-   someip/pubsub/socket_pubSub_client.h
-   someip/pubsub/socket_pubSub_server.cpp
-   someip/pubsub/socket_pubSub_server.h
-   someip/pubsub/event_provider.cpp
-   someip/pubsub/event_provider.h
-
-   
-   ### provider and subscripter for events ###
+   ## events ##
    someip/events/fsm/notsubscribed_state.h
    someip/events/fsm/service_down_state.h
    someip/events/fsm/subscribed_state.h
@@ -102,44 +63,58 @@ add_library(
    someip/events/event_provider.cpp
    someip/events/event_provider.h
 
+   ## someip_sd message ##
+   someip/someipSdMsg/someip_sd_message.cpp
+   someip/someipSdMsg/someip_sd_message.h
 
-   ### DiscoveryProcess ###
+   ## entry ##
+   someip/someipSdMsg/entry/entry_deserializer.h
+   someip/someipSdMsg/entry/entry.cpp
+   someip/someipSdMsg/entry/entry.h
+   someip/someipSdMsg/entry/eventgroup_entry.cpp
+   someip/someipSdMsg/entry/eventgroup_entry.h
+   someip/someipSdMsg/entry/service_entry.cpp
+   someip/someipSdMsg/entry/service_entry.h
+
+   ## option ##
+   someip/someipSdMsg/option/ipv4_endpoint_option.cpp
+   someip/someipSdMsg/option/ipv4_endpoint_option.h
+   someip/someipSdMsg/option/loadbalancing_option.cpp
+   someip/someipSdMsg/option/loadbalancing_option.h
+   someip/someipSdMsg/option/option_deserializer.h
+   someip/someipSdMsg/option/option.cpp
+   someip/someipSdMsg/option/option.h
+ 
+   ## DiscoveryProcess ##
    someip/DiscoveryProcess/Process.h
    someip/DiscoveryProcess/Process.cpp   
 
-   #### service provider ####
+   ## service ##
    someip/service/fsm/notsubscribed_state.h
    someip/service/fsm/service_down_state.h
    someip/service/fsm/subscribed_state.h
-   someip/service/provider.h
-   someip/service/provider.cpp
 
-   #### service requester ####
-   someip/service/requester.h
-   someip/service/requester.cpp
-   someip/service/methods.h
-
-   ###### config #######
-   config.h
-
-   ###### proxy_skeleton #####
-   Proxy_Skeleton/Proxy.h
-   Proxy_Skeleton/Skeleton.h
-
-
-   #############################################################
-   ##                         SM                              ##
-   #############################################################
-   
-   #### provider of service which is an event only ####
+   ## service which is an event with rpcs ##
+   someip/service/event_rpcs/provider.h
+   someip/service/event_rpcs/provider.cpp
+   someip/service/event_rpcs/requester.h
+   someip/service/event_rpcs/requester.cpp
+   someip/service/event_rpcs/methods.h
+ 
+   ## service which is an event only ##
    someip/service/event_Only/event_service_provider.h
    someip/service/event_Only/event_service_provider.cpp
-
-   #### requester of service which is an event only ####
    someip/service/event_Only/event_service_requester.h
    someip/service/event_Only/event_service_requester.cpp
 
-   ############## sm_interfaces ###########
+   ## config ##
+   config.h
+
+   ## proxy_skeleton ##
+   Proxy_Skeleton/Proxy.h
+   Proxy_Skeleton/Skeleton.h
+
+   ## sm_interfaces ##
    sm_interfaces/TriggerInProxy.h
    sm_interfaces/TriggerInSkeleton.h
    sm_interfaces/TriggerOutProxy.h
@@ -159,13 +134,6 @@ add_library(
 #target_link_libraries(server_rpc araCom)
 #add_executable(client_rpc samples/demo_rpc_client.cpp)
 #target_link_libraries(client_rpc araCom)
-
-
-#### executables for pubSub ####
-#add_executable(client_pubSub samples/demo_pubSub_client.cpp)
-#target_link_libraries(client_pubSub araCom)
-#add_executable(server_pubSub samples/demo_pubSub_server.cpp)
-#target_link_libraries(server_pubSub araCom)
 
 
 #### executables for events ####

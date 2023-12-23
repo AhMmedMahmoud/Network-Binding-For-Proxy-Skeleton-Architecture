@@ -1,28 +1,49 @@
+// headers
 #include <iostream>
 #include "../sm_interfaces/TriggerInSkeleton.h"
 #include <thread>
 
+
+// namespaces
 using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
 using namespace ara::com;
 using namespace ara::com::skelton;
 
+
+// global variables
 bool executing = true;
 Poller* poller;
 
 
-int main()
+// class that simulates SM class
+class SM
 {
-    poller = new Poller();
-    
-    InstanceIdentifier id("3");
-    TriggerInSkelton mySkeleton(id);
+   public:
+   bool process(std::vector<uint8_t> data)
+   {
+      std::cout << "SM process function\n";
+      for(uint8_t x : data) 
+      {
+         if(x != 44)
+            return false;
+      }
+      return true;
+   }
+};
 
-    poller = mySkeleton.getPoller();
+
+int main()
+{   
+   // Create Object from TriggerInSkeleton 
+   InstanceIdentifier id("3");
+   TriggerInSkelton mySkeleton(id);
 
 
    // Create thread using a lambda expression
+   poller = new Poller();
+   poller = mySkeleton.getPoller();
    std::thread t1([](){
       while(executing)
       {
@@ -30,36 +51,18 @@ int main()
       }
    });
 
-   mySkeleton.init();
 
+   // initilize the service before offer it
+   SM smObject;
+   std::vector<uint8_t> currentValue = {47,48,49};
+   auto handle = std::bind(&SM::process, &smObject, std::placeholders::_1);
+   mySkeleton.init(currentValue, handle);
+
+
+   // offer the service
    std::cout << "before offering the service\n";
-
    mySkeleton.offerService();
-   
    std::cout << "after offering the service\n";
-
-
-   int counter = false;
-   std::vector<uint8_t> data;
-
-   /*
-   while(1)
-   {    
-      if(mySkeleton.eventServer->GetState() == PubSubState::Subscribed && counter == false)
-      {
-         // Introduce a delay of 7 seconds
-         std::this_thread::sleep_for(std::chrono::seconds(7));
-         std::cout << "---preparing sample1 to send---\n";
-         data= {1,2,3,4};
-         mySkeleton.eventServer->update(data);
-
-         // Introduce a delay of 7 seconds
-         std::this_thread::sleep_for(std::chrono::seconds(20));
-         counter = true;
-      } 
-   }
-   */
-   
 
 
    // Join the thread with the main thread
