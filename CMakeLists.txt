@@ -89,11 +89,6 @@ add_library(
    someip/DiscoveryProcess/Process.h
    someip/DiscoveryProcess/Process.cpp   
 
-   ## service ##
-   someip/service/fsm/notsubscribed_state.h
-   someip/service/fsm/service_down_state.h
-   someip/service/fsm/subscribed_state.h
-
    ## service which is an event with rpcs ##
    someip/service/event_rpcs/provider.h
    someip/service/event_rpcs/provider.cpp
