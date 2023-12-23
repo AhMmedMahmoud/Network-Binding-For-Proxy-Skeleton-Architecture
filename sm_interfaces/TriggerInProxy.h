@@ -174,7 +174,6 @@ namespace ara
                 private:
                     /*************************** atttibutes ****************/
 
-                    HandleType  *Handle;
                     EventServiceRequester *requester;
             };
         }
