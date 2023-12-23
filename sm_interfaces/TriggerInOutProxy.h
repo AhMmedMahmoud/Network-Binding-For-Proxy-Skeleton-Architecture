@@ -132,16 +132,16 @@ namespace ara
 
                     /************************ fundemental funtions *******************/
 
-                    void subscribe()
+                    void subscribe(size_t maxSampleCount)
                     {
-                        requester->eventClient->Subscribe();
+                        requester->eventClient->Subscribe(maxSampleCount);
+                    }
+ 
+                    helper::SubscriptionState GetSubscriptionState() const
+                    {
+                        return requester->eventClient->GetSubscriptionState();
                     }
 
-                    bool isSubscribed(int duration)
-                    {
-                        return requester->eventClient->isSubscribed(duration);
-                    }
-                    
                     std::future<bool> setter(std::vector<uint8_t> data)
                     {
                         return requester->eventClient->setter(data);
@@ -156,6 +156,18 @@ namespace ara
                     {
                        return requester->eventClient->requestGetting();
                     }
+
+                    void printSubscriptionState()
+                    {
+                        requester->eventClient->printCurrentState();
+                    }
+
+                    /*
+                    bool isSubscribed(int duration)
+                    {
+                        return requester->eventClient->isSubscribed(duration);
+                    }
+                    */
 
 
                     /******** disable copy constructor and equal assigment operator *****/

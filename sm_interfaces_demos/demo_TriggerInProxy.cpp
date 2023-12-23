@@ -44,43 +44,49 @@ int main()
             }
         });
 
- 
-        std::cout << "---------- requesting subscribe ---------\n";
-        myProxy.subscribe();
-        if(myProxy.isSubscribed(3000) == 1)
+        
+        std::cout << "---------- subscription state before requesting subscribe ---------\n";
+        myProxy.printSubscriptionState();
+        // Introduce a delay of 7 seconds
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        
+        
+        std::cout << "\n\n\n----------------------- requesting subscribe ----------------------\n";
+        myProxy.subscribe(256);
+        while(myProxy.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
         {
-            std::cout << "----------subscription is done ---------\n";
+            std::cout << "not subscribed yet ...\n";
+        }
+        
+        std::cout << "subscribed\n";
 
-            std::cout << "---------------- getter ----------------\n";
-            std::vector<uint8_t> data;
-            std::future<bool> futureObj = myProxy.getter(data);
-            if(futureObj.get())
-            {
-                std::cout << "data received\n";
-                for (int i = 0; i < data.size(); i++) {
-                    std::cout << static_cast<int>(data[i])  << " ";
-                }
-                std::cout << "\n";
+        std::cout << "\n\n\n------------------------------- getter ----------------------------\n";
+        std::vector<uint8_t> data;
+        std::future<bool> futureObj = myProxy.getter(data);
+        if(futureObj.get())
+        {
+            std::cout << "data received\n";
+            for (int i = 0; i < data.size(); i++) {
+                std::cout << static_cast<int>(data[i])  << " ";
             }
+            std::cout << "\n";
+        }
 
-            std::cout << "\n\n------------------------------------\n";
-            std::cout << "sleep for 10 seconds\n";
-            std::cout << "---------------------------------------\n\n\n";
+        std::cout << "\n\n------------------------------------\n";
+        std::cout << "sleep for 10 seconds\n";
+        std::cout << "---------------------------------------\n\n\n";
+        // Introduce a delay of 7 seconds
+        std::this_thread::sleep_for(std::chrono::seconds(10));
 
-            // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-            std::vector<uint8_t> data3 = {44,44,44};
-            std::cout << "waiting for setting function\n";
-            std::future<bool>futureObj3 = myProxy.setter(data3);
-            if(futureObj3.get())
-            {
+
+        std::cout << "\n\n\n------------------------------- setter ----------------------------\n";
+        std::vector<uint8_t> data3 = {44,44,44};
+        std::future<bool>futureObj3 = myProxy.setter(data3);
+        if(futureObj3.get())
+        {
             std::cout << "setter function is executed\n";
-            }
         }
-        else
-        {
-            std::cout << "subscription is failed\n";
-        }
+
 
         std::cout << "\n\n\ntest is done\n";
         t1.join();

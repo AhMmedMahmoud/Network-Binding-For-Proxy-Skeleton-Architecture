@@ -40,18 +40,21 @@ int main()
             }
         });
 
- 
-        std::cout << "---------- requesting subscribe ---------\n";
-        myProxy.subscribe();
 
-        if(myProxy.isSubscribed(3000) == 1)
+        std::cout << "---------- subscription state before requesting subscribe ---------\n";
+        myProxy.printSubscriptionState();
+        // Introduce a delay of 7 seconds
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        
+        
+        std::cout << "\n\n\n----------------------- requesting subscribe ----------------------\n";
+        myProxy.subscribe(256);
+        while(myProxy.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
         {
-            std::cout << "----------subscription is done ---------\n";
-        }
-        else
-        {
-            std::cout << "subscription is failed\n";
-        }
+            std::cout << "not subscribed yet ...\n";
+        }        
+        std::cout << "subscribed\n";
+
 
         std::cout << "test is done\n";
         t1.join();

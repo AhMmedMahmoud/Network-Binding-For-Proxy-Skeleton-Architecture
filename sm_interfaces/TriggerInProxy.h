@@ -27,7 +27,7 @@ namespace ara
         {    
             template <typename t>
             using ServiceHandleContainer = std::vector<t>;
-
+            
             class TriggerInProxy
             {
                 public:
@@ -132,14 +132,14 @@ namespace ara
 
                     /************************ fundemental funtions *******************/
 
-                    void subscribe()
+                    void subscribe(size_t maxSampleCount)
                     {
-                        requester->eventClient->Subscribe();
+                        requester->eventClient->Subscribe(maxSampleCount);
                     }
 
-                    bool isSubscribed(int duration)
+                    helper::SubscriptionState GetSubscriptionState() const
                     {
-                        return requester->eventClient->isSubscribed(duration);
+                        return requester->eventClient->GetSubscriptionState();
                     }
                     
                     std::future<bool> setter(std::vector<uint8_t> data)
@@ -154,7 +154,19 @@ namespace ara
 
                     void requestGetting()
                     {
-                       return requester->eventClient->requestGetting();
+                        requester->eventClient->requestGetting();
+                    }
+
+                    /*
+                    bool isSubscribed(int duration)
+                    {
+                        return requester->eventClient->isSubscribed(duration);
+                    }
+                    */
+
+                    void printSubscriptionState()
+                    {
+                        requester->eventClient->printCurrentState();
                     }
 
 

@@ -63,51 +63,47 @@ int main()
     }
 
 #elif(EXAMPLE == PUBSUB)    
-        std::cout << "---------- requesting subscribe ---------\n";
-    
-        myProxy.subscribe();
-
-        if(myProxy.isSubscribed(3000) == 1)
+        std::cout << "\n\n\n----------------------- requesting subscribe ----------------------\n";
+        myProxy.subscribe(256);
+        while(myProxy.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
         {
-            std::cout << "subscription is done\n";
-
-            std::vector<uint8_t> data;
-            std::future<bool> futureObj = myProxy.getter(data);
-            if(futureObj.get())
-            {
-                std::cout << "data received\n";
-                for (int i = 0; i < data.size(); i++) {
-                    std::cout << static_cast<int>(data[i])  << " ";
-                }
-                std::cout << "\n";
-            }
-
-            std::vector<uint8_t> data2;
-            std::future<bool> futureObj2 = myProxy.getter(data2);
-            if(futureObj2.get())
-            {
-                std::cout << "data received\n";
-                for (int i = 0; i < data2.size(); i++) {
-                    std::cout << static_cast<int>(data2[i])  << " ";
-                }
-                std::cout << "\n";
-            }
-
-
-            // Introduce a delay of 7 seconds
-            std::this_thread::sleep_for(std::chrono::seconds(4));
-            std::vector<uint8_t> data3 = {99,102,88};
-            std::cout << "waiting for setting function\n";
-            std::future<bool>futureObj3 = myProxy.setter(data3);
-            if(futureObj3.get())
-            {
-            std::cout << "setter function is executed\n";
-            }
+            std::cout << "not subscribed yet ...\n";
         }
-        else
+        
+        std::cout << "subscribed\n";
+
+        std::vector<uint8_t> data;
+        std::future<bool> futureObj = myProxy.getter(data);
+        if(futureObj.get())
         {
-            std::cout << "subscription is failed\n";
-            // timeout
+            std::cout << "data received\n";
+            for (int i = 0; i < data.size(); i++) {
+                std::cout << static_cast<int>(data[i])  << " ";
+            }
+            std::cout << "\n";
+        }
+
+
+        std::vector<uint8_t> data2;
+        std::future<bool> futureObj2 = myProxy.getter(data2);
+        if(futureObj2.get())
+        {
+            std::cout << "data received\n";
+            for (int i = 0; i < data2.size(); i++) {
+                std::cout << static_cast<int>(data2[i])  << " ";
+            }
+            std::cout << "\n";
+        }
+
+
+        // Introduce a delay of 7 seconds
+        std::this_thread::sleep_for(std::chrono::seconds(4));
+        std::vector<uint8_t> data3 = {99,102,88};
+        std::cout << "waiting for setting function\n";
+        std::future<bool>futureObj3 = myProxy.setter(data3);
+        if(futureObj3.get())
+        {
+          std::cout << "setter function is executed\n";
         }
 #endif
 

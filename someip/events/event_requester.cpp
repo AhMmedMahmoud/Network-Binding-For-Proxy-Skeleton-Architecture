@@ -97,7 +97,8 @@ namespace ara
                                                 mProtocolVersion{protocolVersion},
                                                 mInterfaceVersion{interfaceVersion},
                                                 mSubscriptionLock(mSubscriptionMutex, std::defer_lock),
-                                                mValidNotify{true}
+                                                mValidNotify{true},
+                                                state(helper::SubscriptionState::kNotSubscribed)
                 {}
 
 
@@ -106,19 +107,28 @@ namespace ara
                 {
                     if(isValidNotification(message))
                     {
-#if(debuging == 1)
-                        std::cout << "it is notification\n";
-                        std::cout << "------------------------------------------------\n";
-                        std::cout << ".....received message..... \n";
-                        message.print();
-                        std::cout << "-------------------------------------------------\n\n";
-#endif
-                        bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
-                        if (_enqueued)
+                        // update state to subscribed if i already request subscription
+                        if(state == helper::SubscriptionState::kSubscriptionPending)
                         {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                            std::cout << "wake up thread that setting promise\n";
-                            mSubscriptionConditionVariable.notify_one();
+#if(debuging == 1)
+                            std::cout << "it is notification\n";
+                            std::cout << "------------------------------------------------\n";
+                            std::cout << ".....received message..... \n";
+                            message.print();
+                            std::cout << "-------------------------------------------------\n\n";
+#endif
+                            state = helper::SubscriptionState::kSubscribed;
+                        }
+
+                        if(state == helper::SubscriptionState::kSubscribed)
+                        {
+                            bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
+                            if (_enqueued)
+                            {
+                                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                                std::cout << "wake up thread that setting promise\n";
+                                mSubscriptionConditionVariable.notify_one();
+                            }
                         }
                     }
                     else if(isResponseToSettingValue(message))
@@ -141,7 +151,7 @@ namespace ara
                 
                 /******************************* fundemental functions *********************/
 
-                void EventSubscripter::Subscribe()
+                void EventSubscripter::Subscribe(size_t maxSampleCount)
                 {
                     std::vector<uint8_t> data;
                     uint32_t _serviceId = mServiceId;
@@ -155,9 +165,10 @@ namespace ara
                                                    data
                                                 );
                     Send(message);
+                    state = helper::SubscriptionState::kSubscriptionPending;
                 }
 
-
+                /*
                 bool EventSubscripter::isSubscribed(
                     int duration,
                     rpc::SomeIpRpcMessage &message)
@@ -191,6 +202,11 @@ namespace ara
 
                 bool EventSubscripter::isSubscribed(int duration)
                 {
+                    if(state ==helper::SubscriptionState::kSubscribed)
+                        return true;
+                    else if(state ==helper::SubscriptionState::kNotSubscribed)
+                        return false;
+
                     bool _result;
                     if (mMessageBuffer.Empty())
                     {
@@ -210,6 +226,7 @@ namespace ara
 
                     return _result;
                 }
+                */
 
                 
 
@@ -274,7 +291,33 @@ namespace ara
 
                     return future;
                 }
+
                 
+                helper::SubscriptionState EventSubscripter::GetSubscriptionState() const
+                {
+                    return state;
+                }
+
+                void EventSubscripter::printCurrentState() const
+                {
+                    switch(state)
+                    {
+                        case helper::SubscriptionState::kNotSubscribed:
+                        std::cout << "current state: NotSubscribed\n";
+                        break;
+
+                        case helper::SubscriptionState::kSubscribed:
+                        std::cout << "current state: Subscribed\n";
+                        break;
+
+                        case helper::SubscriptionState::kSubscriptionPending :
+                        std::cout << "current state: Subscription Pending\n";
+                        break;
+
+                        default:
+                        break;
+                    }
+                }
 
                 /******************************* destructor ******************************/
 

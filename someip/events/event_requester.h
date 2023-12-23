@@ -3,6 +3,7 @@
 
 #include <condition_variable>
 #include "../../helper/concurrent_queue.h"
+#include "../../helper/state.h"
 #include <functional>
 #include <iostream>
 #include "../someipRpcMsg/someip_rpc_message.h"
@@ -38,6 +39,7 @@ namespace ara
                     const  uint16_t cRequestSetValueBySubscriberMethodId = 10;
                     const  uint16_t cRequestGetValueBySubscriberMethodId = 11;
 
+                    helper::SubscriptionState state;
 
                     /******************************* useful variables ************************/
 
@@ -60,7 +62,16 @@ namespace ara
 
                     void requestSetting(const std::vector<uint8_t> &data);
 
+                    /*
+                    /// @brief Try to wait unitl the server processes a subscription request
+                    /// @param duration Waiting timeout in milliseconds
+                    /// @param message The first processed subscription message in the buffer
+                    /// @returns True, if the service offering is stopped before the timeout; otherwise false
+                    bool isSubscribed(int duration, rpc::SomeIpRpcMessage &message);
                 
+                    bool isSubscribed(int duration);
+                    */
+                   
                 protected:
                     /*********************** useful for constructor of my child *****************/
                     
@@ -87,21 +98,17 @@ namespace ara
                 public:
                     /******************************* fundemental functions *********************/
 
-                    void Subscribe();
+                    void Subscribe(size_t maxSampleCount);
                     
-                    /// @brief Try to wait unitl the server processes a subscription request
-                    /// @param duration Waiting timeout in milliseconds
-                    /// @param message The first processed subscription message in the buffer
-                    /// @returns True, if the service offering is stopped before the timeout; otherwise false
-                    bool isSubscribed(int duration, rpc::SomeIpRpcMessage &message);
-
-                    bool isSubscribed(int duration);
+                    helper::SubscriptionState GetSubscriptionState() const;
 
                     std::future<bool> getter(std::vector<uint8_t> &data); 
 
                     std::future<bool> setter(const std::vector<uint8_t> &data); 
 
                     void requestGetting();
+
+                    void printCurrentState() const;
 
                     /************************ disable empty constructor **********************/
 
