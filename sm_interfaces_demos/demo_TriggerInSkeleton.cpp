@@ -15,6 +15,7 @@ using namespace ara::com::skelton;
 // global variables
 bool executing = true;
 Poller* poller;
+const int cTimeoutMs = 100;
 
 
 // class that simulates SM class

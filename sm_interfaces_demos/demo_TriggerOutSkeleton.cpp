@@ -1,15 +1,20 @@
+// headers
 #include <iostream>
 #include "../sm_interfaces/TriggerOutSkeleton.h"
 #include <thread>
 
+// namespaces
 using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
 using namespace ara::com;
 using namespace ara::com::skelton;
 
+
+// global variables
 bool executing = true;
 Poller* poller;
+const int cTimeoutMs = 100;
 
 
 int main()
@@ -32,7 +37,7 @@ int main()
 
 
    std::vector<uint8_t> currentValue = {47,48,49};
-   //mySkeleton.init(currentValue);
+   mySkeleton.init(currentValue);
 
    std::cout << "before offering the service\n";
 
@@ -40,7 +45,7 @@ int main()
    
    std::cout << "after offering the service\n";
 
-
+   /*
    int counter = false;
    std::vector<uint8_t> data;
 
@@ -59,6 +64,7 @@ int main()
          counter = true;
       } 
    }
+   */
    
 
 

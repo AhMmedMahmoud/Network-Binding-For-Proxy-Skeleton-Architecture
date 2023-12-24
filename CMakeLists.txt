@@ -111,11 +111,17 @@ add_library(
 
    ## sm_interfaces ##
    sm_interfaces/TriggerInProxy.h
+   sm_interfaces/TriggerInProxy.cpp
    sm_interfaces/TriggerInSkeleton.h
+   sm_interfaces/TriggerInSkeleton.cpp
    sm_interfaces/TriggerOutProxy.h
+   sm_interfaces/TriggerOutProxy.cpp
    sm_interfaces/TriggerOutSkeleton.h
+   sm_interfaces/TriggerOutSkeleton.cpp
    sm_interfaces/TriggerInOutProxy.h
+   sm_interfaces/TriggerInOutProxy.cpp
    sm_interfaces/TriggerInOutSkeleton.h
+   sm_interfaces/TriggerInOutSkeleton.cpp
 )
 
 

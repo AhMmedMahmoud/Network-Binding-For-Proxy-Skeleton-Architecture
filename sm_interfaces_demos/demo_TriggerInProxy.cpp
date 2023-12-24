@@ -16,6 +16,7 @@ using namespace ara::com::proxy;
 // global variables
 bool executing = true;
 Poller* poller;
+const int cTimeoutMs = 100;
 
 
 int main()

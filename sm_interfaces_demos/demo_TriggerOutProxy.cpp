@@ -1,11 +1,10 @@
+// headers
 #include <iostream>
 #include "../sm_interfaces/TriggerOutProxy.h"
-
 #include <thread>
-// for delay
-#include <chrono>
+#include <chrono>   // for delay
 
-
+// namespaces
 using namespace ara::com::someip::sd;
 using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
@@ -13,18 +12,24 @@ using namespace ara::com;
 using namespace ara::com::proxy;
 
 
+// global variables
 bool executing = true;
 Poller* poller;
+const int cTimeoutMs = 100;
 
 
 int main()
 {
-    std::cout << "--------- before finding ----------\n";
+    std::cout << "-----------------------------------------------------------\n";
+    std::cout << "before finding \n";
+    std::cout << "-----------------------------------------------------------\n";
 
     InstanceIdentifier id("4");
     auto handles = TriggerOutProxy::findSerivce(id);
     
-    std::cout << "--------- after finding ----------\n";
+    std::cout << "-----------------------------------------------------------\n";
+    std::cout << "after finding \n";
+    std::cout << "-----------------------------------------------------------\n\n\n";
 
 
     if(!handles.empty())
