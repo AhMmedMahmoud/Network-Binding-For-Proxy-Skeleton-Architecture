@@ -1,3 +1,6 @@
+#ifndef TRIGGER_IN_PROXY_H
+#define TRIGGER_IN_PROXY_H
+
 #include "../someip/service/event_Only/event_service_requester.h"
 #include "../helper/instance_id.h"
 
@@ -72,11 +75,9 @@ namespace ara
 
                     void requestGetting();
 
-                    /*
-                    bool isSubscribed(int duration);
-                    */
-
                     void printSubscriptionState();
+
+                    //bool isSubscribed(int duration);
 
 
                     /******** disable copy constructor and equal assigment operator *****/
@@ -97,3 +98,5 @@ namespace ara
         }
     }
 }
+
+#endif

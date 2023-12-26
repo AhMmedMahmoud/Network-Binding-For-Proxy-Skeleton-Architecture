@@ -1,3 +1,6 @@
+#ifndef TRIGGER_IN_SKELETON_H
+#define TRIGGER_IN_SKELETON_H
+
 #include "../someip/service/event_Only/event_service_provider.h"
 #include "../helper/instance_id.h"
 
@@ -36,3 +39,5 @@ namespace ara
         }
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef TRIGGER_IN_OUT_PROXY_H
+#define TRIGGER_IN_OUT_PROXY_H
+
 #include "../someip/service/event_Only/event_service_requester.h"
 #include "../helper/instance_id.h"
 
@@ -95,3 +98,5 @@ namespace ara
         }
     }
 }
+
+#endif

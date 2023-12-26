@@ -1,3 +1,6 @@
+#ifndef TRIGGER_OUT_PROXY_H
+#define TRIGGER_OUT_PROXY_H
+
 #include "../someip/service/event_Only/event_service_requester.h"
 #include "../helper/instance_id.h"
 
@@ -49,7 +52,11 @@ namespace ara
                             EventServiceRequester* getRequester();
                     };
 
+
+                    /*********************** static functions **********************/
+
                     static ServiceHandleContainer<HandleType> findSerivce(InstanceIdentifier id);
+
 
                     /************************* constructor **************************/
 
@@ -70,10 +77,8 @@ namespace ara
 
                     void printSubscriptionState();
 
-                    /*
-                    bool isSubscribed(int duration);
-                    */
-
+                    // bool isSubscribed(int duration);
+                    
 
                     /******** disable copy constructor and equal assigment operator *****/
                     
@@ -93,3 +98,5 @@ namespace ara
         }
     }
 }
+
+#endif

@@ -8,16 +8,16 @@ add_library(
 
    ## sockets ##
    sockets/include/communicator.h
-   sockets/include/network_socket.h
-   sockets/include/poller.h
-   sockets/include/tcp_client.h
-   sockets/include/tcp_listener.h
-   sockets/include/udp_client.h
    sockets/src/communicator.cpp
+   sockets/include/network_socket.h
    sockets/src/network_socket.cpp
+   sockets/include/poller.h
    sockets/src/poller.cpp
+   sockets/include/tcp_client.h
    sockets/src/tcp_client.cpp
+   sockets/include/tcp_listener.h
    sockets/src/tcp_listener.cpp
+   sockets/include/udp_client.h
    sockets/src/udp_client.cpp
 
    ## helper ##
@@ -28,8 +28,6 @@ add_library(
    helper/ipv4_address.h
    helper/payload_helper.h
    helper/payload_helper.cpp
-   helper/ttl_timer.h
-   helper/ttl_timer.cpp
    helper/instance_id.h
 
    ## someip message ##
@@ -107,7 +105,9 @@ add_library(
 
    ## proxy_skeleton ##
    Proxy_Skeleton/Proxy.h
+   Proxy_Skeleton/Proxy.cpp
    Proxy_Skeleton/Skeleton.h
+   Proxy_Skeleton/Skeleton.cpp
 
    ## sm_interfaces ##
    sm_interfaces/TriggerInProxy.h
@@ -150,13 +150,13 @@ target_link_libraries(process araCom)
 
 
 #### execuatables for service provider ####
-add_executable(provider samples/demo_service_provider.cpp)
-target_link_libraries(provider araCom)
+#add_executable(provider samples/demo_service_provider.cpp)
+#target_link_libraries(provider araCom)
 
 
 #### execuatables for service requester ####
-add_executable(requester samples/demo_service_requester.cpp)
-target_link_libraries(requester araCom)
+#add_executable(requester samples/demo_service_requester.cpp)
+#target_link_libraries(requester araCom)
 
 
 #### executables for proxy ####
@@ -166,9 +166,6 @@ target_link_libraries(proxy araCom)
 #### executables for skeleton ####
 add_executable(skeleton samples/demo_skeleton.cpp)
 target_link_libraries(skeleton araCom)
-
-
-
 
 
 #####################################################################################

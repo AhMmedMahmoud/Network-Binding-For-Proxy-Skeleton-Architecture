@@ -18,16 +18,15 @@ const int cTimeoutMs = 100;
 
 
 int main()
-{
-    poller = new Poller();
-    
-    InstanceIdentifier id("4");
-    TriggerOutSkelton mySkeleton(id);
+{   
+   // Create Object from TriggerOutSkeleton 
+   InstanceIdentifier id("4");
+   TriggerOutSkelton mySkeleton(id);
 
-    poller = mySkeleton.getPoller();
-
-
+ 
    // Create thread using a lambda expression
+   poller = new Poller();
+   poller = mySkeleton.getPoller();
    std::thread t1([](){
       while(executing)
       {
@@ -36,19 +35,19 @@ int main()
    });
 
 
+   // initilize the service before offer it
    std::vector<uint8_t> currentValue = {47,48,49};
    mySkeleton.init(currentValue);
 
-   std::cout << "before offering the service\n";
 
+   // offer the service
+   std::cout << "before offering the service\n";
    mySkeleton.offerService();
-   
    std::cout << "after offering the service\n";
 
    /*
    int counter = false;
    std::vector<uint8_t> data;
-
    while(1)
    {    
       if(mySkeleton.eventServer->GetState() == PubSubState::Subscribed && counter == false)
@@ -66,7 +65,6 @@ int main()
    }
    */
    
-
 
    // Join the thread with the main thread
    t1.join();

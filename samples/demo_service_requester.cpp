@@ -96,16 +96,11 @@ int main()
 #endif
 */    
 
-#if(debuging == 1)
-    std::cout << "before calling getSum\n";
-#endif
+    std::cout << "--------------------------- before calling getSum------------------\n";
+
     std::vector<uint8_t> output3;
 
     std::future<bool> futureObj3 = requester->calculateSum(input,output3);
-
-#if(debuging == 1)
-    std::cout << "after calling getSum\n";
-#endif
 
     if(futureObj3.get())
     {
@@ -116,19 +111,17 @@ int main()
         std::cout << "\n";
     }
 
-    
-
 #elif(EXAMPLE == PUBSUB)    
-    std::cout << "---------- requesting subscribe ---------\n";
-    
+    std::cout << "\n\n\n----------------------- requesting subscribe ----------------------\n";
     requester->eventClient->Subscribe(256);
-
     while(requester->eventClient->GetSubscriptionState() != SubscriptionState::kSubscribed)
     {
         std::cout << "not subscribed yet ...\n";
     }
     std::cout << "subscription is done\n";
 
+
+    std::cout << "\n\n\n------------------------------- getter ----------------------------\n";
     std::vector<uint8_t> data;
     std::future<bool> futureObj = requester->eventClient->getter(data);
     if(futureObj.get())
@@ -140,6 +133,13 @@ int main()
         std::cout << "\n";
     }
 
+    std::cout << "\n\n------------------------------------\n";
+    std::cout << "sleep for 4 seconds\n";
+    std::cout << "---------------------------------------\n\n\n";
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+
+
+    std::cout << "\n\n\n------------------------------- getter ----------------------------\n";
     std::vector<uint8_t> data2;
     std::future<bool> futureObj2 = requester->eventClient->getter(data2);
     if(futureObj2.get())
@@ -152,14 +152,19 @@ int main()
     }
 
 
-    // Introduce a delay of 7 seconds
+    std::cout << "\n\n------------------------------------\n";
+    std::cout << "sleep for 4 seconds\n";
+    std::cout << "---------------------------------------\n\n\n";
     std::this_thread::sleep_for(std::chrono::seconds(4));
+
+
+    std::cout << "\n\n\n------------------------------- setter ----------------------------\n";
     std::vector<uint8_t> data3 = {99,102,88};
     std::cout << "waiting for setting function\n";
     std::future<bool>futureObj3 = requester->eventClient->setter(data3);
     if(futureObj3.get())
     {
-    std::cout << "setter function is executed\n";
+        std::cout << "setter function is executed\n";
     }
 
 #endif
