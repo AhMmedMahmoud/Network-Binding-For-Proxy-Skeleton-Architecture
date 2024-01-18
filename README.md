@@ -1,5 +1,3 @@
-# SOMEIP-and-SOMEIP-SD
-
 # build instructions
 ```cmake
 if [ -d "build" ]; then
