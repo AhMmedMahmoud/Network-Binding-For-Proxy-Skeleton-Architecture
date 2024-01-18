@@ -1,6 +1,6 @@
 # studied topics
 - Sockets tcp/udp
-- epoll of linux
+- Epoll of linux
 - SOMEIP
 - SOMEIP/SD
 - Rpcs
