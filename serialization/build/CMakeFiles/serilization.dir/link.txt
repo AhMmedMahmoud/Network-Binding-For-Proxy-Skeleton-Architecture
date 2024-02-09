@@ -1,2 +1,0 @@
-/usr/bin/ar qc libserilization.a CMakeFiles/serilization.dir/serializer.cpp.o CMakeFiles/serilization.dir/deserializer.cpp.o
-/usr/bin/ranlib libserilization.a
