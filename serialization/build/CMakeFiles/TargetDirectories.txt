@@ -1,0 +1,4 @@
+/home/ahmed/coding/serialization/build/CMakeFiles/serilization.dir
+/home/ahmed/coding/serialization/build/CMakeFiles/test.dir
+/home/ahmed/coding/serialization/build/CMakeFiles/edit_cache.dir
+/home/ahmed/coding/serialization/build/CMakeFiles/rebuild_cache.dir
