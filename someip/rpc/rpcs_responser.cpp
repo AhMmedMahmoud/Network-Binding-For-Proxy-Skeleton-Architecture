@@ -10,7 +10,8 @@ namespace ara
             {
                 /********************************* useful in child ******************************/
 
-                RpcsResponser::RpcsResponser(uint8_t protocolVersion, uint8_t interfaceVersion) noexcept : mProtocolVersion{protocolVersion},
+                RpcsResponser::RpcsResponser(uint8_t protocolVersion,
+                                             uint8_t interfaceVersion) noexcept : mProtocolVersion{protocolVersion},
                                                                                   mInterfaceVersion{interfaceVersion}
                 {}
 
@@ -49,8 +50,16 @@ namespace ara
                 }
 
 
+
                 /*
-                    make from passed message a vector fills with response SOMEIP message
+                    - make response message 
+                        - has same message id of received message
+                        - has same client id of received message
+                        - has same session id of received message
+                        
+                        - has passed return code
+                        - has passed rpcPayload
+                    - fill its serialization into passed vector that called payload
                 */
                 void RpcsResponser::getResponsePayload(
                     const SomeIpRpcMessage &request,
@@ -70,6 +79,9 @@ namespace ara
                     payload = std::move(_errorMessage.Payload());
                 }
 
+                /*
+                    special case when rpcPayload is set to null 
+                */
                 void RpcsResponser::getResponsePayload(
                     const SomeIpRpcMessage &request,
                     SomeIpReturnCode returnCode,
@@ -83,25 +95,20 @@ namespace ara
 
                 /**************************** for my child ***************************************/
 
+                /*
+                    - valiadate request message message
+                    - if invalid request message then fill responsePayload with error message and return
+                    - else check if message id of request message is registed or not
+                        - if not registed then fill responsePayload with error message and return
+                        - else call the registed handler for this message id
+                        - call the method
+                        - fill responsePayload with response message with result of requested method
+                */
+
                 bool RpcsResponser::TryInvokeHandler(
                     const std::vector<uint8_t> &requestPayload,
                     std::vector<uint8_t> &responsePayload) const
                 {
-                    /*
-                    take
-                    - serialized SOMEIP message that represents request to executing a method
-                    - vector to be filled with SOMEIP message that represents response to the request
-
-                    success senario
-                      - valiadate serialized SOMEIP message
-                      - check for message id
-                        - call the registed handler for this message id
-                            - call the method
-                            - fill the result into passed vector
-                        - make SOMEIP message 
-                        - serialize it
-                        - store it in passed vector 
-                    */
                     try
                     {
                         const SomeIpRpcMessage _request{SomeIpRpcMessage::Deserialize(requestPayload)};
@@ -113,7 +120,7 @@ namespace ara
                                 _request,
                                 _returnCode,
                                 responsePayload);
-
+                         
                             return true;
                         }
 
@@ -125,19 +132,19 @@ namespace ara
 
                             if (_handled)
                             {
-                                getResponsePayload(
-                                    _request,
-                                    SomeIpReturnCode::eOK,
-                                    _rpcResponsePdu,
-                                    responsePayload);
+                                getResponsePayload( _request,
+                                                    SomeIpReturnCode::eOK,
+                                                    _rpcResponsePdu,
+                                                    responsePayload
+                                                  );  
                             }
                             else
                             {
-                                getResponsePayload(
-                                    _request,
-                                    SomeIpReturnCode::eNotOk,
-                                    _rpcResponsePdu,
-                                    responsePayload);
+                                getResponsePayload( _request,
+                                                    SomeIpReturnCode::eNotOk,
+                                                    _rpcResponsePdu,
+                                                    responsePayload
+                                                  );
                             }
                         }
                         else
@@ -151,7 +158,8 @@ namespace ara
                         return true;
                     }
                     catch (std::out_of_range)
-                    {
+                    {                 
+                        std::cout << "77777777777777777777777777777\n";
                         return false;
                     }
                 }

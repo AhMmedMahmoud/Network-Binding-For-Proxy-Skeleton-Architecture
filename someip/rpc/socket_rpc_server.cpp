@@ -1,5 +1,4 @@
-#include "./socket_rpc_server.h"
-
+#include "socket_rpc_server.h"
 
 namespace ara
 {
@@ -90,14 +89,17 @@ namespace ara
                         received.print();
                         std::cout << "--------------------------------------------------\n";
  
-                        // define vector that will be filled with result of method that i provide
+                        /*
+                        define vector that will be filled with response message 
+                        whose payload is the result of method that i provide
+                        */
                         std::vector<uint8_t> _responsePayload;
                          
                         // Try to invoke corresponding request handler at a message reception
                         bool _handled{TryInvokeHandler(cRequestPayload, _responsePayload)};
                         if (_handled)
                         {
-                            // put vector that holds the result of method that i provide
+                            // put vector that represent response message
                             mSendingQueue.TryEnqueue(std::move(_responsePayload));
                         }
                     }

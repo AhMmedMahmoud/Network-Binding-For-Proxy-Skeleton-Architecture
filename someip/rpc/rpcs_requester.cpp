@@ -130,8 +130,7 @@ namespace ara
                     // create message that represents a request
                     SomeIpRpcMessage _request(_messageId, clientId, _sessionId, mProtocolVersion, mInterfaceVersion, rpcPayload);
 
-                    std::vector<uint8_t> p = _request.Payload();
-                    Send(p);
+                    Send(_request.Payload());
 
                     // for printing
                     std::cout << "\n------------------------------------------------\n";

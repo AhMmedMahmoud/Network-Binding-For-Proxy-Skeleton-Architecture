@@ -11,13 +11,14 @@ namespace ara
             namespace rpc
             {
                 /******************************* constructors  ******************************/
-
+            
                 SomeIpRpcMessage::SomeIpRpcMessage() : SomeIpMessage(0,
                                                                      0,
                                                                      1,
                                                                      1,
                                                                      SomeIpMessageType::Request)
                 {}
+                
 
                 SomeIpRpcMessage::SomeIpRpcMessage(uint32_t messageId,
                                                    uint16_t clientId,

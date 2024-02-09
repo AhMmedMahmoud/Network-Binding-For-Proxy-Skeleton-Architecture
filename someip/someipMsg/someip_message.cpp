@@ -1,4 +1,4 @@
-#include "./someip_message.h"
+#include "someip_message.h"
 #include <iostream>
 
 namespace ara
@@ -7,7 +7,7 @@ namespace ara
     {
         namespace someip
         {
-            /****** it helps in constructors that will be inherited to mychild *******/
+            /************************** generic constructor *************************/
 
             SomeIpMessage::SomeIpMessage(uint32_t messageId,
                                          uint16_t clientId,
@@ -84,6 +84,7 @@ namespace ara
 
 
 
+
             /***************** move constructor and move assigment operator *****************/
 
             SomeIpMessage::SomeIpMessage(SomeIpMessage &&other) noexcept : mMessageId{other.mMessageId},
@@ -96,7 +97,7 @@ namespace ara
             {
             }
 
-            SomeIpMessage &SomeIpMessage::operator=(SomeIpMessage &&other)
+            SomeIpMessage& SomeIpMessage::operator=(SomeIpMessage &&other)
             {
                 mMessageId = other.mMessageId;
                 mClientId = other.mClientId;

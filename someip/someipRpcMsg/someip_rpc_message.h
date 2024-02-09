@@ -20,16 +20,31 @@ namespace ara
                     std::vector<uint8_t> mRpcPayload;
 
 
-                    //SomeIpRpcMessage();
+                public:                    
+                    /* 
+                        all constructor arenot declared as noexcept as the constructors 
+                        of partent they call may throw exception 
+                    */
 
-                public:
+                    /******************************** empty constructor **************************/
+
                     SomeIpRpcMessage();
 
-                    /******************************* constructors  ******************************/
-                   
-                    /* all constructor arenot declared as noexcept as the constructors 
-                    of partent they call may throw exception */
-                    
+
+                    /****************************** generic constructor **************************/
+
+                    SomeIpRpcMessage( uint32_t messageId,
+                                      uint16_t clientId,
+                                      uint16_t sessionId,
+                                      uint8_t protocolVersion,
+                                      uint8_t interfaceVersion,
+                                      SomeIpMessageType messageType,
+                                      SomeIpReturnCode returnCode,
+                                      const std::vector<uint8_t> &rpcPayload);
+
+
+                    /******************* constructors for request messages  *********************/
+
                     /// @brief Constructor for RPC request message by copying the RPC payload
                     /// @param messageId Message ID consisting service and method/event ID
                     /// @param clientId Client ID including ID prefix
@@ -58,6 +73,9 @@ namespace ara
                                      uint8_t interfaceVersion,
                                      std::vector<uint8_t> &&rpcPayload);
 
+
+                    /************** constructor for response or error messages  *****************/
+
                     /// @brief Constructor for RPC response or error message
                     /// @param messageId Message ID consisting service and method/event ID
                     /// @param clientId Client ID including ID prefix
@@ -75,14 +93,6 @@ namespace ara
                                      const std::vector<uint8_t> &rpcPayload);
 
 
-                    SomeIpRpcMessage(uint32_t messageId,
-                                                   uint16_t clientId,
-                                                   uint16_t sessionId,
-                                                   uint8_t protocolVersion,
-                                                   uint8_t interfaceVersion,
-                                                   SomeIpMessageType messageType,
-                                                   SomeIpReturnCode returnCode,
-                                                   const std::vector<uint8_t> &rpcPayload);
 
                     /*************** override virtual functions inherited from parent*************/
 

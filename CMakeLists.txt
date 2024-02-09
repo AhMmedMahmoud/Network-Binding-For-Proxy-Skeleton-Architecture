@@ -187,3 +187,7 @@ target_link_libraries(TriggerOutSkeleton araCom)
 #### executables for TriggerOutProxy ####
 add_executable(TriggerOutProxy sm_interfaces_demos/demo_TriggerOutProxy.cpp)
 target_link_libraries(TriggerOutProxy araCom)
+
+
+add_executable(tes samples/demo_someipRpc.cpp)
+target_link_libraries(tes araCom)

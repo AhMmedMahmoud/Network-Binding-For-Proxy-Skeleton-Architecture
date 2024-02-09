@@ -75,8 +75,11 @@ namespace ara
                 SomeIpReturnCode mReturnCode;
 
 
-               /****** it helps in constructors that will be inherited to mychild *******/
 
+                /************************** generic constructor *************************/
+                /*
+                    it helps in constructors that will be inherited to mychild 
+                */
                 SomeIpMessage(uint32_t messageId,
                               uint16_t clientId,
                               uint16_t sessionId,
@@ -117,6 +120,7 @@ namespace ara
                               SomeIpMessageType messageType,
                               SomeIpReturnCode returnCode,
                               uint16_t sessionId = 1);
+
 
                 /// @brief Deserialize a SOME/IP message payload
                 /// @param message SOME/IP message to be filled by deserializing the payload

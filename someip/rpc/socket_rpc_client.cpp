@@ -102,9 +102,7 @@ namespace ara
 
                 void SocketRpcClient::Send(const std::vector<uint8_t> &payload)
                 {
-                    //mSendingQueue.TryEnqueue(payload);
-                    
-                    mSendingQueue.TryEnqueue(std::move(payload));
+                    mSendingQueue.TryEnqueue(payload);                    
                 }
 
 
