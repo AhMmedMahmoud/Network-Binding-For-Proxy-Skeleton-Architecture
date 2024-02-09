@@ -130,6 +130,11 @@ add_library(
 ##                                execuatables                                ##
 ################################################################################
 
+#### execuatables for SOMEIP_Rpc ####
+add_executable(tes samples/demo_someipRpc.cpp)
+target_link_libraries(tes araCom)
+
+
 #### execuatables for rpc ####
 #add_executable(server_rpc samples/demo_rpc_server.cpp)
 #target_link_libraries(server_rpc araCom)
@@ -187,7 +192,3 @@ target_link_libraries(TriggerOutSkeleton araCom)
 #### executables for TriggerOutProxy ####
 add_executable(TriggerOutProxy sm_interfaces_demos/demo_TriggerOutProxy.cpp)
 target_link_libraries(TriggerOutProxy araCom)
-
-
-add_executable(tes samples/demo_someipRpc.cpp)
-target_link_libraries(tes araCom)
