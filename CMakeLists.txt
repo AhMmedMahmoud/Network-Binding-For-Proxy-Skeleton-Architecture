@@ -122,6 +122,27 @@ add_library(
    sm_interfaces/TriggerInOutProxy.cpp
    sm_interfaces/TriggerInOutSkeleton.h
    sm_interfaces/TriggerInOutSkeleton.cpp
+
+   ## V2X_interfaces ##
+   V2X_interfaces/POTI_Management_Proxy.h
+   V2X_interfaces/POTI_Management_Proxy.cpp
+   V2X_interfaces/POTI_Management_Skeleton.h
+   V2X_interfaces/POTI_Management_Skeleton.cpp
+
+   V2X_interfaces/CAM_VDP_Proxy.h
+   V2X_interfaces/CAM_VDP_Proxy.cpp
+   V2X_interfaces/CAM_VDP_Skeleton.h
+   V2X_interfaces/CAM_VDP_Skeleton.cpp
+
+   V2X_interfaces/DENM_VDP_Proxy.h
+   V2X_interfaces/DENM_VDP_Proxy.cpp
+   V2X_interfaces/DENM_VDP_Skeleton.h
+   V2X_interfaces/DENM_VDP_Skeleton.cpp
+
+   V2X_interfaces/DENM_Control_Proxy.h
+   V2X_interfaces/DENM_Control_Proxy.cpp
+   V2X_interfaces/DENM_Control_Skeleton.h
+   V2X_interfaces/DENM_Control_Skeleton.cpp
 )
 
 
