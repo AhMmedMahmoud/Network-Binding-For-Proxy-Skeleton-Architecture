@@ -152,8 +152,8 @@ add_library(
 ################################################################################
 
 #### execuatables for SOMEIP_Rpc ####
-add_executable(tes samples/demo_someipRpc.cpp)
-target_link_libraries(tes araCom)
+add_executable(someip samples/demo_someipRpc.cpp)
+target_link_libraries(someip araCom)
 
 
 #### execuatables for rpc ####
@@ -213,3 +213,29 @@ target_link_libraries(TriggerOutSkeleton araCom)
 #### executables for TriggerOutProxy ####
 add_executable(TriggerOutProxy sm_interfaces_demos/demo_TriggerOutProxy.cpp)
 target_link_libraries(TriggerOutProxy araCom)
+
+
+
+
+
+
+#####################################################################################
+##                                  V2X excutables                                 ##
+#####################################################################################
+
+#### executables for CAM_VDP_Skeleton ####
+add_executable(CAM_VDP_Skeleton V2X_interfaces_demos/demo_CAM_VDP_Skeleton.cpp)
+target_link_libraries(CAM_VDP_Skeleton araCom)
+
+#### executables for CAM_VDP_Proxy ####
+add_executable(CAM_VDP_Proxy V2X_interfaces_demos/demo_CAM_VDP_Proxy.cpp)
+target_link_libraries(CAM_VDP_Proxy araCom)
+
+
+#### executables for CAM_VDP_Skeleton ####
+add_executable(DENM_Server V2X_interfaces_demos/demo_DENM_Server.cpp)
+target_link_libraries(DENM_Server araCom)
+
+#### executables for CAM_VDP_Proxy ####
+add_executable(DENM_Client V2X_interfaces_demos/demo_DENM_Client.cpp)
+target_link_libraries(DENM_Client araCom)
