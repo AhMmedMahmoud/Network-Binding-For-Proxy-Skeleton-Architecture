@@ -15,7 +15,8 @@ using namespace ara::com::proxy;
 
 // global variables
 bool executing = true;
-Poller* poller;
+Poller* poller_DENM_VDP;
+Poller* poller_DENM_Control;
 const int cTimeoutMs = 100;
 
 
@@ -47,11 +48,13 @@ int main()
             DENM_Control_Proxy myProxy_DENM_Control(handles_DENM_Control[0]);
 
             // Create thread using a lambda expression
-            poller = handles_DENM_Control[0].getRequester()->getPoller();
+            poller_DENM_VDP = handles_DENM_VDP[0].getRequester()->getPoller();
+            poller_DENM_Control = handles_DENM_Control[0].getRequester()->getPoller();
             std::thread t1([](){
                 while(executing)
                 {
-                poller->TryPoll(cTimeoutMs);
+                poller_DENM_VDP->TryPoll(cTimeoutMs);
+                poller_DENM_Control->TryPoll(cTimeoutMs);
                 }
             });
 
@@ -66,11 +69,11 @@ int main()
             myProxy_DENM_VDP.subscribe(256);
             while(myProxy_DENM_VDP.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
             {
-                std::cout << "not subscribed yet ...\n";
+                //std::cout << "not subscribed yet ...\n";
             }        
             std::cout << "subscribed\n";
 
-
+            
             std::cout << "---------- subscription state before requesting subscribe ---------\n";
             myProxy_DENM_Control.printSubscriptionState();
             // Introduce a delay of 7 seconds
@@ -81,10 +84,10 @@ int main()
             myProxy_DENM_Control.subscribe(256);
             while(myProxy_DENM_Control.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
             {
-                std::cout << "not subscribed yet ...\n";
+                //std::cout << "not subscribed yet ...\n";
             }        
             std::cout << "subscribed\n";
-
+            
 
             std::cout << "test is done\n";
             t1.join();

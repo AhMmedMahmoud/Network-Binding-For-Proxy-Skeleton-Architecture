@@ -28,7 +28,7 @@ int main()
 
    // Create Object from DENM_Control_Skeleton 
    InstanceIdentifier id_DENM_Control("9");
-   DENM_VDP_Skeleton mySkeleton_DENM_Control(id_DENM_Control);
+   DENM_Control_Skeleton mySkeleton_DENM_Control(id_DENM_Control);
 
  
    // Create thread using a lambda expression
@@ -45,9 +45,10 @@ int main()
 
 
    // initilize the service before offer it
-   std::vector<uint8_t> currentValue = {47,48,49};
-   mySkeleton_DENM_VDP.init(currentValue);
-   mySkeleton_DENM_Control.init(currentValue);
+   std::vector<uint8_t> currentValue_DENM_VDP = {47,48,49};
+   std::vector<uint8_t> currentValue_DENM_Control = {33,34,35};
+   mySkeleton_DENM_VDP.init(currentValue_DENM_VDP);
+   mySkeleton_DENM_Control.init(currentValue_DENM_Control);
 
 
 
