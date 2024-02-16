@@ -148,6 +148,16 @@ namespace ara
                 }
                 */
 
+                void TriggerOutProxy::SetReceiveHandler(Handler h)
+                {
+                    requester->eventClient->SetReceiveHandler(h);
+                }
+
+                void TriggerOutProxy::UnsetReceiveHandler()
+                {
+                    requester->eventClient->UnsetReceiveHandler();
+                }
+
 
                 /********************* deconstructor *******************/
                 

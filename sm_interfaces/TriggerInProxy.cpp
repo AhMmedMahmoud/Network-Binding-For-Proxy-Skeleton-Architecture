@@ -149,6 +149,16 @@ namespace ara
                 requester->eventClient->printCurrentState();
             }
 
+            void TriggerInProxy::SetReceiveHandler(Handler h)
+            {
+                requester->eventClient->SetReceiveHandler(h);
+            }
+
+            void TriggerInProxy::UnsetReceiveHandler()
+            {
+                requester->eventClient->UnsetReceiveHandler();
+            }
+
 
             /********************* deconstructor *******************/
             

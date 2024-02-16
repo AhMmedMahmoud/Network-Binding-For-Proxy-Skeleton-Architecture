@@ -21,6 +21,8 @@ namespace ara
             class TriggerOutProxy
             {
                 public:
+                    using Handler = std::function<void(const std::vector<uint8_t> &)>;
+
                     class HandleType
                     {
                         private:  
@@ -79,6 +81,9 @@ namespace ara
 
                     // bool isSubscribed(int duration);
                     
+                    void SetReceiveHandler(Handler h);
+
+                    void UnsetReceiveHandler();
 
                     /******** disable copy constructor and equal assigment operator *****/
                     
