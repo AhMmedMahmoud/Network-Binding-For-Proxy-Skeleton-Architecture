@@ -23,6 +23,9 @@ namespace ara
                 /// @brief SOME/IP event requester
                 class EventSubscripter
                 {
+                public:   
+                    using ReceivingHandler = std::function<void(const std::vector<uint8_t> &)>;
+                
                 private:
                     /******************************* attributes ******************************/
                     uint16_t mServiceId;
@@ -41,6 +44,8 @@ namespace ara
 
                     helper::SubscriptionState state;
 
+                    ReceivingHandler myReceivingHandle;
+
                     /******************************* useful variables ************************/
 
                     // queue at which we get received messages that contained acknowledging entry
@@ -57,8 +62,6 @@ namespace ara
                     /************************************* internal functions *****************/
 
                     bool isValidNotification(const rpc::SomeIpRpcMessage &request);
-
-                    bool isResponseToSettingValue(const rpc::SomeIpRpcMessage &request);
 
                     void requestSetting(const std::vector<uint8_t> &data);
 
@@ -109,6 +112,10 @@ namespace ara
                     void requestGetting();
 
                     void printCurrentState() const;
+
+                    void SetReceiveHandler(ReceivingHandler h);
+
+                    void UnsetReceiveHandler();
 
                     /************************ disable empty constructor **********************/
 

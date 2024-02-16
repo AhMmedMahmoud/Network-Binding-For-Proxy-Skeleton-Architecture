@@ -59,7 +59,7 @@ namespace ara
                     bool mValidNotify;
 
 
-                     // queue at which we get received messages that contained acknowledging entry
+                    // queue at which we get received messages that contained acknowledging entry
                     helper::ConcurrentQueue<sd::SomeIpSdMessage> mOfferingBuffer;
 
                     // mutex object
@@ -103,6 +103,10 @@ namespace ara
 
                     bool init(uint16_t &_port);
 
+                    bool TryGetTransportInfo(int duration, std::string &ipAddress,uint16_t &port);
+
+                    bool TryGetTransportInfo(std::string &ipAddress,uint16_t &port);
+
 
                 public:
                     /******************* constructor  *******************************/
@@ -123,14 +127,9 @@ namespace ara
 
                     /******************************* fundemental functions *********************/
 
-                    bool TryGetTransportInfo(int duration, std::string &ipAddress,uint16_t &port);
-
-                    bool TryGetTransportInfo(std::string &ipAddress,uint16_t &port);
-
                     bool findService();
 
                     bool findService(uint16_t &_port);
-
 
                     /************************** getter  ***************************/
 

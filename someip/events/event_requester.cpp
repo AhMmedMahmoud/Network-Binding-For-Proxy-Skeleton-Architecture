@@ -39,26 +39,6 @@ namespace ara
                     Send(message);
                 }
 
-
-
-                bool EventSubscripter::isResponseToSettingValue(const rpc::SomeIpRpcMessage &request)
-                {
-                    uint32_t _serviceId = (request.MessageId() & 0xffff0000);
-                    uint32_t _eventgroupId =  (request.MessageId() & 0x0000ffff);
-                    if( (request.MessageType() == SomeIpMessageType::Response) &&  
-                        (request.ProtocolVersion() == mProtocolVersion) &&
-                        (request.InterfaceVersion() == mInterfaceVersion) &&
-                        (request.MessageId() == (_serviceId | cRequestSetValueBySubscriberMethodId))
-                    )
-                    {
-                        return true;
-                    }
-                    else 
-                    {
-                        return false;
-                    }
-                }
-
                 bool EventSubscripter::isValidNotification(const rpc::SomeIpRpcMessage &request)
                 {
                     uint32_t _serviceId = (request.MessageId() & 0xffff0000);
@@ -122,6 +102,34 @@ namespace ara
 
                         if(state == helper::SubscriptionState::kSubscribed)
                         {
+                            try
+                            {
+                                if(myReceivingHandle)
+                                {
+                                    std::cout << "there is handler for receiving registed\n";
+                                    std::vector<uint8_t> receivedData = message.RpcPayload();
+                                    myReceivingHandle(receivedData);
+                                }
+                                else
+                                {
+                                    std::cout << "no handler for receiving registed\n";
+                                    bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
+                                    if (_enqueued)
+                                    {
+                                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                                        std::cout << "wake up thread that setting promise\n";
+                                        mSubscriptionConditionVariable.notify_one();
+                                    }
+                                }
+                            }
+                            catch (const std::bad_function_call& ex)
+                            {
+                                std::cout << "failed due to received handler" << ex.what() << std::endl;
+                                // Handle the exception as needed
+                            }
+                            
+                            
+                            /*
                             bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
                             if (_enqueued)
                             {
@@ -129,17 +137,8 @@ namespace ara
                                 std::cout << "wake up thread that setting promise\n";
                                 mSubscriptionConditionVariable.notify_one();
                             }
+                            */
                         }
-                    }
-                    else if(isResponseToSettingValue(message))
-                    {
-#if(debuging == 1)
-                        std::cout << "it is ResponseToSettingValue\n";
-                        std::cout << "------------------------------------------------\n";
-                        std::cout << ".....received message..... \n";
-                        message.print();
-                        std::cout << "-------------------------------------------------\n\n";
-#endif
                     }
                     else
                     {
@@ -153,19 +152,22 @@ namespace ara
 
                 void EventSubscripter::Subscribe(size_t maxSampleCount)
                 {
-                    std::vector<uint8_t> data;
-                    uint32_t _serviceId = mServiceId;
-                    uint32_t _eventgroupId =  mEventgroupId;
-                    rpc::SomeIpRpcMessage message(
-                                                ( (((uint32_t)_serviceId)<<16) | ((uint32_t)_eventgroupId)),
-                                                   mCounter,
-                                                   cInitialSessionId++,
-                                                   mProtocolVersion,
-                                                   mInterfaceVersion,
-                                                   data
-                                                );
-                    Send(message);
-                    state = helper::SubscriptionState::kSubscriptionPending;
+                    if(state != helper::SubscriptionState::kSubscribed)
+                    {
+                        std::vector<uint8_t> data;
+                        uint32_t _serviceId = mServiceId;
+                        uint32_t _eventgroupId =  mEventgroupId;
+                        rpc::SomeIpRpcMessage message(
+                                                    ( (((uint32_t)_serviceId)<<16) | ((uint32_t)_eventgroupId)),
+                                                    mCounter,
+                                                    cInitialSessionId++,
+                                                    mProtocolVersion,
+                                                    mInterfaceVersion,
+                                                    data
+                                                    );
+                        Send(message);
+                        state = helper::SubscriptionState::kSubscriptionPending;
+                    }
                 }
 
                 /*
@@ -317,6 +319,17 @@ namespace ara
                         default:
                         break;
                     }
+                }
+
+
+                void EventSubscripter::SetReceiveHandler(ReceivingHandler h)
+                {
+                    myReceivingHandle = h;
+                }
+
+                void EventSubscripter::UnsetReceiveHandler()
+                {
+                    myReceivingHandle = nullptr;
                 }
 
                 /******************************* destructor ******************************/

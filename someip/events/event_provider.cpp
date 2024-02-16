@@ -76,9 +76,8 @@ namespace ara
                 }
 
                
-                // std::vector<uint8_t> currentValue = {10,20,30};
                 void EventServer::InvokeEventHandler(const rpc::SomeIpRpcMessage &request)
-                {                    
+                {  
                     if(isFromMe(request))
                     {
                         //std::cout << "ignore it is from me\n";
@@ -150,6 +149,10 @@ namespace ara
                                                             currentValue);
 
                             Send(message.Payload());
+                        }
+                        else
+                        {
+                            std::cout << "failed to set a valid value\n";
                         }
                     }
                     else if(isRequestingToGettingValue(request))

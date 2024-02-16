@@ -141,6 +141,16 @@ namespace ara
                 }
                 */
 
+                void POTI_Management_Proxy::SetReceiveHandler(Handler h)
+                {
+                    requester->eventClient->SetReceiveHandler(h);
+                }
+
+                void POTI_Management_Proxy::UnsetReceiveHandler()
+                {
+                    requester->eventClient->UnsetReceiveHandler();
+                }
+
 
                 /********************* deconstructor *******************/
                 

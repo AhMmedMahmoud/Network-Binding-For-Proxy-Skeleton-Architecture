@@ -141,6 +141,16 @@ namespace ara
                 }
                 */
 
+                void DENM_VDP_Proxy::SetReceiveHandler(Handler h)
+                {
+                    requester->eventClient->SetReceiveHandler(h);
+                }
+
+                void DENM_VDP_Proxy::UnsetReceiveHandler()
+                {
+                    requester->eventClient->UnsetReceiveHandler();
+                }
+
 
                 /********************* deconstructor *******************/
                 

@@ -145,8 +145,6 @@ add_library(
    V2X_interfaces/DENM_Control_Skeleton.cpp
 )
 
-
-
 ################################################################################
 ##                                execuatables                                ##
 ################################################################################
@@ -215,10 +213,6 @@ add_executable(TriggerOutProxy sm_interfaces_demos/demo_TriggerOutProxy.cpp)
 target_link_libraries(TriggerOutProxy araCom)
 
 
-
-
-
-
 #####################################################################################
 ##                                  V2X excutables                                 ##
 #####################################################################################
@@ -230,6 +224,10 @@ target_link_libraries(CAM_VDP_Skeleton araCom)
 #### executables for CAM_VDP_Proxy ####
 add_executable(CAM_VDP_Proxy V2X_interfaces_demos/demo_CAM_VDP_Proxy.cpp)
 target_link_libraries(CAM_VDP_Proxy araCom)
+
+#### executables for CAM_VDP_Proxy showing EventDriven approach ####
+add_executable(eventDriven_CAM_VDP_Proxy V2X_interfaces_demos/demo_eventDriven_CAM_VDP_Proxy.cpp)
+target_link_libraries(eventDriven_CAM_VDP_Proxy araCom)
 
 
 #### executables for CAM_VDP_Skeleton ####

@@ -21,6 +21,8 @@ namespace ara
             class POTI_Management_Proxy
             {
                 public:
+                    using Handler = std::function<void(const std::vector<uint8_t> &)>;
+
                     class HandleType
                     {
                         private:  
@@ -78,6 +80,10 @@ namespace ara
                     void printSubscriptionState();
                     
                     //bool isSubscribed(int duration);
+
+                    void SetReceiveHandler(Handler h);
+
+                    void UnsetReceiveHandler();
 
 
                     /******** disable copy constructor and equal assigment operator *****/

@@ -19,6 +19,21 @@ Poller* poller;
 const int cTimeoutMs = 100;
 
 
+// class that simulates CAM_VDP class
+class CAM_VDP
+{
+    public:
+        void V2X_CAM_setCam(std::vector<uint8_t> data)
+        {
+            std::cout << "V2X_CAM_setCam function is called\n";
+            for(uint8_t x : data) 
+            {
+                std::cout << static_cast<int>(x) << "\n";
+            }
+        }
+};
+
+
 int main()
 {
     std::cout << "-----------------------------------------------------------\n";
@@ -45,6 +60,9 @@ int main()
             }
         });
 
+        CAM_VDP myCAM_VDP_Object;
+        auto handle = std::bind(&CAM_VDP::V2X_CAM_setCam, &myCAM_VDP_Object, std::placeholders::_1);
+        myProxy.SetReceiveHandler(handle);
         
         std::cout << "---------- subscription state before requesting subscribe ---------\n";
         myProxy.printSubscriptionState();
@@ -56,26 +74,10 @@ int main()
         myProxy.subscribe(256);
         while(myProxy.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
         {
-            std::cout << "not subscribed yet ...\n";
+            //std::cout << "not subscribed yet ...\n";
         }
         
         std::cout << "subscribed\n";
-
-        std::cout << "\n\n\n------------------------------- getter ----------------------------\n";
-        std::vector<uint8_t> data;
-        std::future<bool> futureObj = myProxy.getter(data);
-        if(futureObj.get())
-        {
-            //  V2X_CAM_setCam_Proxy(data);
-
-            
-            std::cout << "data received\n";
-            for (int i = 0; i < data.size(); i++) {
-                std::cout << static_cast<int>(data[i])  << " ";
-            }
-            std::cout << "\n";
-            
-        }
 
         std::cout << "\n\n------------------------------------\n";
         std::cout << "sleep for 10 seconds\n";
