@@ -18,22 +18,6 @@ Poller* poller;
 const int cTimeoutMs = 100;
 
 
-// class that simulates SM class
-class SM
-{
-   public:
-   bool process(std::vector<uint8_t> data)
-   {
-      std::cout << "SM process function\n";
-      for(uint8_t x : data) 
-      {
-         if(x != 44)
-            return false;
-      }
-      return true;
-   }
-};
-
 
 int main()
 {   
@@ -54,16 +38,43 @@ int main()
 
 
    // initilize the service before offer it
-   SM smObject;
    std::vector<uint8_t> currentValue = {47,48,49};
-   auto handle = std::bind(&SM::process, &smObject, std::placeholders::_1);
-   mySkeleton.init(currentValue, handle);
+   mySkeleton.init(currentValue);
 
 
    // offer the service
    std::cout << "before offering the service\n";
    mySkeleton.offerService();
    std::cout << "after offering the service\n";
+
+
+   int counter = false;
+   std::vector<uint8_t> data;
+   while(1)
+   {    
+      if(mySkeleton.eventServer->GetState() == PubSubState::Subscribed && counter == false)
+      {
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "---preparing sample1 to send---\n";
+         data= {1,2,3,4};
+         mySkeleton.eventServer->update(data);
+
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "\n---preparing sample2 to send---\n";
+         data= {4,5,6,7};
+         mySkeleton.eventServer->update(data);
+
+         // Introduce a delay of 7 seconds
+         std::this_thread::sleep_for(std::chrono::seconds(7));
+         std::cout << "\n---preparing sample2 to send---\n";
+         data= {8,9,10,11};
+         mySkeleton.eventServer->update(data);
+
+         counter = true;
+      } 
+   }
 
 
    // Join the thread with the main thread

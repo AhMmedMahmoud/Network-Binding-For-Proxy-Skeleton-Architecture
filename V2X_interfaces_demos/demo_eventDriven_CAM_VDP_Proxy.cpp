@@ -79,12 +79,13 @@ int main()
         
         std::cout << "subscribed\n";
 
+        /*
         std::cout << "\n\n------------------------------------\n";
         std::cout << "sleep for 10 seconds\n";
         std::cout << "---------------------------------------\n\n\n";
         // Introduce a delay of 7 seconds
         std::this_thread::sleep_for(std::chrono::seconds(10));
-
+        */
 
         std::cout << "\n\n\ntest is done\n";
         t1.join();

@@ -98,6 +98,9 @@ namespace ara
                             std::cout << "-------------------------------------------------\n\n";
 #endif
                             state = helper::SubscriptionState::kSubscribed;
+                            //////
+                            return;
+                            /////
                         }
 
                         if(state == helper::SubscriptionState::kSubscribed)
