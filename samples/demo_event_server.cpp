@@ -21,7 +21,7 @@ using namespace AsyncBsdSocketLib;
 
 /************************************ constants ******************************/
 
-const int cTimeoutMs = 3000;
+const int cTimeoutMs = 100;
 
 const std::string cAnyIpAddress{"0.0.0.0"};
 const std::string cNicIpAddress{"127.0.0.1"};

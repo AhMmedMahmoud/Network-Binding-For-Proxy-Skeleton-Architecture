@@ -11,13 +11,14 @@
 using namespace ara::com::someip::pubsub;
 using namespace ara::com::someip::rpc;
 using namespace ara::com::someip::sd;
+using namespace ara::com::helper;
 using namespace AsyncBsdSocketLib;
 
 
 
 /************************************ constants ******************************/
 
-const int cTimeoutMs = 5000;
+const int cTimeoutMs = 100;
 
 const std::string cAnyIpAddress{"0.0.0.0"};
 const std::string cNicIpAddress{"127.0.0.1"};
@@ -69,7 +70,7 @@ int main()
                              cPort,
                              cProtocolVersion);
 
-  client.Subscribe();
+  client.Subscribe(256);
 
   // Create thread using a lambda expression
   std::thread t1([poller]()
@@ -81,51 +82,46 @@ int main()
   });
 
 
-  SomeIpRpcMessage message;
-  if(client.isSubscribed(3000,message) == 1)
+  while(client.GetSubscriptionState() != SubscriptionState::kSubscribed)
   {
-    std::cout << "subscription is done\n";
-    //message.print();
-    // subscription is done
-
-    std::vector<uint8_t> data;
-    std::future<bool> futureObj = client.getter(data);
-    if(futureObj.get())
-    {
-      std::cout << "data received\n";
-      for (int i = 0; i < data.size(); i++) {
-        std::cout << static_cast<int>(data[i])  << " ";
-      }
-      std::cout << "\n";
-    }
-
-    std::vector<uint8_t> data2;
-    std::future<bool> futureObj2 = client.getter(data2);
-    if(futureObj2.get())
-    {
-      std::cout << "data received\n";
-      for (int i = 0; i < data2.size(); i++) {
-        std::cout << static_cast<int>(data2[i])  << " ";
-      }
-      std::cout << "\n";
-    }
-
-
-    // Introduce a delay of 7 seconds
-    std::this_thread::sleep_for(std::chrono::seconds(4));
-    std::vector<uint8_t> data3 = {99,102,88};
-    std::future<bool>futureObj3 = client.setter(data3);
-    std::cout << "waiting for setting function\n";
-    if(futureObj3.get())
-    {
-      std::cout << "setter function is executed\n";
-    }
+      //std::cout << "not subscribed yet ...\n";
   }
-  else
+  std::cout << "subscribe\n\n";
+
+
+  std::vector<uint8_t> data;
+  std::future<bool> futureObj = client.getter(data);
+  if(futureObj.get())
   {
-    std::cout << "subscription is failed\n";
-    // timeout
+    std::cout << "data received\n";
+    for (int i = 0; i < data.size(); i++) {
+      std::cout << static_cast<int>(data[i])  << " ";
+    }
+    std::cout << "\n";
   }
+
+  std::vector<uint8_t> data2;
+  std::future<bool> futureObj2 = client.getter(data2);
+  if(futureObj2.get())
+  {
+    std::cout << "data received\n";
+    for (int i = 0; i < data2.size(); i++) {
+      std::cout << static_cast<int>(data2[i])  << " ";
+    }
+    std::cout << "\n";
+  }
+
+  /*
+  // Introduce a delay of 7 seconds
+  std::this_thread::sleep_for(std::chrono::seconds(4));
+  std::vector<uint8_t> data3 = {99,102,88};
+  std::future<bool>futureObj3 = client.setter(data3);
+  std::cout << "waiting for setting function\n";
+  if(futureObj3.get())
+  {
+    std::cout << "setter function is executed\n";
+  }
+  */
 
   // Join the thread with the main thread
   t1.join();
