@@ -34,4 +34,4 @@
 
 
 notes
-- service instance is usually called instance
+- service instance is usually called service
