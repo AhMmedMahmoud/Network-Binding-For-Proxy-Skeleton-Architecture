@@ -34,4 +34,6 @@
 
 
 notes
-- service instance is usually called service
+- service instance is usually called instance
+
+- problem of size of DENM message is solved by compressing DENM message before sending it
