@@ -1,6 +1,6 @@
 // headers
 #include <iostream>
-#include "../V2X_interfaces/CAM_VDP_Proxy.h"
+#include "../V2X_interfaces/DENM_VDP_Proxy.h"
 #include <thread>
 #include <chrono> // for delay
 
@@ -25,8 +25,8 @@ int main()
     std::cout << "before finding \n";
     std::cout << "-----------------------------------------------------------\n";
 
-    InstanceIdentifier id("7");
-    auto handles = CAM_VDP_Proxy::findSerivce(id);
+    InstanceIdentifier id("8");
+    auto handles = DENM_VDP_Proxy::findSerivce(id);
     
     std::cout << "-----------------------------------------------------------\n";
     std::cout << "after finding \n";
@@ -34,7 +34,7 @@ int main()
 
     if(!handles.empty())
     {
-        CAM_VDP_Proxy myProxy(handles[0]);
+        DENM_VDP_Proxy myProxy(handles[0]);
 
         // Create thread using a lambda expression
         poller = handles[0].getRequester()->getPoller();

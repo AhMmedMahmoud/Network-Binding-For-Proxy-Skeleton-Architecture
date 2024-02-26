@@ -64,6 +64,7 @@ int main()
         auto handle = std::bind(&CAM_VDP::V2X_CAM_setCam, &myCAM_VDP_Object, std::placeholders::_1);
         myProxy.SetReceiveHandler(handle);
         
+
         std::cout << "---------- subscription state before requesting subscribe ---------\n";
         myProxy.printSubscriptionState();
         // Introduce a delay of 7 seconds

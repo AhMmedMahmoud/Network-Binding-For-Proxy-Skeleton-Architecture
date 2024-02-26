@@ -128,21 +128,28 @@ add_library(
    V2X_interfaces/POTI_Management_Proxy.cpp
    V2X_interfaces/POTI_Management_Skeleton.h
    V2X_interfaces/POTI_Management_Skeleton.cpp
-
    V2X_interfaces/CAM_VDP_Proxy.h
    V2X_interfaces/CAM_VDP_Proxy.cpp
    V2X_interfaces/CAM_VDP_Skeleton.h
    V2X_interfaces/CAM_VDP_Skeleton.cpp
-
    V2X_interfaces/DENM_VDP_Proxy.h
    V2X_interfaces/DENM_VDP_Proxy.cpp
    V2X_interfaces/DENM_VDP_Skeleton.h
    V2X_interfaces/DENM_VDP_Skeleton.cpp
-
    V2X_interfaces/DENM_Control_Proxy.h
    V2X_interfaces/DENM_Control_Proxy.cpp
    V2X_interfaces/DENM_Control_Skeleton.h
    V2X_interfaces/DENM_Control_Skeleton.cpp
+
+   ## Application_V2X_interfaces ##
+   Application_V2X_interfaces/POTI_Proxy.h
+   Application_V2X_interfaces/POTI_Proxy.cpp
+   Application_V2X_interfaces/POTI_Skeleton.h
+   Application_V2X_interfaces/POTI_Skeleton.cpp
+   Application_V2X_interfaces/VDP_Proxy.h
+   Application_V2X_interfaces/VDP_Proxy.cpp
+   Application_V2X_interfaces/VDP_Skeleton.h
+   Application_V2X_interfaces/VDP_Skeleton.cpp
 )
 
 ################################################################################
@@ -162,10 +169,10 @@ target_link_libraries(someip araCom)
 
 
 #### executables for events ####
-#add_executable(client_event samples/demo_event_client.cpp)
-#target_link_libraries(client_event araCom)
-#add_executable(server_event samples/demo_event_server.cpp)
-#target_link_libraries(server_event araCom)
+add_executable(client_event samples/demo_event_client.cpp)
+target_link_libraries(client_event araCom)
+add_executable(server_event samples/demo_event_server.cpp)
+target_link_libraries(server_event araCom)
 
 
 #### execuatables for ServiceDiscoveryProcess ####
@@ -230,10 +237,19 @@ add_executable(eventDriven_CAM_VDP_Proxy V2X_interfaces_demos/demo_eventDriven_C
 target_link_libraries(eventDriven_CAM_VDP_Proxy araCom)
 
 
-#### executables for CAM_VDP_Skeleton ####
+#### executables for DENM_VDP_Skeleton ####
+add_executable(DENM_VDP_Skeleton V2X_interfaces_demos/demo_DENM_VDP_Skeleton.cpp)
+target_link_libraries(DENM_VDP_Skeleton araCom)
+
+#### executables for DENM_VDP_Proxy ####
+add_executable(DENM_VDP_Proxy V2X_interfaces_demos/demo_DENM_VDP_Proxy.cpp)
+target_link_libraries(DENM_VDP_Proxy araCom)
+
+
+#### executables for DENM_VDP_Server ####
 add_executable(DENM_Server V2X_interfaces_demos/demo_DENM_Server.cpp)
 target_link_libraries(DENM_Server araCom)
 
-#### executables for CAM_VDP_Proxy ####
+#### executables for DENM_VDP_Client ####
 add_executable(DENM_Client V2X_interfaces_demos/demo_DENM_Client.cpp)
 target_link_libraries(DENM_Client araCom)
