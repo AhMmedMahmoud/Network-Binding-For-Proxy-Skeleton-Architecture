@@ -140,16 +140,10 @@ add_library(
    V2X_interfaces/DENM_Control_Proxy.cpp
    V2X_interfaces/DENM_Control_Skeleton.h
    V2X_interfaces/DENM_Control_Skeleton.cpp
-
-   ## Application_V2X_interfaces ##
-   Application_V2X_interfaces/POTI_Proxy.h
-   Application_V2X_interfaces/POTI_Proxy.cpp
-   Application_V2X_interfaces/POTI_Skeleton.h
-   Application_V2X_interfaces/POTI_Skeleton.cpp
-   Application_V2X_interfaces/VDP_Proxy.h
-   Application_V2X_interfaces/VDP_Proxy.cpp
-   Application_V2X_interfaces/VDP_Skeleton.h
-   Application_V2X_interfaces/VDP_Skeleton.cpp
+   V2X_interfaces/VDP_Proxy.h
+   V2X_interfaces/VDP_Proxy.cpp
+   V2X_interfaces/POTI_Skeleton.h
+   V2X_interfaces/POTI_Skeleton.cpp
 )
 
 ################################################################################
