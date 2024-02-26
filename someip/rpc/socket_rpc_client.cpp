@@ -41,8 +41,7 @@ namespace ara
                         throw std::runtime_error("Adding TCP client socket sender failed.");
                     }
 
-                    auto _receiver{std::bind(&SocketRpcClient::onReceive, this)};
-                    
+                    auto _receiver{std::bind(&SocketRpcClient::onReceive, this)};                 
                     _successful = mPoller->TryAddReceiver(&mClient, _receiver);
                     if (!_successful)
                     {

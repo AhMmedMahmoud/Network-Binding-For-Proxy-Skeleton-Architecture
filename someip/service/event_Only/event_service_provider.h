@@ -9,7 +9,7 @@
 #include "../../someipSdMsg/entry/service_entry.h"
 #include "../../someipSdMsg/entry/eventgroup_entry.h"
 #include "../../someipSdMsg/option/ipv4_endpoint_option.h"
-#include "../../rpc/socket_rpc_server.h"
+//#include "../../rpc/socket_rpc_server.h"
 #include "../../events/socket_event_server.h"
 #include <algorithm>
 #include <iostream>

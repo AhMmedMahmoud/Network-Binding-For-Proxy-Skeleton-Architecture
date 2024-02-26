@@ -10,7 +10,7 @@
 #include "../../someipSdMsg/entry/service_entry.h"
 #include "../../someipSdMsg/option/ipv4_endpoint_option.h"
 #include "../../someipRpcMsg/someip_rpc_message.h"
-#include "../../rpc/socket_rpc_client.h"
+//#include "../../rpc/socket_rpc_client.h"
 #include "../../events/socket_event_client.h"
 #include <condition_variable>
 #include <iostream>
