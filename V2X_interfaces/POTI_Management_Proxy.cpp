@@ -114,32 +114,15 @@ namespace ara
                     return requester->eventClient->GetSubscriptionState();
                 }
 
-                std::future<bool> POTI_Management_Proxy::setter(std::vector<uint8_t> data)
-                {
-                    return requester->eventClient->setter(data);
-                }
-
                 std::future<bool> POTI_Management_Proxy::getter(std::vector<uint8_t> &data)
                 {
                     return requester->eventClient->getter(data);
-                }
-
-                void POTI_Management_Proxy::requestGetting()
-                {
-                    return requester->eventClient->requestGetting();
                 }
 
                 void POTI_Management_Proxy::printSubscriptionState()
                 {
                     requester->eventClient->printCurrentState();
                 }
-
-                /*
-                bool POTI_Management_Proxy::isSubscribed(int duration)
-                {
-                    return requester->eventClient->isSubscribed(duration);
-                }
-                */
 
                 void POTI_Management_Proxy::SetReceiveHandler(Handler h)
                 {

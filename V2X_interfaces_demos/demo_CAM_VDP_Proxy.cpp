@@ -57,8 +57,7 @@ int main()
         while(myProxy.GetSubscriptionState() != helper::SubscriptionState::kSubscribed)
         {
             //std::cout << "not subscribed yet ...\n";
-        }
-        
+        }        
         std::cout << "subscribed\n";
 
         std::cout << "\n\n\n------------------------------- getter ----------------------------\n";

@@ -114,32 +114,15 @@ namespace ara
                     return requester->eventClient->GetSubscriptionState();
                 }
 
-                std::future<bool> DENM_Control_Proxy::setter(std::vector<uint8_t> data)
-                {
-                    return requester->eventClient->setter(data);
-                }
-
                 std::future<bool> DENM_Control_Proxy::getter(std::vector<uint8_t> &data)
                 {
                     return requester->eventClient->getter(data);
-                }
-
-                void DENM_Control_Proxy::requestGetting()
-                {
-                    return requester->eventClient->requestGetting();
                 }
 
                 void DENM_Control_Proxy::printSubscriptionState()
                 {
                     requester->eventClient->printCurrentState();
                 }
-
-                /*
-                bool DENM_Control_Proxy::isSubscribed(int duration)
-                {
-                    return requester->eventClient->isSubscribed(duration);
-                }
-                */
 
                 void DENM_Control_Proxy::SetReceiveHandler(Handler h)
                 {

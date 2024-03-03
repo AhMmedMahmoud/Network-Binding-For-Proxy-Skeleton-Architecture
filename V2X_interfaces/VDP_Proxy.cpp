@@ -114,32 +114,15 @@ namespace ara
                     return requester->eventClient->GetSubscriptionState();
                 }
 
-                std::future<bool> VDP_Proxy::setter(std::vector<uint8_t> data)
-                {
-                    return requester->eventClient->setter(data);
-                }
-
                 std::future<bool> VDP_Proxy::getter(std::vector<uint8_t> &data)
                 {
                     return requester->eventClient->getter(data);
-                }
-
-                void VDP_Proxy::requestGetting()
-                {
-                    return requester->eventClient->requestGetting();
                 }
 
                 void VDP_Proxy::printSubscriptionState()
                 {
                     requester->eventClient->printCurrentState();
                 }
-
-                /*
-                bool VDP_Proxy::isSubscribed(int duration)
-                {
-                    return requester->eventClient->isSubscribed(duration);
-                }
-                */
 
                 void VDP_Proxy::SetReceiveHandler(Handler h)
                 {

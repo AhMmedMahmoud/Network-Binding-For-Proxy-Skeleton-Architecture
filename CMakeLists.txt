@@ -61,6 +61,16 @@ add_library(
    someip/events/event_provider.cpp
    someip/events/event_provider.h
 
+   ## fields ##
+   someip/fields/field_requester.cpp
+   someip/fields/field_requester.h
+   someip/fields/socket_field_client.cpp
+   someip/fields/socket_field_client.h
+   someip/fields/socket_field_server.cpp
+   someip/fields/socket_field_server.h
+   someip/fields/field_provider.cpp
+   someip/fields/field_provider.h
+
    ## someip_sd message ##
    someip/someipSdMsg/someip_sd_message.cpp
    someip/someipSdMsg/someip_sd_message.h
@@ -99,6 +109,12 @@ add_library(
    someip/service/event_Only/event_service_provider.cpp
    someip/service/event_Only/event_service_requester.h
    someip/service/event_Only/event_service_requester.cpp
+
+   ## service which is an field only ##
+   someip/service/field_Only/field_service_provider.h
+   someip/service/field_Only/field_service_provider.cpp
+   someip/service/field_Only/field_service_requester.h
+   someip/service/field_Only/field_service_requester.cpp
 
    ## config ##
    config.h
