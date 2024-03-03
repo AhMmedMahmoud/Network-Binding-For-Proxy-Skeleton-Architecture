@@ -41,18 +41,18 @@ namespace ara
                 const InstanceIdentifier& TriggerOutProxy::HandleType::GetInstanceId()const
                 {   return identifier;  }
 
-                void TriggerOutProxy::HandleType::setRequester(EventServiceRequester *r)
+                void TriggerOutProxy::HandleType::setRequester(FieldServiceRequester *r)
                 {   requester = r;  }
 
-                EventServiceRequester* TriggerOutProxy::HandleType::getRequester()
+                FieldServiceRequester* TriggerOutProxy::HandleType::getRequester()
                 { return requester; }    
 
                 /**/
 
                 ServiceHandleContainer<TriggerOutProxy::HandleType> TriggerOutProxy::findSerivce(InstanceIdentifier id)
                 {
-                    EventServiceRequester *requester;
-                    requester = new EventServiceRequester(c_ServiceId,
+                    FieldServiceRequester *requester;
+                    requester = new FieldServiceRequester(c_ServiceId,
                                             id.getInstanceId(),
                                             c_MajorVersion,
                                             c_MinorVersion,
@@ -113,49 +113,37 @@ namespace ara
 
                 void TriggerOutProxy::subscribe(size_t maxSampleCount)
                 {
-                    requester->eventClient->Subscribe(maxSampleCount);
+                    requester->fieldClient->Subscribe(maxSampleCount);
                 }
 
                 helper::SubscriptionState TriggerOutProxy::GetSubscriptionState() const
                 {
-                    return requester->eventClient->GetSubscriptionState();
+                    return requester->fieldClient->GetSubscriptionState();
                 }
                 
-                std::future<bool> TriggerOutProxy::setter(std::vector<uint8_t> data)
+                std::future<bool> TriggerOutProxy::set(std::vector<uint8_t> &data)
                 {
-                    return requester->eventClient->setter(data);
+                    return requester->fieldClient->set(data);
                 }
 
-                std::future<bool> TriggerOutProxy::getter(std::vector<uint8_t> &data)
+                std::future<bool> TriggerOutProxy::get(std::vector<uint8_t> &data)
                 {
-                    return requester->eventClient->getter(data);
-                }
-
-                void TriggerOutProxy::requestGetting()
-                {
-                    return requester->eventClient->requestGetting();
+                    return requester->fieldClient->get(data);
                 }
 
                 void TriggerOutProxy::printSubscriptionState()
                 {
-                    requester->eventClient->printCurrentState();
+                    requester->fieldClient->printCurrentState();
                 }
-
-                /*
-                bool TriggerOutProxy::isSubscribed(int duration)
-                {
-                    return requester->eventClient->isSubscribed(duration);
-                }
-                */
 
                 void TriggerOutProxy::SetReceiveHandler(Handler h)
                 {
-                    requester->eventClient->SetReceiveHandler(h);
+                    requester->fieldClient->SetReceiveHandler(h);
                 }
 
                 void TriggerOutProxy::UnsetReceiveHandler()
                 {
-                    requester->eventClient->UnsetReceiveHandler();
+                    requester->fieldClient->UnsetReceiveHandler();
                 }
 
 

@@ -20,7 +20,7 @@ namespace ara
     {
         namespace skelton
         {
-            TriggerInSkelton::TriggerInSkelton( ara::com::InstanceIdentifier id) : EventServiceProvider
+            TriggerInSkelton::TriggerInSkelton( ara::com::InstanceIdentifier id) : FieldServiceProvider
                                                                     ( 
                                                                     c_ServiceId,        
                                                                     id.getInstanceId(),

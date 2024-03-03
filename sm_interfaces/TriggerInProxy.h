@@ -1,7 +1,7 @@
 #ifndef TRIGGER_IN_PROXY_H
 #define TRIGGER_IN_PROXY_H
 
-#include "../someip/service/event_Only/event_service_requester.h"
+#include "../someip/service/field_Only/field_service_requester.h"
 #include "../helper/instance_id.h"
 
 using namespace ara::com::someip::sd;
@@ -30,7 +30,7 @@ namespace ara
                          
                             ara::com::InstanceIdentifier identifier;
                             int16_t port_no;
-                            EventServiceRequester *requester;
+                            FieldServiceRequester *requester;
 
                         
                         public:
@@ -49,9 +49,9 @@ namespace ara
 
                             const InstanceIdentifier &GetInstanceId()const;
 
-                            void setRequester(EventServiceRequester *r);
+                            void setRequester(FieldServiceRequester *r);
 
-                            EventServiceRequester* getRequester();    
+                            FieldServiceRequester* getRequester();    
                     };
 
 
@@ -71,19 +71,16 @@ namespace ara
 
                     helper::SubscriptionState GetSubscriptionState() const;
                     
-                    std::future<bool> setter(std::vector<uint8_t> data);
+                    std::future<bool> set(std::vector<uint8_t> &data);
 
-                    std::future<bool> getter(std::vector<uint8_t> &data);
-
-                    void requestGetting();
+                    std::future<bool> get(std::vector<uint8_t> &data);
 
                     void printSubscriptionState();
-
-                    //bool isSubscribed(int duration);
 
                     void SetReceiveHandler(Handler h);
 
                     void UnsetReceiveHandler();
+
 
                     /******** disable copy constructor and equal assigment operator *****/
                     
@@ -98,7 +95,7 @@ namespace ara
                 private:
                     /*************************** atttibutes ****************/
 
-                    EventServiceRequester *requester;
+                    FieldServiceRequester *requester;
             };
         }
     }

@@ -1,13 +1,11 @@
-#ifndef EVENT_SERVER
-#define EVENT_SERVER
+#ifndef FIELD_SERVER
+#define FIELD_SERVER
 
 #include "../../helper/fsm.h"
-#include "fsm/service_down_state.h"
-#include "fsm/notsubscribed_state.h"
-#include "fsm/subscribed_state.h"
+#include "../events/fsm/service_down_state.h"
+#include "../events/fsm/notsubscribed_state.h"
+#include "../events/fsm/subscribed_state.h"
 #include "../someipRpcMsg/someip_rpc_message.h"
-
-#include <functional>
 #include <stdint.h>
 #include <vector>
 #include <mutex>
@@ -21,8 +19,8 @@ namespace ara
         {
             namespace pubsub
             {
-                /// @brief SOME/IP event server
-                class EventServer
+                /// @brief SOME/IP field server
+                class FieldServer
                 {
                 public:
                     using ProcessingHandler = std::function<bool(const std::vector<uint8_t> &)>;
@@ -41,6 +39,10 @@ namespace ara
                     std::mutex mCurrentValueMutex;
                     std::vector<uint8_t> currentValue;
 
+                    const  uint16_t cRequestSetValueBySubscriberMethodId = 10;
+                    const  uint16_t cRequestGetValueBySubscriberMethodId = 11;
+
+
                     helper::FSM<helper::PubSubState> mStateMachine;
                     fsm::ServiceDownState mServiceDownState;
                     fsm::NotSubscribedState mNotSubscribedState;
@@ -55,6 +57,10 @@ namespace ara
                     
                     bool isFromMe(const rpc::SomeIpRpcMessage &request);
                   
+                    bool isRequestingToSettingValue(const rpc::SomeIpRpcMessage &request);
+
+                    bool isRequestingToGettingValue(const rpc::SomeIpRpcMessage &request);
+
                     void printCurrentState() const;
 
                 protected:
@@ -62,11 +68,9 @@ namespace ara
 
                     virtual void Send(const std::vector<uint8_t> &payload) = 0;
 
-
                     /*********** function contain what to do with received messages ***********/
 
                     void InvokeEventHandler(const rpc::SomeIpRpcMessage &request);
-
 
                 public:
                     /******************************* constructor ******************************/
@@ -78,7 +82,7 @@ namespace ara
                     /// @param eventgroupId Service event-group ID
                     /// @param ipAddress Multicast IP address that clients should listen to for receiving events
                     /// @param port Multicast port number that clients should listen to for receiving events
-                    EventServer( uint16_t serviceId,
+                    FieldServer( uint16_t serviceId,
                                  uint16_t instanceId,
                                  uint8_t majorVersion,
                                  uint16_t eventgroupId,
@@ -107,7 +111,7 @@ namespace ara
 
                     /******************************* destructor ******************************/
 
-                    virtual ~EventServer();
+                    virtual ~FieldServer();
                 };
             }
         }

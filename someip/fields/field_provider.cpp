@@ -1,4 +1,4 @@
-#include "event_provider.h"
+#include "field_provider.h"
 #include <iostream>
 
 namespace ara
@@ -9,7 +9,37 @@ namespace ara
         {
             namespace pubsub
             {
-                bool EventServer::isRequestingToSubscription(const rpc::SomeIpRpcMessage &request)
+                bool FieldServer::isRequestingToSettingValue(const rpc::SomeIpRpcMessage &request)
+                {     
+                    if(
+                        (request.MessageType() == SomeIpMessageType::Request)
+                        && (request.ProtocolVersion() == mProtocolVersion)
+                        && (request.InterfaceVersion() == mInterfaceVersion)
+                        && (request.MessageId() == ( (((uint32_t)mServiceId)<<16) | (uint32_t)cRequestSetValueBySubscriberMethodId))
+                    )
+                    {
+                        //std::cout << "isRequestingToSettingValue\n";
+                        return true;
+                    }
+                    return false;
+                }
+
+                bool FieldServer::isRequestingToGettingValue(const rpc::SomeIpRpcMessage &request)
+                {     
+                    if(
+                        (request.MessageType() == SomeIpMessageType::Request)
+                        && (request.ProtocolVersion() == mProtocolVersion)
+                        && (request.InterfaceVersion() == mInterfaceVersion)
+                        && (request.MessageId() == ( (((uint32_t)mServiceId)<<16) | (uint32_t)cRequestGetValueBySubscriberMethodId))
+                    )
+                    {
+                        //std::cout << "isRequestingToSettingValue\n";
+                        return true;
+                    }
+                    return false;
+                }
+
+                bool FieldServer::isRequestingToSubscription(const rpc::SomeIpRpcMessage &request)
                 {     
                     if(
                         (request.MessageType() == SomeIpMessageType::Request)
@@ -24,7 +54,7 @@ namespace ara
                     return false;
                 }
 
-                bool EventServer::isFromMe(const rpc::SomeIpRpcMessage &request)
+                bool FieldServer::isFromMe(const rpc::SomeIpRpcMessage &request)
                 {
                     if(
                         (request.MessageType() == SomeIpMessageType::Notification)
@@ -39,13 +69,13 @@ namespace ara
                     return false;
                 }
 
-                void EventServer::SetHandler(ProcessingHandler handler)
+                void FieldServer::SetHandler(ProcessingHandler handler)
                 {
                     myProcessHandle = handler;
                 }
 
                
-                void EventServer::InvokeEventHandler(const rpc::SomeIpRpcMessage &request)
+                void FieldServer::InvokeEventHandler(const rpc::SomeIpRpcMessage &request)
                 {  
                     if(isFromMe(request))
                     {
@@ -82,13 +112,83 @@ namespace ara
                         }
                         Send(message.Payload());
                     }
+                    else if(isRequestingToSettingValue(request))
+                    {
+                        std::cout << "it is requestToSettingValue\n";
+                        request.print();
+
+                        try
+                        {
+                            if(myProcessHandle)
+                            {
+                                std::vector<uint8_t> receivedData = request.RpcPayload();
+                                if(!myProcessHandle(receivedData))
+                                {
+                                    std::cout << "not valid value to set\n";
+
+                                    // send field value
+                                    rpc::SomeIpRpcMessage message(  request.MessageId(),
+                                                            request.ClientId(),
+                                                            request.SessionId(),
+                                                            mProtocolVersion,
+                                                            mInterfaceVersion,
+                                                            SomeIpMessageType::Notification,
+                                                            SomeIpReturnCode::eOK,
+                                                            currentValue);
+
+                                    Send(message.Payload());
+                                    return;
+                                }
+                            }
+                        }
+                        catch (const std::bad_function_call& ex)
+                        {
+                            std::cout << "failed due to processing handler" << ex.what() << std::endl;
+                            // Handle the exception as needed
+                        }
+
+                        bool _result = putCurrentValue(request.RpcPayload());
+                        if(_result)
+                        {
+                            rpc::SomeIpRpcMessage message(  request.MessageId(),
+                                                            request.ClientId(),
+                                                            request.SessionId(),
+                                                            mProtocolVersion,
+                                                            mInterfaceVersion,
+                                                            SomeIpMessageType::Notification,
+                                                            SomeIpReturnCode::eOK,
+                                                            currentValue);
+
+                            Send(message.Payload());
+                        }
+                        else
+                        {
+                            std::cout << "failed to set a valid value\n";
+                        }
+                    }
+                    else if(isRequestingToGettingValue(request))
+                    {
+                        std::cout << "it is requestToGettingValue\n";
+                        request.print();
+
+                        rpc::SomeIpRpcMessage message(  request.MessageId(),
+                                                        request.ClientId(),
+                                                        request.SessionId(),
+                                                        mProtocolVersion,
+                                                        mInterfaceVersion,
+                                                        SomeIpMessageType::Notification,
+                                                        SomeIpReturnCode::eOK,
+                                                        currentValue);
+
+                        Send(message.Payload());
+                    }
                     else
                     {
                         //std::cout << " ignore\n";
                     }
                 }
 
-                bool EventServer::putCurrentValue(const std::vector<uint8_t> &data)
+                bool FieldServer::putCurrentValue(const std::vector<uint8_t> &data)
                 {
                     std::unique_lock<std::mutex> _lock(mCurrentValueMutex, std::defer_lock);
                     if (_lock.try_lock())
@@ -106,7 +206,7 @@ namespace ara
 
                 /******************************* constructor ******************************/
 
-                EventServer::EventServer( uint16_t serviceId,
+                FieldServer::FieldServer( uint16_t serviceId,
                                                 uint16_t instanceId,
                                                 uint8_t majorVersion,
                                                 uint16_t eventgroupId,
@@ -125,7 +225,7 @@ namespace ara
                 }
 
 
-                void EventServer::printCurrentState() const
+                void FieldServer::printCurrentState() const
                 {
                     switch(mStateMachine.GetState())
                     {
@@ -148,7 +248,7 @@ namespace ara
 
                 /******************************* fundemental functions *********************/
 
-                void EventServer::Start()
+                void FieldServer::Start()
                 {                  
                     helper::PubSubState _state = GetState();
                     if (_state == helper::PubSubState::ServiceDown)
@@ -158,12 +258,12 @@ namespace ara
                     }
                 }
 
-                helper::PubSubState EventServer::GetState() const noexcept
+                helper::PubSubState FieldServer::GetState() const noexcept
                 {
                     return mStateMachine.GetState();
                 }
 
-                void EventServer::Stop()
+                void FieldServer::Stop()
                 {
                     helper::PubSubState _state = GetState();
                     if (_state == helper::PubSubState::NotSubscribed)
@@ -176,7 +276,7 @@ namespace ara
                     }
                 }
 
-                void EventServer::update(const std::vector<uint8_t> &data)
+                void FieldServer::update(const std::vector<uint8_t> &data)
                 {
                     putCurrentValue(data);
                     rpc::SomeIpRpcMessage message(  ( (((uint32_t)mServiceId)<<16) | ((uint32_t)mEventgroupId)),
@@ -192,9 +292,10 @@ namespace ara
                 }
 
 
+
                 /******************************* destructor ******************************/
 
-                EventServer::~EventServer()
+                FieldServer::~FieldServer()
                 {
                     Stop();
                 }

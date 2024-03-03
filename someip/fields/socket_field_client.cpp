@@ -1,6 +1,6 @@
-#include "socket_event_client.h"
-#include <iostream>
 #include <algorithm>
+#include "socket_field_client.h"
+#include <iostream>
 
 
 namespace ara
@@ -11,11 +11,11 @@ namespace ara
         {
             namespace sd
             {
-                const std::string SockeKEventClient::cAnyIpAddress("0.0.0.0");
+                const std::string SockeKFieldClient::cAnyIpAddress("0.0.0.0");
 
                 /******************************* constructors  ******************************/
 
-                SockeKEventClient::SockeKEventClient(
+                SockeKFieldClient::SockeKFieldClient(
                     uint16_t serviceId,
                     uint16_t instanceId,
                     uint8_t majorVersion,
@@ -27,7 +27,7 @@ namespace ara
                     std::string multicastGroup,
                     uint16_t port,
                     uint8_t protocolVersion,
-                    uint8_t interfaceVersion) : EventSubscripter(serviceId,
+                    uint8_t interfaceVersion) : FieldSubscripter(serviceId,
                                                 instanceId,
                                                 majorVersion,
                                                 minorVersion,
@@ -49,14 +49,14 @@ namespace ara
                         throw std::runtime_error("UDP socket setup failed.");
                     }
 
-                    auto _receiver{std::bind(&SockeKEventClient::onReceive, this)};
+                    auto _receiver{std::bind(&SockeKFieldClient::onReceive, this)};
                     _successful = mPoller->TryAddReceiver(&mUdpSocket, _receiver);
                     if (!_successful)
                     {
                         throw std::runtime_error("Adding UDP socket receiver failed.");
                     }
 
-                    auto _sender{std::bind(&SockeKEventClient::onSend, this)};
+                    auto _sender{std::bind(&SockeKFieldClient::onSend, this)};
                     _successful = mPoller->TryAddSender(&mUdpSocket, _sender);
                     if (!_successful)
                     {
@@ -68,7 +68,7 @@ namespace ara
 
                 /**************************** poller functions  **********************************/
 
-                void SockeKEventClient::onReceive()
+                void SockeKFieldClient::onReceive()
                 {
                     //std::cout << "------------------------- onReceive ------------------\n";
 
@@ -94,7 +94,7 @@ namespace ara
                     }
                 }
 
-                void SockeKEventClient::onSend()
+                void SockeKFieldClient::onSend()
                 {
                     while (!mSendingQueue.Empty())
                     {
@@ -125,7 +125,7 @@ namespace ara
 
                 /************************** function that parent use ***********************/
 
-                void SockeKEventClient::Send(const rpc::SomeIpRpcMessage &message)
+                void SockeKFieldClient::Send(const rpc::SomeIpRpcMessage &message)
                 {
                     std::vector<uint8_t> _payload{message.Payload()};
                     mSendingQueue.TryEnqueue(std::move(_payload));
@@ -135,7 +135,7 @@ namespace ara
 
                 /**************************** override deconstructor  ************************/
 
-                SockeKEventClient::~SockeKEventClient()
+                SockeKFieldClient::~SockeKFieldClient()
                 {
                     mPoller->TryRemoveSender(&mUdpSocket);
                     mPoller->TryRemoveReceiver(&mUdpSocket);

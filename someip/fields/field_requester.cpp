@@ -1,7 +1,10 @@
-#include "event_requester.h"
+#include "field_requester.h"
+#include <iostream>
+// for delay
 #include <thread>
 #include <chrono>
-#include <iostream>
+
+#define debuging 1
 
 namespace ara
 {
@@ -11,7 +14,36 @@ namespace ara
         {
             namespace pubsub
             {
-                bool EventSubscripter::isValidNotification(const rpc::SomeIpRpcMessage &request)
+                void FieldSubscripter::requestSetting(const std::vector<uint8_t> &data)
+                {
+                    rpc::SomeIpRpcMessage message(  ( (((uint32_t)mServiceId)<<16) | ((uint32_t)cRequestSetValueBySubscriberMethodId)),
+                                                    mCounter,
+                                                    cInitialSessionId++,
+                                                    mProtocolVersion,
+                                                    mInterfaceVersion,
+                                                    SomeIpMessageType::Request,
+                                                    SomeIpReturnCode::eOK,
+                                                    data);
+                    
+                    Send(message);
+                }
+
+                void FieldSubscripter::requestGetting()
+                {
+                    std::vector<uint8_t> data;
+                    rpc::SomeIpRpcMessage message(  ( (((uint32_t)mServiceId)<<16) | ((uint32_t)cRequestGetValueBySubscriberMethodId)),
+                                                    mCounter,
+                                                    cInitialSessionId++,
+                                                    mProtocolVersion,
+                                                    mInterfaceVersion,
+                                                    SomeIpMessageType::Request,
+                                                    SomeIpReturnCode::eOK,
+                                                    data);
+                    
+                    Send(message);
+                }
+
+                bool FieldSubscripter::isValidNotification(const rpc::SomeIpRpcMessage &request)
                 {
                     uint32_t _serviceId = (request.MessageId() & 0xffff0000);
                     uint32_t _eventgroupId =  (request.MessageId() & 0x0000ffff);
@@ -31,7 +63,7 @@ namespace ara
                 
                 /******************************* constructor ******************************/
 
-                EventSubscripter::EventSubscripter(
+                FieldSubscripter::FieldSubscripter(
                             uint16_t serviceId,
                             uint16_t instanceId,
                             uint8_t majorVersion,
@@ -55,23 +87,24 @@ namespace ara
 
 
 
-                void EventSubscripter::InvokeEventHandler(rpc::SomeIpRpcMessage &&message)
+                void FieldSubscripter::InvokeEventHandler(rpc::SomeIpRpcMessage &&message)
                 {
                     if(isValidNotification(message))
                     {
                         // update state to subscribed if i already request subscription
                         if(state == helper::SubscriptionState::kSubscriptionPending)
                         {
-                            /*
+#if(debuging == 1)
                             std::cout << "it is notification\n";
                             std::cout << "------------------------------------------------\n";
                             std::cout << ".....received message..... \n";
                             message.print();
                             std::cout << "-------------------------------------------------\n\n";
-                            */
-
+#endif
                             state = helper::SubscriptionState::kSubscribed;
+                            //////
                             return;
+                            /////
                         }
 
                         if(state == helper::SubscriptionState::kSubscribed)
@@ -87,6 +120,11 @@ namespace ara
                                 else
                                 {
                                     std::cout << "no handler for receiving registed\n";
+                                    if(!mMessageBuffer.Empty())
+                                    {
+                                        std::cout << "remove previous value\n";
+                                        mMessageBuffer.TryDequeue();
+                                    }
                                     bool _enqueued = mMessageBuffer.TryEnqueue(std::move(message));
                                     if (_enqueued)
                                     {
@@ -113,7 +151,7 @@ namespace ara
                 
                 /******************************* fundemental functions *********************/
 
-                void EventSubscripter::Subscribe(size_t maxSampleCount)
+                void FieldSubscripter::Subscribe(size_t maxSampleCount)
                 {
                     if(state != helper::SubscriptionState::kSubscribed)
                     {
@@ -133,7 +171,118 @@ namespace ara
                     }
                 }
 
-                std::future<bool> EventSubscripter::getter(std::vector<uint8_t> &data) 
+                /*
+                bool FieldSubscripter::isSubscribed(
+                    int duration,
+                    rpc::SomeIpRpcMessage &message)
+                {
+                    bool _result;
+                    if (mMessageBuffer.Empty())
+                    {
+                        std::cout << "-- buffer of received messages is empty --\n";
+                        mSubscriptionLock.lock();
+                        std::cv_status _status = mSubscriptionConditionVariable.wait_for(
+                                mSubscriptionLock, std::chrono::milliseconds(duration));
+                        mSubscriptionLock.unlock();
+                        _result = mValidNotify && (_status != std::cv_status::timeout);
+                    }
+                    else
+                    {
+                        std::cout << "-- buffer of receiver messages has messages --\n";
+                        // There are still processed subscription messages in the buffer, so no need to wait.
+                        _result = true;
+                    }
+
+                    // In the case of successful get, set the first processed subscription to the output argument
+                    if (_result)
+                    {
+                        std::cout << "-- fill passed message with received message --\n";
+                        _result = mMessageBuffer.TryDequeue(message);
+                    }
+
+                    return _result;
+                }
+
+                bool FieldSubscripter::isSubscribed(int duration)
+                {
+                    if(state ==helper::SubscriptionState::kSubscribed)
+                        return true;
+                    else if(state ==helper::SubscriptionState::kNotSubscribed)
+                        return false;
+
+                    bool _result;
+                    if (mMessageBuffer.Empty())
+                    {
+                        std::cout << "-- buffer of received messages is empty --\n";
+                        mSubscriptionLock.lock();
+                        std::cv_status _status = mSubscriptionConditionVariable.wait_for(
+                                mSubscriptionLock, std::chrono::milliseconds(duration));
+                        mSubscriptionLock.unlock();
+                        _result = mValidNotify && (_status != std::cv_status::timeout);
+                    }
+                    else
+                    {
+                        std::cout << "-- buffer of receiver messages has messages --\n";
+                        // There are still processed subscription messages in the buffer, so no need to wait.
+                        _result = true;
+                    }
+
+                    return _result;
+                }
+                */
+
+                
+
+                std::future<bool> FieldSubscripter::get(std::vector<uint8_t> &data) 
+                {
+                    std::shared_ptr<std::promise<bool>> promisePtr = std::make_shared<std::promise<bool>>();
+                    std::future<bool> future = promisePtr->get_future();
+
+                    // In your waiting function
+                    if (mMessageBuffer.Empty()) 
+                    {
+                        requestGetting();
+
+                        std::thread([&, promisePtr] 
+                        {
+                            std::cout << "-- buffer of received messages is empty --\n";
+                            std::cout << "-- acquire the lock --\n";
+                            mSubscriptionLock.lock();
+                            std::cout << "----- waiting -----\n";
+                            mSubscriptionConditionVariable.wait(mSubscriptionLock);
+                            std::cout << "-- releasing lock the lock --\n";
+                            mSubscriptionLock.unlock();
+                            //std::cout << "-- if --\n";
+                            if (mValidNotify) 
+                            {
+                                rpc::SomeIpRpcMessage message;
+                                bool _result = mMessageBuffer.TryDequeue(message);
+                                if (_result) 
+                                {
+                                    data = message.RpcPayload();
+                                    promisePtr->set_value(true);
+                                } else {
+                                    promisePtr->set_value(false);
+                                }
+                            } 
+                            else {  promisePtr->set_value(false);   }
+                        }).detach();
+                    } 
+                    else 
+                    {
+                        rpc::SomeIpRpcMessage message;
+                        bool _result = mMessageBuffer.TryDequeue(message);
+                        if (_result) {
+                            data = message.RpcPayload();
+                        }
+                        promisePtr->set_value(_result);
+                    }
+
+                    return future;
+                }
+
+
+                std::future<bool> FieldSubscripter::getter(std::vector<uint8_t> &data) 
                 {
                     std::shared_ptr<std::promise<bool>> promisePtr = std::make_shared<std::promise<bool>>();
                     std::future<bool> future = promisePtr->get_future();
@@ -178,13 +327,31 @@ namespace ara
 
                     return future;
                 }
+             
+                std::future<bool> FieldSubscripter::set(std::vector<uint8_t> &data)
+                {
+                    auto promise_ = std::make_shared<std::promise<bool>>(); // Create a local shared_ptr
+                    std::future<bool> future = promise_->get_future();
+
+                    requestSetting(data);
+
+                    std::async(std::launch::async, [&, promise_]() { // Capture promise_ in the lambda
+                        std::vector<uint8_t> received;
+                        bool result = getter(received).get();  // Use get() to retrieve the value from the future
+                        data = received;
+                        promise_->set_value(result);
+                    });
+
+                    return future;
+                }
+
                 
-                helper::SubscriptionState EventSubscripter::GetSubscriptionState() const
+                helper::SubscriptionState FieldSubscripter::GetSubscriptionState() const
                 {
                     return state;
                 }
 
-                void EventSubscripter::printCurrentState() const
+                void FieldSubscripter::printCurrentState() const
                 {
                     switch(state)
                     {
@@ -205,19 +372,20 @@ namespace ara
                     }
                 }
 
-                void EventSubscripter::SetReceiveHandler(ReceivingHandler h)
+
+                void FieldSubscripter::SetReceiveHandler(ReceivingHandler h)
                 {
                     myReceivingHandle = h;
                 }
 
-                void EventSubscripter::UnsetReceiveHandler()
+                void FieldSubscripter::UnsetReceiveHandler()
                 {
                     myReceivingHandle = nullptr;
                 }
 
                 /******************************* destructor ******************************/
 
-                EventSubscripter::~EventSubscripter()
+                FieldSubscripter::~FieldSubscripter()
                 {
                     // Condition variable notifications are not valid anymore during destruction.
                     mValidNotify = false;

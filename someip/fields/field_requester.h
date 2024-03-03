@@ -1,12 +1,13 @@
-#ifndef EVENT_CLIENT
-#define EVENT_CLIENT
+#ifndef FIELD_CLIENT
+#define FIELD_CLIENT
 
 #include "../../helper/concurrent_queue.h"
 #include "../../helper/state.h"
 #include "../someipRpcMsg/someip_rpc_message.h"
-#include <future>
-#include <functional>
 #include <condition_variable>
+#include <functional>
+#include <future>
+
 
 namespace ara
 {
@@ -16,14 +17,15 @@ namespace ara
         {
             namespace pubsub
             {
-                /// @brief SOME/IP event requester
-                class EventSubscripter
+                /// @brief SOME/IP field requester
+                class FieldSubscripter
                 {
                 public:   
                     using ReceivingHandler = std::function<void(const std::vector<uint8_t> &)>;
                 
                 private:
                     /******************************* attributes ******************************/
+
                     uint16_t mServiceId;
                     uint16_t mInstanceId;
                     uint8_t mMajorVersion;
@@ -42,6 +44,7 @@ namespace ara
 
                     ReceivingHandler myReceivingHandle;
 
+
                     /******************************* useful variables ************************/
 
                     // queue at which we get received messages that contained acknowledging entry
@@ -55,16 +58,29 @@ namespace ara
                     // flag
                     bool mValidNotify;
 
+
                     /************************************* internal functions *****************/
 
                     bool isValidNotification(const rpc::SomeIpRpcMessage &request);
+
+                    void requestSetting(const std::vector<uint8_t> &data);
+
+                    /*
+                    /// @brief Try to wait unitl the server processes a subscription request
+                    /// @param duration Waiting timeout in milliseconds
+                    /// @param message The first processed subscription message in the buffer
+                    /// @returns True, if the service offering is stopped before the timeout; otherwise false
+                    bool isSubscribed(int duration, rpc::SomeIpRpcMessage &message);
+                
+                    bool isSubscribed(int duration);
+                    */
                    
                 protected:
                     /*********************** useful for constructor of my child *****************/
                     
                     /// @param networkLayer Network communication abstraction layer
                     /// @param counter Counter to make the client distinguishable among other subscribers
-                    EventSubscripter(
+                    FieldSubscripter(
                             uint16_t serviceId,
                             uint16_t instanceId,
                             uint8_t majorVersion,
@@ -89,7 +105,13 @@ namespace ara
                     
                     helper::SubscriptionState GetSubscriptionState() const;
 
+                    std::future<bool> get(std::vector<uint8_t> &data); 
+
                     std::future<bool> getter(std::vector<uint8_t> &data); 
+
+                    std::future<bool> set(std::vector<uint8_t> &data); 
+
+                    void requestGetting();
 
                     void printCurrentState() const;
 
@@ -99,11 +121,11 @@ namespace ara
 
                     /************************ disable empty constructor **********************/
 
-                    EventSubscripter() = delete;
+                    FieldSubscripter() = delete;
     
                     /******************************* destructor ******************************/
 
-                    virtual ~EventSubscripter();
+                    virtual ~FieldSubscripter();
                 };
             }
         }

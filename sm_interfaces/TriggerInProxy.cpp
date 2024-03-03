@@ -41,10 +41,10 @@ namespace ara
             const InstanceIdentifier& TriggerInProxy::HandleType::GetInstanceId()const
             {   return identifier;  }
 
-            void TriggerInProxy::HandleType::setRequester(EventServiceRequester *r)
+            void TriggerInProxy::HandleType::setRequester(FieldServiceRequester *r)
             {   requester = r;  }
 
-            EventServiceRequester* TriggerInProxy::HandleType::getRequester()
+            FieldServiceRequester* TriggerInProxy::HandleType::getRequester()
             { return requester; }    
 
 
@@ -52,8 +52,8 @@ namespace ara
 
             ServiceHandleContainer<TriggerInProxy::HandleType> TriggerInProxy::findSerivce(InstanceIdentifier id)
             {
-                EventServiceRequester *requester;
-                requester = new EventServiceRequester(c_ServiceId,
+                FieldServiceRequester *requester;
+                requester = new FieldServiceRequester(c_ServiceId,
                                         id.getInstanceId(),
                                         c_MajorVersion,
                                         c_MinorVersion,
@@ -114,49 +114,37 @@ namespace ara
 
             void TriggerInProxy::subscribe(size_t maxSampleCount)
             {
-                requester->eventClient->Subscribe(maxSampleCount);
+                requester->fieldClient->Subscribe(maxSampleCount);
             }
 
             helper::SubscriptionState TriggerInProxy::GetSubscriptionState() const
             {
-                return requester->eventClient->GetSubscriptionState();
+                return requester->fieldClient->GetSubscriptionState();
             }
             
-            std::future<bool> TriggerInProxy::setter(std::vector<uint8_t> data)
+            std::future<bool> TriggerInProxy::set(std::vector<uint8_t> &data)
             {
-                return requester->eventClient->setter(data);
+                return requester->fieldClient->set(data);
             }
 
-            std::future<bool> TriggerInProxy::getter(std::vector<uint8_t> &data)
+            std::future<bool> TriggerInProxy::get(std::vector<uint8_t> &data)
             {
-                return requester->eventClient->getter(data);
+                return requester->fieldClient->get(data);
             }
-
-            void TriggerInProxy::requestGetting()
-            {
-                requester->eventClient->requestGetting();
-            }
-
-            /*
-            bool TriggerInProxy::isSubscribed(int duration)
-            {
-                return requester->eventClient->isSubscribed(duration);
-            }
-            */
 
             void TriggerInProxy::printSubscriptionState()
             {
-                requester->eventClient->printCurrentState();
+                requester->fieldClient->printCurrentState();
             }
 
             void TriggerInProxy::SetReceiveHandler(Handler h)
             {
-                requester->eventClient->SetReceiveHandler(h);
+                requester->fieldClient->SetReceiveHandler(h);
             }
 
             void TriggerInProxy::UnsetReceiveHandler()
             {
-                requester->eventClient->UnsetReceiveHandler();
+                requester->fieldClient->UnsetReceiveHandler();
             }
 
 

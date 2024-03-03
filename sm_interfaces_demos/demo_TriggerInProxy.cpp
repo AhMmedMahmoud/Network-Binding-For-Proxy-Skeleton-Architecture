@@ -63,7 +63,7 @@ int main()
 
         std::cout << "\n\n\n------------------------------- getter ----------------------------\n";
         std::vector<uint8_t> data;
-        std::future<bool> futureObj = myProxy.getter(data);
+        std::future<bool> futureObj = myProxy.get(data);
         if(futureObj.get())
         {
             std::cout << "data received\n";
@@ -80,12 +80,18 @@ int main()
         std::this_thread::sleep_for(std::chrono::seconds(10));
 
 
-        std::cout << "\n\n\n------------------------------- setter ----------------------------\n";
-        std::vector<uint8_t> data3 = {44,44,44};
-        std::future<bool>futureObj3 = myProxy.setter(data3);
+        std::cout << "\n\n\n------------------------------- set ----------------------------\n";
+        //std::vector<uint8_t> data3 = {44,44,44};
+        std::vector<uint8_t> data3 = {40,40,40};
+        std::future<bool>futureObj3 = myProxy.set(data3);
         if(futureObj3.get())
         {
-            std::cout << "setter function is executed\n";
+            std::cout << "set function is executed\n";
+            std::cout << "data received\n";
+            for (int i = 0; i < data3.size(); i++) {
+                std::cout << static_cast<int>(data3[i])  << " ";
+            }
+            std::cout << "\n";
         }
 
 

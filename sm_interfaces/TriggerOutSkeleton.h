@@ -1,7 +1,7 @@
 #ifndef TRIGGER_OUT_SKELETON_H
 #define TRIGGER_OUT_SKELETON_H
 
-#include "../someip/service/event_Only/event_service_provider.h"
+#include "../someip/service/field_Only/field_service_provider.h"
 #include "../helper/instance_id.h"
 
 namespace ara 
@@ -10,7 +10,7 @@ namespace ara
     {
         namespace skelton
         {
-            class TriggerOutSkelton : public ara::com::someip::sd::EventServiceProvider 
+            class TriggerOutSkelton : public ara::com::someip::sd::FieldServiceProvider 
             {                    
                 public:
                     TriggerOutSkelton( ara::com::InstanceIdentifier id);  

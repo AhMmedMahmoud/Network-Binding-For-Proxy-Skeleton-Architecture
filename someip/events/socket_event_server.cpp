@@ -1,6 +1,6 @@
-#include <algorithm>
 #include "socket_event_server.h"
 #include <iostream>
+#include <algorithm>
 
 namespace ara
 {

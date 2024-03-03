@@ -50,13 +50,13 @@ int main()
    std::vector<uint8_t> data;
    while(1)
    {    
-      if(mySkeleton.eventServer->GetState() == PubSubState::Subscribed && counter == false)
+      if(mySkeleton.fieldServer->GetState() == PubSubState::Subscribed && counter == false)
       {
          // Introduce a delay of 7 seconds
          std::this_thread::sleep_for(std::chrono::seconds(7));
          std::cout << "---preparing sample to send---\n";
          data= {10,20,30,40};
-         mySkeleton.eventServer->update(data);
+         mySkeleton.fieldServer->update(data);
 
          // Introduce a delay of 7 seconds
          std::this_thread::sleep_for(std::chrono::seconds(20));
