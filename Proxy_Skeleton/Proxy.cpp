@@ -120,32 +120,15 @@ namespace ara
                 return requester->eventClient->GetSubscriptionState();
             }
             
-            std::future<bool> Proxy::setter(std::vector<uint8_t> data)
-            {
-                return requester->eventClient->setter(data);
-            }
-
             std::future<bool> Proxy::getter(std::vector<uint8_t> &data)
             {
                 return requester->eventClient->getter(data);
-            }
-
-            void Proxy::requestGetting()
-            {
-                return requester->eventClient->requestGetting();
             }
 
             void Proxy::printSubscriptionState()
             {
                 requester->eventClient->printCurrentState();
             }
-
-            /*
-            bool Proxy::isSubscribed(int duration)
-            {
-                return requester->eventClient->isSubscribed(duration);
-            }
-            */
 
 #elif(EXAMPLE == RPCS)
             std::future<bool> Proxy::calculateSum(const std::vector<uint8_t> &payload,

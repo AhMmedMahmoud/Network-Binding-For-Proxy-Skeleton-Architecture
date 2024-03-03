@@ -69,15 +69,9 @@ namespace ara
                     
                     helper::SubscriptionState GetSubscriptionState() const;
                     
-                    std::future<bool> setter(std::vector<uint8_t> data);
-
                     std::future<bool> getter(std::vector<uint8_t> &data);
 
-                    void requestGetting();
-
                     void printSubscriptionState();
-
-                    // bool isSubscribed(int duration);
                     
 #elif(EXAMPLE == RPCS)
 

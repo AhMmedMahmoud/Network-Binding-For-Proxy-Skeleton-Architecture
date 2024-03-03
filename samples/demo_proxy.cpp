@@ -111,7 +111,7 @@ int main()
         std::cout << "---------------------------------------\n\n\n";
         std::this_thread::sleep_for(std::chrono::seconds(4));
 
-        
+        /*
         std::cout << "\n\n\n------------------------------- setter ----------------------------\n";
         std::vector<uint8_t> data3 = {99,102,88};
         std::cout << "waiting for setting function\n";
@@ -120,6 +120,7 @@ int main()
         {
           std::cout << "setter function is executed\n";
         }
+        */
 #endif
 
         std::cout << "test is done\n";
