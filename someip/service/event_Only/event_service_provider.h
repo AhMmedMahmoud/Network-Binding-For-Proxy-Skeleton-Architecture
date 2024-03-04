@@ -96,7 +96,7 @@ namespace ara
 
                     void stopService();
                     
-                    void init(std::vector<uint8_t> currentValue, Handler h = nullptr);
+                    void init(Handler h = nullptr);
 
                     AsyncBsdSocketLib::Poller* getPoller();
 

@@ -59,6 +59,8 @@ namespace ara
 
                     bool isValidNotification(const rpc::SomeIpRpcMessage &request);
                    
+                    bool isSubscriptionAck(const rpc::SomeIpRpcMessage &request);
+
                 protected:
                     /*********************** useful for constructor of my child *****************/
                     

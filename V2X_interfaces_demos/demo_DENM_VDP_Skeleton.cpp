@@ -38,8 +38,7 @@ int main()
 
 
    // initilize the service before offer it
-   std::vector<uint8_t> currentValue = {47,48,49};
-   mySkeleton.init(currentValue);
+   mySkeleton.init();
 
 
    // offer the service

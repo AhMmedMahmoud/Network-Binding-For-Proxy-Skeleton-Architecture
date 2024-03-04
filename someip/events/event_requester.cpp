@@ -28,6 +28,24 @@ namespace ara
                         return false;
                     }
                 }
+
+                bool EventSubscripter::isSubscriptionAck(const rpc::SomeIpRpcMessage &request)
+                {
+                    uint32_t _serviceId = (request.MessageId() & 0xffff0000);
+                    uint32_t _eventgroupId =  (request.MessageId() & 0x0000ffff);
+                    if( (request.MessageType() == SomeIpMessageType::Response) &&  
+                        (request.ProtocolVersion() == mProtocolVersion) &&
+                        (request.InterfaceVersion() == mInterfaceVersion) &&
+                        (request.MessageId() == (_serviceId | _eventgroupId))
+                    )
+                    {
+                        return true;
+                    }
+                    else 
+                    {
+                        return false;
+                    }
+                }
                 
                 /******************************* constructor ******************************/
 
@@ -57,23 +75,21 @@ namespace ara
 
                 void EventSubscripter::InvokeEventHandler(rpc::SomeIpRpcMessage &&message)
                 {
-                    if(isValidNotification(message))
+                    if(isSubscriptionAck(message))
                     {
                         // update state to subscribed if i already request subscription
                         if(state == helper::SubscriptionState::kSubscriptionPending)
                         {
-                            /*
-                            std::cout << "it is notification\n";
-                            std::cout << "------------------------------------------------\n";
-                            std::cout << ".....received message..... \n";
-                            message.print();
-                            std::cout << "-------------------------------------------------\n\n";
-                            */
+                            std::cout << "it is SubscriptionAck\n";
 
                             state = helper::SubscriptionState::kSubscribed;
+
                             return;
                         }
-
+                    }
+                    
+                    if(isValidNotification(message))
+                    {
                         if(state == helper::SubscriptionState::kSubscribed)
                         {
                             try
@@ -102,10 +118,6 @@ namespace ara
                                 // Handle the exception as needed
                             }
                         }
-                    }
-                    else
-                    {
-                        //std::cout << "ignore\n";
                     }
                 }
 

@@ -10,8 +10,7 @@
 #include <functional>
 #include <stdint.h>
 #include <vector>
-#include <mutex>
-#include <vector>
+
 
 namespace ara
 {
@@ -38,9 +37,6 @@ namespace ara
                     const uint8_t mInterfaceVersion;                    
                     uint16_t cInitialSessionId{1};
 
-                    std::mutex mCurrentValueMutex;
-                    std::vector<uint8_t> currentValue;
-
                     helper::FSM<helper::PubSubState> mStateMachine;
                     fsm::ServiceDownState mServiceDownState;
                     fsm::NotSubscribedState mNotSubscribedState;
@@ -52,10 +48,9 @@ namespace ara
                     /*************************** internal function **********************/
                     
                     bool isRequestingToSubscription(const rpc::SomeIpRpcMessage &request);
-                    
-                    bool isFromMe(const rpc::SomeIpRpcMessage &request);
-                  
+                                      
                     void printCurrentState() const;
+
 
                 protected:
                     /****************** function that child will implement it *****************/
@@ -100,8 +95,6 @@ namespace ara
 
                     void update(const std::vector<uint8_t> &data);
                     
-                    bool putCurrentValue(const std::vector<uint8_t> &data);
-
                     void SetHandler(ProcessingHandler handler);
 
 

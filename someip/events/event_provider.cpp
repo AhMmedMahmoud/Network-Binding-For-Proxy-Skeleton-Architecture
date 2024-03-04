@@ -18,22 +18,6 @@ namespace ara
                         && (request.MessageId() == ( (((uint32_t)mServiceId)<<16) | (uint32_t)mEventgroupId))
                     )
                     {
-                        //std::cout << "isRequestingToSubscription\n";
-                        return true;
-                    }
-                    return false;
-                }
-
-                bool EventServer::isFromMe(const rpc::SomeIpRpcMessage &request)
-                {
-                    if(
-                        (request.MessageType() == SomeIpMessageType::Notification)
-                        && (request.ProtocolVersion() == mProtocolVersion)
-                        && (request.InterfaceVersion() == mInterfaceVersion)
-                        && (request.MessageId() == ( (((uint32_t)mServiceId)<<16) | (uint32_t)mEventgroupId))
-                    )
-                    {
-                        //std::cout << "isFromMe\n";
                         return true;
                     }
                     return false;
@@ -43,27 +27,23 @@ namespace ara
                 {
                     myProcessHandle = handler;
                 }
-
-               
+           
                 void EventServer::InvokeEventHandler(const rpc::SomeIpRpcMessage &request)
                 {  
-                    if(isFromMe(request))
+                    if(isRequestingToSubscription(request))
                     {
-                        //std::cout << "ignore it is from me\n";
-                        // ignore
-                    }
-                    else if(isRequestingToSubscription(request))
-                    {
-                        //std::cout << "it is request to Subscribe\n";
+                        std::cout << "it is request to Subscribe\n";
                         request.print();
+
+                        std::vector<uint8_t> emptyVec;
                         rpc::SomeIpRpcMessage message(  request.MessageId(),
                                                         request.ClientId(),
                                                         request.SessionId(),
                                                         mProtocolVersion,
                                                         mInterfaceVersion,
-                                                        SomeIpMessageType::Notification,
+                                                        SomeIpMessageType::Response,
                                                         SomeIpReturnCode::eOK,
-                                                        currentValue);
+                                                        emptyVec);
 
                         helper::PubSubState _state = GetState();
                         //printCurrentState();
@@ -80,29 +60,11 @@ namespace ara
                             mSubscribedState.Subscribed();
                             printCurrentState();
                         }
+
                         Send(message.Payload());
-                    }
-                    else
-                    {
-                        //std::cout << " ignore\n";
                     }
                 }
 
-                bool EventServer::putCurrentValue(const std::vector<uint8_t> &data)
-                {
-                    std::unique_lock<std::mutex> _lock(mCurrentValueMutex, std::defer_lock);
-                    if (_lock.try_lock())
-                    {
-                        currentValue = data;
-                        _lock.unlock();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                    
-                }
 
                 /******************************* constructor ******************************/
 
@@ -178,7 +140,6 @@ namespace ara
 
                 void EventServer::update(const std::vector<uint8_t> &data)
                 {
-                    putCurrentValue(data);
                     rpc::SomeIpRpcMessage message(  ( (((uint32_t)mServiceId)<<16) | ((uint32_t)mEventgroupId)),
                                                     1,
                                                     cInitialSessionId++,

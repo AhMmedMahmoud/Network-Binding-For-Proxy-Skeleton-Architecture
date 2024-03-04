@@ -45,11 +45,8 @@ int main()
 
 
    // initilize the service before offer it
-   std::vector<uint8_t> currentValue_DENM_VDP = {47,48,49};
-   std::vector<uint8_t> currentValue_DENM_Control = {33,34,35};
-   mySkeleton_DENM_VDP.init(currentValue_DENM_VDP);
-   mySkeleton_DENM_Control.init(currentValue_DENM_Control);
-
+   mySkeleton_DENM_VDP.init();
+   mySkeleton_DENM_Control.init();
 
 
    // offer the service

@@ -178,11 +178,11 @@ target_link_libraries(someip araCom)
 #target_link_libraries(client_rpc araCom)
 
 
-#### executables for events ####
-add_executable(client_event samples/demo_event_client.cpp)
-target_link_libraries(client_event araCom)
-add_executable(server_event samples/demo_event_server.cpp)
-target_link_libraries(server_event araCom)
+#### executables for fields ####
+add_executable(client_field samples/demo_field_client.cpp)
+target_link_libraries(client_field araCom)
+add_executable(server_field samples/demo_field_server.cpp)
+target_link_libraries(server_field araCom)
 
 
 #### execuatables for ServiceDiscoveryProcess ####

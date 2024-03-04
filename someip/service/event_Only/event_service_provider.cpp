@@ -62,7 +62,7 @@ namespace ara
 
                 /******************************* fundemental functions *********************/
     
-                void EventServiceProvider::init(std::vector<uint8_t> currentValue, Handler h)
+                void EventServiceProvider::init(Handler h)
                 {
                     /************** initialization for events ***************/            
                     
@@ -76,16 +76,8 @@ namespace ara
                                             mEndpointEventPort,
                                             mProtocolVersion);
                     
-                    bool _result = eventServer->putCurrentValue(currentValue);
-                    if(_result)
-                    {
-                        eventServer->SetHandler(h);
-                        eventServer->Start();
-                    }
-                    else
-                    {
-                        std::cout << "fail to put current value\n";
-                    }
+                    eventServer->SetHandler(h);
+                    eventServer->Start();
                 }
 
 
