@@ -130,36 +130,53 @@ add_library(
    sm_interfaces/TriggerInProxy.cpp
    sm_interfaces/TriggerInSkeleton.h
    sm_interfaces/TriggerInSkeleton.cpp
+  
    sm_interfaces/TriggerOutProxy.h
    sm_interfaces/TriggerOutProxy.cpp
    sm_interfaces/TriggerOutSkeleton.h
    sm_interfaces/TriggerOutSkeleton.cpp
+  
    sm_interfaces/TriggerInOutProxy.h
    sm_interfaces/TriggerInOutProxy.cpp
    sm_interfaces/TriggerInOutSkeleton.h
    sm_interfaces/TriggerInOutSkeleton.cpp
+
 
    ## V2X_interfaces ##
    V2X_interfaces/POTI_Management_Proxy.h
    V2X_interfaces/POTI_Management_Proxy.cpp
    V2X_interfaces/POTI_Management_Skeleton.h
    V2X_interfaces/POTI_Management_Skeleton.cpp
+
    V2X_interfaces/CAM_VDP_Proxy.h
    V2X_interfaces/CAM_VDP_Proxy.cpp
    V2X_interfaces/CAM_VDP_Skeleton.h
    V2X_interfaces/CAM_VDP_Skeleton.cpp
+
    V2X_interfaces/DENM_VDP_Proxy.h
    V2X_interfaces/DENM_VDP_Proxy.cpp
    V2X_interfaces/DENM_VDP_Skeleton.h
    V2X_interfaces/DENM_VDP_Skeleton.cpp
+
    V2X_interfaces/DENM_Control_Proxy.h
    V2X_interfaces/DENM_Control_Proxy.cpp
    V2X_interfaces/DENM_Control_Skeleton.h
    V2X_interfaces/DENM_Control_Skeleton.cpp
-   V2X_interfaces/VDP_Proxy.h
-   V2X_interfaces/VDP_Proxy.cpp
-   V2X_interfaces/POTI_Skeleton.h
-   V2X_interfaces/POTI_Skeleton.cpp
+
+   V2X_interfaces/POTI_VDP_Proxy.h
+   V2X_interfaces/POTI_VDP_Proxy.cpp
+   V2X_interfaces/POTI_VDP_Skeleton.h
+   V2X_interfaces/POTI_VDP_Skeleton.cpp
+
+   V2X_interfaces/CAM_Control_Proxy.h
+   V2X_interfaces/CAM_Control_Proxy.cpp
+   V2X_interfaces/CAM_Control_Skeleton.h
+   V2X_interfaces/CAM_Control_Skeleton.cpp
+
+   V2X_interfaces/Event_DENM_Proxy.h
+   V2X_interfaces/Event_DENM_Proxy.cpp
+   V2X_interfaces/Event_DENM_Skeleton.h
+   V2X_interfaces/Event_DENM_Skeleton.cpp
 )
 
 ################################################################################
